@@ -82,6 +82,7 @@ var tokens = [...]string{
 	RPAREN: ")",
 }
 
+// Token is an entity in an expression
 type Token struct {
 	Type  tokenType
 	Value string
@@ -101,13 +102,15 @@ func (tok *Token) String() string {
 		return tokens[tok.Type]
 	}
 
-	return ""
+	return "???"
 }
 
+// IsOperator checks if the token is an operator
 func (tok *Token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
 }
 
+// IsLiteral checks if the token is a literal
 func (tok *Token) IsLiteral() bool {
 	return tok.Type > literalsBegin && tok.Type < literalsEnd
 }

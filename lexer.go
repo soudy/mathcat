@@ -1,13 +1,15 @@
 package eparser
 
 import (
-	"errors"
 	"fmt"
 	"unicode"
 )
 
 const eol rune = -1
 
+// Lexer holds the lexer's state while scanning an expression. If an error is
+// encountered it's appended to errors and the error count gets increased. If
+// there are 5 errors already it will stop emitting them to prevent spam.
 type Lexer struct {
 	expr   []rune   // the input expression
 	ch     rune     // current character
@@ -27,10 +29,11 @@ func isNumber(c rune) bool {
 	return c >= '0' && c <= '9'
 }
 
-func newLexer(expr []rune) *Lexer {
+func newLexer(expr string) *Lexer {
+	runeExpr := []rune(expr)
 	return &Lexer{
-		expr:  append(expr, eol),
-		ch:    expr[0],
+		expr:  append(runeExpr, eol),
+		ch:    runeExpr[0],
 		pos:   0,
 		start: 0,
 
@@ -45,9 +48,13 @@ func (l *Lexer) error(msg string) {
 		return
 	}
 	l.ErrorCount++
-	l.errors = append(l.errors, errors.New(fmt.Sprintf("%s at position %d", msg, l.start+1)))
+	l.errors = append(l.errors, fmt.Errorf("Syntax Error: %s at position %d", msg, l.start+1))
 }
 
+// Lex starts lexing an expression. We keep reading until EOL is found, because we
+// need a padding of 1 to always be able to peek().
+//
+// Returns the generated tokens and any error found.
 func (l *Lexer) Lex() ([]*Token, []error) {
 	for l.ch != eol {
 		l.start = l.pos

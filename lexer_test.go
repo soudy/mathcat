@@ -4,13 +4,8 @@ import (
 	"testing"
 )
 
-var (
-	testExpr        = []rune("3+5*8")
-	complexTestExpr = []rune("(7 * (3 + 4 - 2)) << 1.23 % 0.3")
-)
-
 func TestPeekAndEat(t *testing.T) {
-	l := newLexer(testExpr)
+	l := newLexer("3+5*8")
 	if l.peek() != '3' {
 		t.Error("wrong peeked value")
 	}
@@ -21,25 +16,13 @@ func TestPeekAndEat(t *testing.T) {
 }
 
 func TestLex(t *testing.T) {
-	l := newLexer(complexTestExpr)
+	expr := "(7 * (3 + 4 - 2)) << 1.23 % 0.3"
+	l := newLexer(expr)
+
 	res, errs := l.Lex()
-	expected := map[int]tokenType{
-		0:  LPAREN,
-		1:  INT,
-		2:  MUL,
-		3:  LPAREN,
-		4:  INT,
-		5:  ADD,
-		6:  INT,
-		7:  SUB,
-		8:  INT,
-		9:  RPAREN,
-		10: RPAREN,
-		11: LSH,
-		12: FLOAT,
-		13: REM,
-		14: FLOAT,
-		15: EOL,
+	expected := []tokenType{
+		LPAREN, INT, MUL, LPAREN, INT, ADD, INT, SUB, INT, RPAREN, RPAREN, LSH,
+		FLOAT, REM, FLOAT, EOL,
 	}
 
 	if errs != nil {
@@ -49,6 +32,19 @@ func TestLex(t *testing.T) {
 	for k, v := range res {
 		if expected[k] != v.Type {
 			t.Error("mismatched token")
+		}
+	}
+}
+
+func TestLongToken(t *testing.T) {
+	l := newLexer("** **=")
+	res, _ := l.Lex()
+
+	expected := []tokenType{POW, POW_EQ, EOL}
+
+	for k, v := range res {
+		if expected[k] != v.Type {
+			t.Error("misread long token(s)")
 		}
 	}
 }
