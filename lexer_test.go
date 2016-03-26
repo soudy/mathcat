@@ -16,12 +16,12 @@ func TestPeekAndEat(t *testing.T) {
 }
 
 func TestLex(t *testing.T) {
-	expr := "(7 * (3 + 4 - 2)) << 1.23 % 0.3"
+	expr := "a **= (7 ** (3 + 4 - 2)) << 1.23 % 0.3"
 	l := newLexer(expr)
 
 	res, errs := l.Lex()
 	expected := []tokenType{
-		LPAREN, INT, MUL, LPAREN, INT, ADD, INT, SUB, INT, RPAREN, RPAREN, LSH,
+		IDENT, POW_EQ, LPAREN, INT, POW, LPAREN, INT, ADD, INT, SUB, INT, RPAREN, RPAREN, LSH,
 		FLOAT, REM, FLOAT, EOL,
 	}
 
@@ -36,15 +36,8 @@ func TestLex(t *testing.T) {
 	}
 }
 
-func TestLongToken(t *testing.T) {
-	l := newLexer("** **=")
-	res, _ := l.Lex()
-
-	expected := []tokenType{POW, POW_EQ, EOL}
-
-	for k, v := range res {
-		if expected[k] != v.Type {
-			t.Error("misread long token(s)")
-		}
+func TestUTF8(t *testing.T) {
+	if !isIdent('Å') || !isIdent('Ś') {
+		t.Error("isIdent doesn't recognize unicode characters")
 	}
 }
