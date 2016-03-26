@@ -17,12 +17,10 @@ func TestPeekAndEat(t *testing.T) {
 
 func TestLex(t *testing.T) {
 	expr := "a **= (7 ** (3 + 4 - 2)) << 1.23 % 0.3"
-	l := newLexer(expr)
-
-	res, errs := l.Lex()
+	res, errs := Lex(expr)
 	expected := []tokenType{
-		IDENT, POW_EQ, LPAREN, INT, POW, LPAREN, INT, ADD, INT, SUB, INT, RPAREN, RPAREN, LSH,
-		FLOAT, REM, FLOAT, EOL,
+		IDENT, POW_EQ, LPAREN, INT, POW, LPAREN, INT, ADD, INT, SUB, INT,
+		RPAREN, RPAREN, LSH, FLOAT, REM, FLOAT, EOL,
 	}
 
 	if errs != nil {
