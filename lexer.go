@@ -55,9 +55,7 @@ func (l *Lexer) error(msg string) {
 // need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func Lex(expr string) ([]*Token, []error) {
-	l := newLexer(expr)
-
+func (l *Lexer) Lex() ([]*Token, []error) {
 	for l.ch != eol {
 		l.start = l.pos
 
