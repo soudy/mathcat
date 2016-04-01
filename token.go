@@ -78,6 +78,12 @@ var tokens = [...]string{
 	POW_EQ: "**=",
 	REM_EQ: "%=",
 
+	AND_EQ: "&=",
+	OR_EQ:  "|=",
+	XOR_EQ: "^=",
+	LSH_EQ: "<<=",
+	RSH_EQ: ">>=",
+
 	LPAREN: "(",
 	RPAREN: ")",
 }
