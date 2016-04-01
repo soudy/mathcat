@@ -29,11 +29,8 @@ func isNumber(c rune) bool {
 	return c >= '0' && c <= '9'
 }
 
-func newLexer(expr string) *Lexer {
-	runeExpr := []rune(expr)
+func newLexer() *Lexer {
 	return &Lexer{
-		expr:  append(runeExpr, eol),
-		ch:    runeExpr[0],
 		pos:   0,
 		start: 0,
 
@@ -51,11 +48,13 @@ func (l *Lexer) error(msg string) {
 	l.errors = append(l.errors, fmt.Errorf("Syntax Error: %s at position %d", msg, l.start+1))
 }
 
-// Lex starts lexing an expression. We keep reading until EOL is found, because we
-// need a padding of 1 to always be able to peek().
+// Lex starts lexing an expression. We keep reading until EOL is found, which
+// we add because we need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func (l *Lexer) Lex() ([]*Token, []error) {
+func (l *Lexer) Lex(expr string) ([]*Token, []error) {
+	l.expr = append([]rune(expr), eol) // add eol as padding
+	l.ch = []rune(expr)[0]
 	for l.ch != eol {
 		l.start = l.pos
 

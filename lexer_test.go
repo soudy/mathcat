@@ -4,20 +4,9 @@ import (
 	"testing"
 )
 
-func TestPeekAndEat(t *testing.T) {
-	l := newLexer("3+5*8")
-	if l.peek() != '3' {
-		t.Error("wrong peeked value")
-	}
-
-	if l.eat() != '3' && l.ch != '+' {
-		t.Error("eating goes wrong")
-	}
-}
-
 func TestLex(t *testing.T) {
-	l := newLexer("a **= (7 ** (3 + 4 - 2)) << 1.23 % 0.3")
-	res, errs := l.Lex()
+	l := newLexer()
+	res, errs := l.Lex("a **= (7 ** (3 + 4 - 2)) << 1.23 % 0.3")
 	expected := []tokenType{
 		IDENT, POW_EQ, LPAREN, INT, POW, LPAREN, INT, ADD, INT, SUB, INT,
 		RPAREN, RPAREN, LSH, FLOAT, REM, FLOAT, EOL,
