@@ -40,7 +40,7 @@ func newLexer() *Lexer {
 }
 
 func (l *Lexer) error(msg string) {
-	if l.ErrorCount > 4 {
+	if l.ErrorCount > 5 {
 		// At this point we're just spamming output
 		return
 	}
@@ -54,7 +54,6 @@ func (l *Lexer) error(msg string) {
 // Returns the generated tokens and any error found.
 func (l *Lexer) Lex(expr string) ([]*Token, []error) {
 	l.expr = append([]rune(expr), eol) // add eol as padding
-	l.ch = l.expr[0]
 
 	for l.ch != eol {
 		l.start = l.pos
