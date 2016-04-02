@@ -54,7 +54,8 @@ func (l *Lexer) error(msg string) {
 // Returns the generated tokens and any error found.
 func (l *Lexer) Lex(expr string) ([]*Token, []error) {
 	l.expr = append([]rune(expr), eol) // add eol as padding
-	l.ch = []rune(expr)[0]
+	l.ch = l.expr[0]
+
 	for l.ch != eol {
 		l.start = l.pos
 
