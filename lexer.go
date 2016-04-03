@@ -13,7 +13,7 @@ const eol rune = -1
 type Lexer struct {
 	expr   []rune   // the input expression
 	ch     rune     // current character
-	pos    int      // current character offset
+	pos    int      // current character position
 	start  int      // current read offset
 	tokens []*Token // tokenized lexemes
 
@@ -29,16 +29,6 @@ func isNumber(c rune) bool {
 	return c >= '0' && c <= '9'
 }
 
-func newLexer() *Lexer {
-	return &Lexer{
-		pos:   0,
-		start: 0,
-
-		errors:     nil,
-		ErrorCount: 0,
-	}
-}
-
 func (l *Lexer) error(msg string) {
 	if l.ErrorCount > 5 {
 		// At this point we're just spamming output
@@ -52,9 +42,20 @@ func (l *Lexer) error(msg string) {
 // we add because we need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func (l *Lexer) Lex(expr string) ([]*Token, []error) {
-	l.expr = append([]rune(expr), eol) // add eol as padding
+func Lex(expr string) ([]*Token, []error) {
+	l := &Lexer{
+		expr:  append([]rune(expr), eol), // add eol as padding
+		pos:   0,
+		start: 0,
 
+		errors:     nil,
+		ErrorCount: 0,
+	}
+
+	return l.lex()
+}
+
+func (l *Lexer) lex() ([]*Token, []error) {
 	for l.ch != eol {
 		l.start = l.pos
 

@@ -49,12 +49,12 @@ const (
 )
 
 var tokens = [...]string{
-	ILLEGAL: "ILLEGAL",
-	EOL:     "EOL",
+	ILLEGAL: "illegal",
+	EOL:     "end of line",
 
-	IDENT: "IDENT",
-	INT:   "INT",
-	FLOAT: "FLOAT",
+	IDENT: "identifier",
+	INT:   "integer",
+	FLOAT: "float",
 
 	ADD: "+",
 	SUB: "-",
