@@ -25,7 +25,7 @@ var constants = map[string]float64{
 // expression and/or use variables.
 //
 // For example, you could declare and use multiple variables like so:
-//	   p := eparser.New()
+//     p := eparser.New()
 //     p.Run("a = 150")
 //     p.Run("b = 715")
 //     res, errs := p.Exec("a**b - (a/b)")
@@ -39,7 +39,7 @@ func New() *Parser {
 // Parse evaluates an expression and returns its result and any errors found.
 //
 // Example:
-//	   res, errs := eparser.Parse("2 * 2 * 2") // 8
+//     res, errs := eparser.Parse("2 * 2 * 2") // 8
 func Parse(expr string) (float64, []error) {
 	tokens, errs := Lex(expr)
 
