@@ -26,7 +26,7 @@ func isIdent(c rune) bool {
 }
 
 func isNumber(c rune) bool {
-	return c >= '0' && c <= '9'
+	return (c >= '0' && c <= '9') || c == '.'
 }
 
 func (l *Lexer) error(msg string) {
@@ -159,7 +159,7 @@ func (l *Lexer) readIdent() {
 
 func (l *Lexer) readNumber() {
 	toktype := INT
-	for isNumber(l.peek()) || l.peek() == '.' {
+	for isNumber(l.peek()) {
 		if l.ch == '.' {
 			toktype = FLOAT
 		}

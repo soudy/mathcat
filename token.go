@@ -1,5 +1,7 @@
 package eparser
 
+import "fmt"
+
 type tokenType int
 
 const (
@@ -105,7 +107,15 @@ func newToken(toktype tokenType, val string, pos int) *Token {
 
 func (tok *Token) String() string {
 	if tok.Type < TOKEN_COUNT {
-		return tokens[tok.Type]
+		return fmt.Sprintf("%d: '%s' ( %s )", tok.Pos, tok.Value, tok.Type)
+	}
+
+	return fmt.Sprintf("%d: '%s' ( ??? )", tok.Pos, tok.Value)
+}
+
+func (t tokenType) String() string {
+	if t < TOKEN_COUNT {
+		return tokens[t]
 	}
 
 	return "???"
