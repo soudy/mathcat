@@ -92,7 +92,7 @@ func (l *Lexer) lex() ([]*Token, []error) {
 			case '<':
 				if l.peek() == '<' {
 					l.eat()
-					l.emit(LSH)
+					l.switchEq(LSH, LSH_EQ)
 				} else {
 					l.emit(ILLEGAL)
 					l.eat()
@@ -101,7 +101,7 @@ func (l *Lexer) lex() ([]*Token, []error) {
 			case '>':
 				if l.peek() == '>' {
 					l.eat()
-					l.emit(RSH)
+					l.switchEq(RSH, RSH_EQ)
 				} else {
 					l.emit(ILLEGAL)
 					l.eat()

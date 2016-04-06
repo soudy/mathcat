@@ -45,7 +45,7 @@ func Parse(expr string) (float64, []error) {
 
 	// If lexer errors occured don't parse
 	if errs != nil {
-		return nil, errs
+		return -1, errs
 	}
 
 	p := &Parser{
