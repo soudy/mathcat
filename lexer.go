@@ -30,7 +30,7 @@ func isNumber(c rune) bool {
 }
 
 func (l *Lexer) error(msg string) {
-	if l.ErrorCount > 5 {
+	if l.ErrorCount >= 5 {
 		// At this point we're just spamming output
 		return
 	}
