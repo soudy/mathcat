@@ -1,7 +1,6 @@
 package eparser
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -11,8 +10,6 @@ func TestLex(t *testing.T) {
 		IDENT, POW_EQ, LPAREN, FLOAT, POW, LPAREN, INT, ADD, INT, SUB, INT,
 		RPAREN, RPAREN, LSH_EQ, FLOAT, REM, FLOAT, EOL,
 	}
-
-	fmt.Print(res)
 
 	if errs != nil {
 		t.Error("lexer error(s) found")
