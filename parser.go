@@ -6,10 +6,56 @@ import (
 )
 
 type Parser struct {
-	tokens       []*Token
-	pos          int
-	Variables    map[string]float64
-	currentToken *Token
+	tokens    []*Token
+	pos       int
+	Variables map[string]float64
+	tok       *Token
+}
+
+type Assoc int
+
+const (
+	ASSOC_NONE Assoc = iota
+	ASSOC_LEFT
+	ASSOC_RIGHT
+)
+
+type Operator struct {
+	prec  int
+	assoc Assoc
+	unary bool
+}
+
+var operators = [...]Operator{
+	// Assignment operators
+	EQ:     {0, ASSOC_RIGHT, false}, // =
+	ADD_EQ: {0, ASSOC_RIGHT, false}, // +=
+	SUB_EQ: {0, ASSOC_RIGHT, false}, // -=
+	DIV_EQ: {0, ASSOC_RIGHT, false}, // /=
+	MUL_EQ: {0, ASSOC_RIGHT, false}, // *=
+	POW_EQ: {0, ASSOC_RIGHT, false}, // **=
+	REM_EQ: {0, ASSOC_RIGHT, false}, // %=
+	AND_EQ: {0, ASSOC_RIGHT, false}, // &=
+	OR_EQ:  {0, ASSOC_RIGHT, false}, // |=
+	XOR_EQ: {0, ASSOC_RIGHT, false}, // ^=
+	LSH_EQ: {0, ASSOC_RIGHT, false}, // <<=
+	RSH_EQ: {0, ASSOC_RIGHT, false}, // >>=
+
+	// Bitwise operators
+	OR:  {1, ASSOC_RIGHT, false}, // |
+	XOR: {2, ASSOC_RIGHT, false}, // ^
+	AND: {3, ASSOC_RIGHT, false}, // &
+	LSH: {4, ASSOC_RIGHT, false}, // <<
+	RSH: {4, ASSOC_RIGHT, false}, // >>
+	NOT: {8, ASSOC_LEFT, true},   // ~
+
+	// Mathematical operators
+	ADD: {5, ASSOC_LEFT, false}, // +
+	SUB: {5, ASSOC_LEFT, false}, // -
+	MUL: {6, ASSOC_LEFT, false}, // *
+	DIV: {6, ASSOC_LEFT, false}, // /
+	REM: {6, ASSOC_LEFT, false}, // %
+	POW: {7, ASSOC_LEFT, false}, // **
 }
 
 // Some useful predefined variables that can be used in expressions. These
@@ -49,10 +95,10 @@ func Parse(expr string) (float64, []error) {
 	}
 
 	p := &Parser{
-		tokens:       tokens,
-		pos:          0,
-		Variables:    constants,
-		currentToken: tokens[0],
+		tokens:    tokens,
+		pos:       0,
+		Variables: constants,
+		tok:       tokens[0],
 	}
 
 	return p.parse()
