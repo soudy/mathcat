@@ -50,11 +50,9 @@ const (
 
 	LPAREN // (
 	RPAREN // )
-
-	TOKEN_COUNT
 )
 
-var tokens = [...]string{
+var tokens = map[tokenType]string{
 	ILLEGAL: "illegal",
 	EOL:     "end of line",
 
@@ -110,7 +108,7 @@ func newToken(toktype tokenType, val string, pos int) *token {
 }
 
 func (tok *token) String() string {
-	if tok.Type < TOKEN_COUNT {
+	if _, ok := tokens[tok.Type]; ok {
 		return fmt.Sprintf("%d: '%s' ( %s )\n", tok.Pos, tok.Value, tok.Type)
 	}
 
@@ -118,7 +116,7 @@ func (tok *token) String() string {
 }
 
 func (t tokenType) String() string {
-	if t < TOKEN_COUNT {
+	if _, ok := tokens[t]; ok {
 		return tokens[t]
 	}
 
