@@ -10,27 +10,27 @@ import (
 )
 
 type Parser struct {
-	tokens    []*Token
+	tokens    []*token
 	pos       int
 	Variables map[string]float64
-	tok       *Token
+	tok       *token
 }
 
-type Assoc int
+type association int
 
 const (
-	ASSOC_NONE Assoc = iota
+	ASSOC_NONE association = iota
 	ASSOC_LEFT
 	ASSOC_RIGHT
 )
 
-type Operator struct {
+type operator struct {
 	prec  int
-	assoc Assoc
+	assoc association
 	unary bool
 }
 
-var operators = [...]Operator{
+var operators = [...]operator{
 	// Assignment operators
 	EQ:     {0, ASSOC_RIGHT, false}, // =
 	ADD_EQ: {0, ASSOC_RIGHT, false}, // +=
@@ -141,9 +141,12 @@ func (p *Parser) peek() *Token {
 	return nil
 }
 
-func (p *Parser) eat() *Token {
-	return nil
+func (p *Parser) peek() *token {
+	return p.tokens[p.pos]
 }
 
-func (p *Parser) expect(token tokenType) {
+func (p *Parser) eat() *token {
+	p.tok = p.peek()
+	p.pos++
+	return p.tok
 }

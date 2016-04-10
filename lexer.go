@@ -11,18 +11,18 @@ import (
 
 const eol rune = -1
 
-// Lexer holds the lexer's state while scanning an expression. If an error is
+// lexer holds the lexer's state while scanning an expression. If an error is
 // encountered it's appended to errors and the error count gets increased. If
 // there are 5 errors already it will stop emitting them to prevent spam.
-type Lexer struct {
+type lexer struct {
 	expr   []rune   // the input expression
 	ch     rune     // current character
 	pos    int      // current character position
 	start  int      // current read offset
-	tokens []*Token // tokenized lexemes
+	tokens []*token // tokenized lexemes
 
 	errors     []error // errors
-	ErrorCount int     // error count
+	errorCount int     // error count
 }
 
 func isIdent(c rune) bool {
@@ -33,12 +33,12 @@ func isNumber(c rune) bool {
 	return (c >= '0' && c <= '9') || c == '.'
 }
 
-func (l *Lexer) error(msg string) {
-	if l.ErrorCount >= 5 {
+func (l *lexer) error(msg string) {
+	if l.errorCount >= 5 {
 		// At this point we're just spamming output
 		return
 	}
-	l.ErrorCount++
+	l.errorCount++
 	l.errors = append(l.errors, fmt.Errorf("Syntax Error: %s at position %d", msg, l.start+1))
 }
 
@@ -46,20 +46,20 @@ func (l *Lexer) error(msg string) {
 // we add because we need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func Lex(expr string) ([]*Token, []error) {
-	l := &Lexer{
+func Lex(expr string) ([]*token, []error) {
+	l := &lexer{
 		expr:  append([]rune(expr), eol), // add eol as padding
 		pos:   0,
 		start: 0,
 
 		errors:     nil,
-		ErrorCount: 0,
+		errorCount: 0,
 	}
 
 	return l.lex()
 }
 
-func (l *Lexer) lex() ([]*Token, []error) {
+func (l *lexer) lex() ([]*token, []error) {
 	for l.ch != eol {
 		l.start = l.pos
 
@@ -133,27 +133,27 @@ func (l *Lexer) lex() ([]*Token, []error) {
 	return l.tokens, l.errors
 }
 
-func (l *Lexer) peek() rune {
+func (l *lexer) peek() rune {
 	return l.expr[l.pos]
 }
 
-func (l *Lexer) eat() rune {
+func (l *lexer) eat() rune {
 	l.ch = l.peek()
 	l.pos++
 	return l.ch
 }
 
-func (l *Lexer) emit(toktype tokenType) {
+func (l *lexer) emit(toktype tokenType) {
 	l.tokens = append(l.tokens, newToken(toktype, string(l.expr[l.start:l.pos]), l.start))
 }
 
-func (l *Lexer) skipWhitespace() {
+func (l *lexer) skipWhitespace() {
 	for l.peek() == '\t' || l.peek() == ' ' || l.peek() == '\r' {
 		l.eat()
 	}
 }
 
-func (l *Lexer) readIdent() {
+func (l *lexer) readIdent() {
 	for isIdent(l.peek()) || isNumber(l.peek()) {
 		l.eat()
 	}
@@ -161,7 +161,7 @@ func (l *Lexer) readIdent() {
 	l.emit(IDENT)
 }
 
-func (l *Lexer) readNumber() {
+func (l *lexer) readNumber() {
 	toktype := INT
 	for isNumber(l.peek()) {
 		if l.ch == '.' {
@@ -173,7 +173,7 @@ func (l *Lexer) readNumber() {
 	l.emit(toktype)
 }
 
-func (l *Lexer) switchEq(tokA, tokB tokenType) {
+func (l *lexer) switchEq(tokA, tokB tokenType) {
 	if l.peek() == '=' {
 		l.eat()
 		l.emit(tokB)

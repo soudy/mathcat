@@ -94,27 +94,27 @@ var tokens = [...]string{
 	RPAREN: ")",
 }
 
-// Token is an entity in an expression
-type Token struct {
+// token is an entity in an expression
+type token struct {
 	Type  tokenType
 	Value string
 	Pos   int
 }
 
-func newToken(toktype tokenType, val string, pos int) *Token {
-	return &Token{
+func newToken(toktype tokenType, val string, pos int) *token {
+	return &token{
 		Type:  toktype,
 		Value: val,
 		Pos:   pos,
 	}
 }
 
-func (tok *Token) String() string {
+func (tok *token) String() string {
 	if tok.Type < TOKEN_COUNT {
-		return fmt.Sprintf("%d: '%s' ( %s )", tok.Pos, tok.Value, tok.Type)
+		return fmt.Sprintf("%d: '%s' ( %s )\n", tok.Pos, tok.Value, tok.Type)
 	}
 
-	return fmt.Sprintf("%d: '%s' ( ??? )", tok.Pos, tok.Value)
+	return fmt.Sprintf("%d: '%s' ( ??? )\n", tok.Pos, tok.Value)
 }
 
 func (t tokenType) String() string {
@@ -126,11 +126,11 @@ func (t tokenType) String() string {
 }
 
 // IsOperator checks if the token is an operator
-func (tok *Token) IsOperator() bool {
+func (tok *token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
 }
 
 // IsLiteral checks if the token is a literal
-func (tok *Token) IsLiteral() bool {
+func (tok *token) IsLiteral() bool {
 	return tok.Type > literalsBegin && tok.Type < literalsEnd
 }
