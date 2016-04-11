@@ -92,7 +92,6 @@ var tokens = map[tokenType]string{
 	RPAREN: ")",
 }
 
-// token is an entity in an expression
 type token struct {
 	Type  tokenType
 	Value string

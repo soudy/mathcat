@@ -234,6 +234,8 @@ func (p *Parser) evaluate(operator, left, right *token) (float64, error) {
 	return result, nil
 }
 
+// Look up a literal. If it's an identifier, check the parser's variables map,
+// otherwise convert the tokenized string to a float64.
 func (p *Parser) lookup(tok *token) (float64, error) {
 	switch tok.Type {
 	case INT, FLOAT:
