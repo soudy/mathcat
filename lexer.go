@@ -5,24 +5,20 @@
 package eparser
 
 import (
-	"fmt"
+	"errors"
 	"unicode"
 )
 
 const eol rune = -1
 
-// lexer holds the lexer's state while scanning an expression. If an error is
-// encountered it's appended to errors and the error count gets increased. If
-// there are 5 errors already it will stop emitting them to prevent spam.
+// lexer holds the lexer's state while scanning an expression. If any error
+// occurs, the scanning stops immediatly and returns the error.
 type lexer struct {
 	expr   []rune   // the input expression
 	ch     rune     // current character
 	pos    int      // current character position
 	start  int      // current read offset
 	tokens []*token // tokenized lexemes
-
-	errors     []error // errors
-	errorCount int     // error count
 }
 
 func isIdent(c rune) bool {
@@ -33,33 +29,21 @@ func isNumber(c rune) bool {
 	return (c >= '0' && c <= '9') || c == '.'
 }
 
-func (l *lexer) error(msg string) {
-	if l.errorCount >= 5 {
-		// At this point we're just spamming output
-		return
-	}
-	l.errorCount++
-	l.errors = append(l.errors, fmt.Errorf("Syntax Error: %s at position %d", msg, l.start+1))
-}
-
 // Lex starts lexing an expression. We keep reading until EOL is found, which
 // we add because we need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func Lex(expr string) ([]*token, []error) {
+func Lex(expr string) ([]*token, error) {
 	l := &lexer{
 		expr:  append([]rune(expr), eol), // add eol as padding
 		pos:   0,
 		start: 0,
-
-		errors:     nil,
-		errorCount: 0,
 	}
 
 	return l.lex()
 }
 
-func (l *lexer) lex() ([]*token, []error) {
+func (l *lexer) lex() ([]*token, error) {
 	for l.ch != eol {
 		l.start = l.pos
 
@@ -100,7 +84,7 @@ func (l *lexer) lex() ([]*token, []error) {
 				} else {
 					l.emit(ILLEGAL)
 					l.eat()
-					l.error("expected <<, got <")
+					return nil, errors.New("expected <<, got <")
 				}
 			case '>':
 				if l.peek() == '>' {
@@ -109,7 +93,7 @@ func (l *lexer) lex() ([]*token, []error) {
 				} else {
 					l.emit(ILLEGAL)
 					l.eat()
-					l.error("expected >>, got >")
+					return nil, errors.New("expected >>, got >")
 				}
 			case '~':
 				l.emit(NOT)
@@ -125,12 +109,12 @@ func (l *lexer) lex() ([]*token, []error) {
 				l.emit(EOL)
 			default:
 				l.emit(ILLEGAL)
-				l.error("unexpected token " + string(l.ch))
+				return nil, errors.New("unexpected token " + string(l.ch))
 			}
 		}
 	}
 
-	return l.tokens, l.errors
+	return l.tokens, nil
 }
 
 func (l *lexer) peek() rune {

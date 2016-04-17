@@ -9,14 +9,14 @@ import (
 )
 
 func TestLex(t *testing.T) {
-	res, errs := Lex("some_var123 **= (.5 ** (3 + 4 - 2)) <<= 1.23 % 0.3")
+	res, err := Lex("some_var123 **= (.5 ** (3 + 4 - 2)) <<= 1.23 % 0.3")
 	expected := []tokenType{
 		IDENT, POW_EQ, LPAREN, FLOAT, POW, LPAREN, INT, ADD, INT, SUB, INT,
 		RPAREN, RPAREN, LSH_EQ, FLOAT, REM, FLOAT, EOL,
 	}
 
-	if errs != nil {
-		t.Error("lexer error(s) found")
+	if err != nil {
+		t.Error("lexer error occured")
 	}
 
 	for k, v := range res {

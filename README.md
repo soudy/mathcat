@@ -21,8 +21,8 @@ calling `Parse`, and the second way is by creating a new instance and using
 If you're not planning on declaring variables, you can use `Parse`. `Parse`
 will evaluate an expression and return its result.
 ```go
-res, errs := eparser.Parse("2*pi*5") // pi is a predefined variable
-if errs != nil {
+res, err := eparser.Parse("2*pi*5") // pi is a predefined variable
+if err != nil {
     // handle errors
 }
 fmt.Printf("Result: %f\n", res) // Result: 31.41592653589793
@@ -38,7 +38,7 @@ Example:
 p := eparser.New()
 p.Run("a = 1")
 p.Run("b = 3")
-res, errs := p.Exec("a + b * b") // 10
+res, err := p.Exec("a + b * b") // 10
 ```
 
 Note that `Run` doesn't return the result of the expression. It does however

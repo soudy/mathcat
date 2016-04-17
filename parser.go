@@ -86,7 +86,7 @@ var constants = map[string]float64{
 //     p := eparser.New()
 //     p.Run("a = 150")
 //     p.Run("b = 715")
-//     res, errs := p.Exec("a**b - (a/b)")
+//     res, err := p.Exec("a**b - (a/b)")
 func New() *Parser {
 	return &Parser{
 		pos:       0,
@@ -97,13 +97,13 @@ func New() *Parser {
 // Parse evaluates an expression and returns its result and any errors found.
 //
 // Example:
-//     res, errs := eparser.Parse("2 * 2 * 2") // 8
+//     res, err := eparser.Parse("2 * 2 * 2") // 8
 func Parse(expr string) (float64, error) {
-	tokens, errs := Lex(expr)
+	tokens, err := Lex(expr)
 
-	// If lexer errors occured don't parse
-	if errs != nil {
-		return -1, errs[0]
+	// If a lexer error occured don't parse
+	if err != nil {
+		return -1, err
 	}
 
 	p := &Parser{
