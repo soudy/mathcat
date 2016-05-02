@@ -9,5 +9,5 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	Parse("2 + 2 * 5")
+	Eval("2 + 2 * 5")
 }
