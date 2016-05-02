@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can be found
 // in the LICENSE file.
 
-package eparser
+package evaler
 
 import (
 	"errors"
@@ -83,7 +83,7 @@ var constants = map[string]float64{
 // expression and/or use variables.
 //
 // For example, you could declare and use multiple variables like so:
-//     p := eparser.New()
+//     p := evaler.New()
 //     p.Run("a = 150")
 //     p.Run("b = 715")
 //     res, err := p.Exec("a**b - (a/b)")
@@ -94,11 +94,11 @@ func New() *Parser {
 	}
 }
 
-// Parse evaluates an expression and returns its result and any errors found.
+// Eval evaluates an expression and returns its result and any errors found.
 //
 // Example:
-//     res, err := eparser.Parse("2 * 2 * 2") // 8
-func Parse(expr string) (float64, error) {
+//     res, err := evaler.Eval("2 * 2 * 2") // 8
+func Eval(expr string) (float64, error) {
 	tokens, err := Lex(expr)
 
 	// If a lexer error occured don't parse
@@ -132,12 +132,12 @@ func (p *Parser) GetVar(index string) (float64, error) {
 //     p.Run("a = 555")
 //     p.Run("a += 45")
 //     p.Run("a + a") // does nothing
-func (p *Parser) Run(expr string) []error {
+func (p *Parser) Run(expr string) error {
 	return nil
 }
 
 // Exec executes an expression and returns the result.
-func (p *Parser) Exec(expr string) (float64, []error) {
+func (p *Parser) Exec(expr string) (float64, error) {
 	return 0, nil
 }
 

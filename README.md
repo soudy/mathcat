@@ -1,27 +1,27 @@
-# eparser
-eparser is an expression parser library for Go. It supports basic arithmetic,
+# evaler
+evaler is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
 
 ## Installation
 ```bash
-go get github.com/soudy/eparser
+go get github.com/soudy/evaler
 ```
 
 And to update:
 ```bash
-go get -u github.com/soudy/eparser
+go get -u github.com/soudy/evaler
 ```
 
 ## Usage
 There are two different ways to evaluate expressions, the first way is by
-calling `Parse`, and the second way is by creating a new instance and using
+calling `Eval`, and the second way is by creating a new instance and using
 `Run` and `Exec`.
 
-### Parse
-If you're not planning on declaring variables, you can use `Parse`. `Parse`
+### Eval
+If you're not planning on declaring variables, you can use `Eval`. `Eval`
 will evaluate an expression and return its result.
 ```go
-res, err := eparser.Parse("2*pi*5") // pi is a predefined variable
+res, err := evaler.Eval("2*pi*5") // pi is a predefined variable
 if err != nil {
     // handle errors
 }
@@ -35,7 +35,7 @@ instance.
 
 Example:
 ```go
-p := eparser.New()
+p := evaler.New()
 p.Run("a = 1")
 p.Run("b = 3")
 res, err := p.Exec("a + b * b") // 10
