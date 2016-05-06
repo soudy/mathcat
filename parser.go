@@ -219,15 +219,64 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 		return -1, err
 	}
 
-	if left, err = p.lookup(operands.Pop()); err != nil {
+	// Save the token in case of a assignment variable is used so we need to
+	// save the result in a variable.
+	lhsIdent := operands.Pop()
+	if left, err = p.lookup(lhsIdent); err != nil {
 		return -1, err
 	}
 
 	switch operator.Type {
 	case ADD, SUB, DIV, MUL, POW, REM, AND, OR, XOR, LSH, RSH, NOT:
-		// TODO
+		result, err = execute(operator.Type, left, right)
+		if err != nil {
+			return -1, err
+		}
 	case ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
-		// TODO
+		result, err = execute(operator.Type, left, right)
+		if err != nil {
+			return -1, err
+		}
+
+		// Save result in variable
+		p.Variables[lhsIdent.(*token).Value] = result
+	}
+
+	return result, nil
+}
+
+func execute(operator tokenType, lhs, rhs float64) (float64, error) {
+	var result float64
+	switch operator {
+	case ADD:
+		result = lhs + rhs
+	case SUB:
+		result = lhs - rhs
+	case DIV:
+		if rhs == 0 {
+			return -1, divisionByZeroErr
+		}
+		result = lhs / rhs
+	case MUL:
+		result = lhs * rhs
+	case POW:
+		result = math.Pow(lhs, rhs)
+	case REM:
+		if rhs == 0 {
+			return -1, divisionByZeroErr
+		}
+		result = math.Mod(lhs, rhs)
+	case AND:
+		// TODO: check for int with bitwise operators
+		// result = lhs & rhs
+	case OR:
+		// result = lhs | rhs
+	case XOR:
+		// result = lhs ^ rhs
+	case LSH:
+		// result = lhs << rhs
+	case RSH:
+		// result = lhs >> rhs
 	}
 
 	return result, nil
