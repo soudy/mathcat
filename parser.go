@@ -64,6 +64,11 @@ var allOperators = map[tokenType]operator{
 	POW: {7, ASSOC_LEFT, false}, // **
 }
 
+var (
+	divisionByZeroErr       = errors.New("divison by zero")
+	unmatchedParenthesesErr = errors.New("unmatched parentheses")
+)
+
 // Determine if operator 1 has higher precendence than operator 2
 func (o1 operator) hasHigherPrecThan(o2 operator) bool {
 	return (o2.assoc == ASSOC_LEFT && o2.prec <= o1.prec) ||
@@ -154,32 +159,27 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.IsOperator():
 			o1 = allOperators[p.tok.Type]
 
-			// FIXME: I don't work correctly!
 			if !operators.Empty() {
 				var ok bool
 				if o2, ok = allOperators[operators.Top().(*token).Type]; !ok {
+					operators.Push(p.tok)
 					break
 				}
 
-				if o1.hasHigherPrecThan(o2) {
+				if o2.hasHigherPrecThan(o1) {
 					operator := operators.Pop().(*token)
-					left := operands.Pop().(*token)
-					right := operands.Pop().(*token)
-
-					val, err := p.evaluate(operator, left, right)
+					val, err := p.evaluate(operator, &operands)
 					if err != nil {
 						return -1, err
 					}
-
 					operands.Push(val)
-
 				}
 			}
 			operators.Push(p.tok)
 		case p.tok.Type == RPAREN:
 			for {
 				if operators.Empty() {
-					return -1, errors.New("unmatched parentheses")
+					return -1, unmatchedParenthesesErr
 				}
 
 				tok := operators.Pop().(*token)
@@ -189,22 +189,36 @@ func (p *Parser) parse() (float64, error) {
 				operands.Push(tok)
 			}
 		}
+
 	}
 
-	fmt.Print(operands)
+	// Evaluate remaing operators
+	for !operators.Empty() {
+		operator := operators.Pop().(*token)
 
-	return 0, nil
+		if operator.Type == LPAREN {
+			return -1, unmatchedParenthesesErr
+		}
+
+		val, err := p.evaluate(operator, &operands)
+		if err != nil {
+			return -1, err
+		}
+		operands.Push(val)
+	}
+
+	return operands[0].(float64), nil
 }
 
-func (p *Parser) evaluate(operator, left, right *token) (float64, error) {
-	var nleft, nright float64
+func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
+	var left, right float64
 	var err error
 
-	if nleft, err = p.lookup(left); err != nil {
+	if right, err = p.lookup(operands.Pop()); err != nil {
 		return -1, err
 	}
 
-	if nright, err = p.lookup(right); err != nil {
+	if left, err = p.lookup(operands.Pop()); err != nil {
 		return -1, err
 	}
 
@@ -212,23 +226,23 @@ func (p *Parser) evaluate(operator, left, right *token) (float64, error) {
 
 	switch operator.Type {
 	case ADD:
-		result = nleft + nright
+		result = left + right
 	case SUB:
-		result = nleft - nright
+		result = left - right
 	case DIV:
-		if nright == 0 {
-			return -1, errors.New("divison by zero")
+		if right == 0 {
+			return -1, divisionByZeroErr
 		}
-		result = nleft / nright
+		result = left / right
 	case MUL:
-		result = nleft * nright
+		result = left * right
 	case POW:
-		result = math.Pow(nleft, nright)
+		result = math.Pow(left, right)
 	case REM:
-		if nright == 0 {
-			return -1, errors.New("divison by zero")
+		if right == 0 {
+			return -1, divisionByZeroErr
 		}
-		result = math.Mod(nleft, nright)
+		result = math.Mod(left, right)
 	}
 
 	return result, nil
@@ -236,17 +250,24 @@ func (p *Parser) evaluate(operator, left, right *token) (float64, error) {
 
 // Look up a literal. If it's an identifier, check the parser's variables map,
 // otherwise convert the tokenized string to a float64.
-func (p *Parser) lookup(tok *token) (float64, error) {
+func (p *Parser) lookup(val interface{}) (float64, error) {
+	// val can be a token or a float64, if it's a float64 it has been already
+	// evaluated and we don't need to do anything
+	if v, ok := val.(float64); ok {
+		return v, nil
+	}
+
+	tok := val.(*token)
 	switch tok.Type {
 	case INT, FLOAT:
 		return strconv.ParseFloat(tok.Value, 64)
 	case IDENT:
-		val, err := p.GetVar(tok.Value)
+		res, err := p.GetVar(tok.Value)
 		if err != nil {
 			return -1, err
 		}
 
-		return val, nil
+		return res, nil
 	}
 
 	return -1, fmt.Errorf("Invalid lookup type: %s", tok.Type)

@@ -5,9 +5,14 @@
 package evaler
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestParser(t *testing.T) {
-	Eval("2 + 2 * 5")
+	res, err := Eval("2 ** 10 / 5 * 2 - 6")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Print(res)
 }
