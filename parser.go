@@ -65,8 +65,8 @@ var allOperators = map[tokenType]operator{
 }
 
 var (
-	divisionByZeroErr       = errors.New("divison by zero")
-	unmatchedParenthesesErr = errors.New("unmatched parentheses")
+	divisionByZeroErr       = errors.New("Divison by zero")
+	unmatchedParenthesesErr = errors.New("Unmatched parentheses")
 )
 
 // Determine if operator 1 has higher precendence than operator 2
@@ -211,6 +211,7 @@ func (p *Parser) parse() (float64, error) {
 }
 
 func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
+	var result float64
 	var left, right float64
 	var err error
 
@@ -222,27 +223,11 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 		return -1, err
 	}
 
-	var result float64
-
 	switch operator.Type {
-	case ADD:
-		result = left + right
-	case SUB:
-		result = left - right
-	case DIV:
-		if right == 0 {
-			return -1, divisionByZeroErr
-		}
-		result = left / right
-	case MUL:
-		result = left * right
-	case POW:
-		result = math.Pow(left, right)
-	case REM:
-		if right == 0 {
-			return -1, divisionByZeroErr
-		}
-		result = math.Mod(left, right)
+	case ADD, SUB, DIV, MUL, POW, REM, AND, OR, XOR, LSH, RSH, NOT:
+		// TODO
+	case ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
+		// TODO
 	}
 
 	return result, nil

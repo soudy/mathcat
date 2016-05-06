@@ -115,8 +115,8 @@ func (tok *token) String() string {
 }
 
 func (t tokenType) String() string {
-	if _, ok := tokens[t]; ok {
-		return tokens[t]
+	if tok, ok := tokens[t]; ok {
+		return tok
 	}
 
 	return "???"
