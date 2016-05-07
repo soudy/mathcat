@@ -11,8 +11,8 @@ import (
 func TestLex(t *testing.T) {
 	res, err := Lex("some_var123 **= (.5 ** (3 + 4 - 2)) <<= 1.23 % 0.3")
 	expected := []tokenType{
-		IDENT, POW_EQ, LPAREN, FLOAT, POW, LPAREN, INT, ADD, INT, SUB, INT,
-		RPAREN, RPAREN, LSH_EQ, FLOAT, REM, FLOAT, EOL,
+		IDENT, POW_EQ, LPAREN, NUMBER, POW, LPAREN, NUMBER, ADD, NUMBER, SUB, NUMBER,
+		RPAREN, RPAREN, LSH_EQ, NUMBER, REM, NUMBER, EOL,
 	}
 
 	if err != nil {

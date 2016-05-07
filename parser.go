@@ -121,6 +121,31 @@ func Eval(expr string) (float64, error) {
 	return p.parse()
 }
 
+// Run executes an expression on an existing parser instance. Useful for
+// variable assignment.
+//
+// Example:
+//     p.Run("a = 555")
+//     p.Run("a += 45")
+//     res, err := p.Run("a + a") // 1200
+func (p *Parser) Run(expr string) (float64, error) {
+	tokens, err := Lex(expr)
+
+	if err != nil {
+		return -1, err
+	}
+
+	p.reset()
+	p.tokens = tokens
+
+	return p.parse()
+}
+
+// Exec executes an expression and returns the result.
+func Exec(expr string) (float64, error) {
+	return 0, nil
+}
+
 // GetVar gets an existing variable.
 func (p *Parser) GetVar(index string) (float64, error) {
 	if val, ok := p.Variables[index]; ok {
@@ -128,22 +153,6 @@ func (p *Parser) GetVar(index string) (float64, error) {
 	}
 
 	return -1, fmt.Errorf("Undefined variable '%s'", index)
-}
-
-// Run executes an expression but returns no result. Useful for variable
-// assignment.
-//
-// Example:
-//     p.Run("a = 555")
-//     p.Run("a += 45")
-//     p.Run("a + a") // does nothing
-func (p *Parser) Run(expr string) error {
-	return nil
-}
-
-// Exec executes an expression and returns the result.
-func (p *Parser) Exec(expr string) (float64, error) {
-	return 0, nil
 }
 
 func (p *Parser) parse() (float64, error) {
@@ -219,25 +228,20 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 		return -1, err
 	}
 
-	// Save the token in case of a assignment variable is used so we need to
+	// Save the token in case of a assignment variable is used and we need to
 	// save the result in a variable.
 	lhsIdent := operands.Pop()
 	if left, err = p.lookup(lhsIdent); err != nil {
 		return -1, err
 	}
 
-	switch operator.Type {
-	case ADD, SUB, DIV, MUL, POW, REM, AND, OR, XOR, LSH, RSH, NOT:
-		result, err = execute(operator.Type, left, right)
-		if err != nil {
-			return -1, err
-		}
-	case ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
-		result, err = execute(operator.Type, left, right)
-		if err != nil {
-			return -1, err
-		}
+	result, err = execute(operator, left, right)
+	if err != nil {
+		return -1, err
+	}
 
+	switch operator.Type {
+	case ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
 		// Save result in variable
 		p.Variables[lhsIdent.(*token).Value] = result
 	}
@@ -245,38 +249,45 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	return result, nil
 }
 
-func execute(operator tokenType, lhs, rhs float64) (float64, error) {
+func execute(operator *token, lhs, rhs float64) (float64, error) {
 	var result float64
-	switch operator {
-	case ADD:
+
+	if operator.IsBitwise() && (!isWholeNumber(lhs) || !isWholeNumber(rhs)) {
+		// Both lhs and rhs have to be whole numbers for bitwise operations
+		return -1, fmt.Errorf("Unsupported type (float) for '%s'", operator.Type)
+	}
+
+	switch operator.Type {
+	case ADD, ADD_EQ:
 		result = lhs + rhs
-	case SUB:
+	case SUB, SUB_EQ:
 		result = lhs - rhs
-	case DIV:
+	case DIV, DIV_EQ:
 		if rhs == 0 {
 			return -1, divisionByZeroErr
 		}
 		result = lhs / rhs
-	case MUL:
+	case MUL, MUL_EQ:
 		result = lhs * rhs
-	case POW:
+	case POW, POW_EQ:
 		result = math.Pow(lhs, rhs)
-	case REM:
+	case REM, REM_EQ:
 		if rhs == 0 {
 			return -1, divisionByZeroErr
 		}
 		result = math.Mod(lhs, rhs)
-	case AND:
-		// TODO: check for int with bitwise operators
-		// result = lhs & rhs
-	case OR:
-		// result = lhs | rhs
-	case XOR:
-		// result = lhs ^ rhs
-	case LSH:
-		// result = lhs << rhs
-	case RSH:
-		// result = lhs >> rhs
+	case AND, AND_EQ:
+		result = float64(int64(lhs) & int64(rhs))
+	case OR, OR_EQ:
+		result = float64(int64(lhs) | int64(rhs))
+	case XOR, XOR_EQ:
+		result = float64(int64(lhs) ^ int64(rhs))
+	case LSH, LSH_EQ:
+		result = float64(uint64(lhs) << uint64(rhs))
+	case RSH, RSH_EQ:
+		result = float64(uint64(lhs) >> uint64(rhs))
+	default:
+		return -1, fmt.Errorf("Invalid operator '%s'", operator)
 	}
 
 	return result, nil
@@ -293,7 +304,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 
 	tok := val.(*token)
 	switch tok.Type {
-	case INT, FLOAT:
+	case NUMBER:
 		return strconv.ParseFloat(tok.Value, 64)
 	case IDENT:
 		res, err := p.GetVar(tok.Value)
@@ -307,6 +318,11 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 	return -1, fmt.Errorf("Invalid lookup type: %s", tok.Type)
 }
 
+func (p *Parser) reset() {
+	p.tokens = nil
+	p.pos = 0
+}
+
 func (p *Parser) peek() *token {
 	return p.tokens[p.pos]
 }
@@ -315,4 +331,11 @@ func (p *Parser) eat() *token {
 	p.tok = p.peek()
 	p.pos++
 	return p.tok
+}
+
+func isWholeNumber(n float64) bool {
+	epsilon := 1e-9
+	_, frac := math.Modf(math.Abs(n))
+
+	return frac < epsilon || frac > 1.0-epsilon
 }

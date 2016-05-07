@@ -146,15 +146,11 @@ func (l *lexer) readIdent() {
 }
 
 func (l *lexer) readNumber() {
-	toktype := INT
 	for isNumber(l.peek()) {
-		if l.ch == '.' {
-			toktype = FLOAT
-		}
 		l.eat()
 	}
 
-	l.emit(toktype)
+	l.emit(NUMBER)
 }
 
 func (l *lexer) switchEq(tokA, tokB tokenType) {

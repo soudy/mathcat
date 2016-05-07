@@ -13,9 +13,8 @@ const (
 	EOL
 
 	literalsBegin
-	IDENT // x
-	INT   // 3
-	FLOAT // 3.14
+	IDENT  // x
+	NUMBER // 3
 	literalsEnd
 
 	operatorsBegin
@@ -26,12 +25,20 @@ const (
 	POW // **
 	REM // %
 
+	bitwiseBegin
 	AND // &
 	OR  // |
 	XOR // ^
 	LSH // <<
 	RSH // >>
 	NOT // ~
+
+	AND_EQ // &=
+	OR_EQ  // |=
+	XOR_EQ // ^=
+	LSH_EQ // <<=
+	RSH_EQ // >>=
+	bitwiseEnd
 
 	EQ     // =
 	ADD_EQ // +=
@@ -40,12 +47,6 @@ const (
 	MUL_EQ // *=
 	POW_EQ // **=
 	REM_EQ // %=
-
-	AND_EQ // &=
-	OR_EQ  // |=
-	XOR_EQ // ^=
-	LSH_EQ // <<=
-	RSH_EQ // >>=
 	operatorsEnd
 
 	LPAREN // (
@@ -56,9 +57,8 @@ var tokens = map[tokenType]string{
 	ILLEGAL: "illegal",
 	EOL:     "end of line",
 
-	IDENT: "identifier",
-	INT:   "integer",
-	FLOAT: "float",
+	IDENT:  "identifier",
+	NUMBER: "number",
 
 	ADD: "+",
 	SUB: "-",
@@ -125,6 +125,11 @@ func (t tokenType) String() string {
 // IsOperator checks if the token is an operator
 func (tok *token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
+}
+
+// IsBitwise checks if the token type is a bitwise operator
+func (tok *token) IsBitwise() bool {
+	return tok.Type > bitwiseBegin && tok.Type < bitwiseEnd
 }
 
 // IsLiteral checks if the token is a literal

@@ -13,27 +13,28 @@ go get -u github.com/soudy/evaler
 ```
 
 ## Usage
-There are two different ways to evaluate expressions, the first way is by
-calling `Eval`, and the second way is by creating a new instance and using
-`Run` and `Exec`.
+There are three different ways to evaluate expressions, the first way is by
+calling `Eval`, the second way is by creating a new instance and using `Run`,
+and the final way is to use `Exec` in which you can pass a map with variables to
+use in the expressio in which you can pass a map with variables to use in the
+expression.
 
 ### Eval
 If you're not planning on declaring variables, you can use `Eval`. `Eval`
 will evaluate an expression and return its result.
+
 ```go
-res, err := evaler.Eval("2*pi*5") // pi is a predefined variable
+res, err := evaler.Eval("2 * pi * 5") // pi is a predefined variable
 if err != nil {
     // handle errors
 }
 fmt.Printf("Result: %f\n", res) // Result: 31.41592653589793
 ```
 
-### Run and Exec
-Otherwise you can use `Run` and `Exec` for a more featureful approach. With
-these you can assign values to variables and use them throughout the same
-instance.
+### Run
+You can use `Run` and for a more featureful approach. With this method you can
+assign and use variables accross the `Parser` instance.
 
-Example:
 ```go
 p := evaler.New()
 p.Run("a = 1")
@@ -41,5 +42,13 @@ p.Run("b = 3")
 res, err := p.Exec("a + b * b") // 10
 ```
 
-Note that `Run` doesn't return the result of the expression. It does however
-return any error(s) found.
+### Exec
+To pass external variables to an expression without using `Run`, you can use
+`Exec` to pass a map of variables.
+
+```go
+res, err := evaler.Exec("a + b * b", map[string]float64{
+    "a": 1,
+    "b": 3,
+}) // 10
+```
