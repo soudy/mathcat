@@ -39,7 +39,7 @@ assign and use variables accross the `Parser` instance.
 p := evaler.New()
 p.Run("a = 1")
 p.Run("b = 3")
-res, err := p.Exec("a + b * b") // 10
+res, err := p.Run("a + b * b") // 10
 ```
 
 ### Exec
