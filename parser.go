@@ -67,6 +67,7 @@ var allOperators = map[tokenType]operator{
 var (
 	divisionByZeroErr       = errors.New("Divison by zero")
 	unmatchedParenthesesErr = errors.New("Unmatched parentheses")
+	invalidSyntaxErr        = errors.New("Invalid syntax")
 )
 
 // Determine if operator 1 has higher precendence than operator 2
@@ -86,12 +87,6 @@ var constants = map[string]float64{
 
 // New initializes a new Parser instance, useful when you want to run multiple
 // expression and/or use variables.
-//
-// For example, you could declare and use multiple variables like so:
-//     p := evaler.New()
-//     p.Run("a = 150")
-//     p.Run("b = 715")
-//     res, err := p.Exec("a**b - (a/b)")
 func New() *Parser {
 	return &Parser{
 		pos:       0,
@@ -159,6 +154,11 @@ func (p *Parser) parse() (float64, error) {
 	var operands, operators stack
 	var o1, o2 operator
 
+	// No input received, return 0
+	if p.tok.Type == EOL {
+		return 0, nil
+	}
+
 	for p.eat().Type != EOL {
 		switch {
 		case p.tok.IsLiteral():
@@ -191,14 +191,17 @@ func (p *Parser) parse() (float64, error) {
 					return -1, unmatchedParenthesesErr
 				}
 
-				tok := operators.Pop().(*token)
-				if tok.Type == LPAREN {
+				operator := operators.Pop().(*token)
+				if operator.Type == LPAREN {
 					break
 				}
-				operands.Push(tok)
+				val, err := p.evaluate(operator, &operands)
+				if err != nil {
+					return -1, err
+				}
+				operands.Push(val)
 			}
 		}
-
 	}
 
 	// Evaluate remaing operators
@@ -209,30 +212,49 @@ func (p *Parser) parse() (float64, error) {
 			return -1, unmatchedParenthesesErr
 		}
 
-		val, err := p.evaluate(operator, &operands)
-		if err != nil {
-			return -1, err
+		if !operands.Empty() {
+			val, err := p.evaluate(operator, &operands)
+			if err != nil {
+				return -1, err
+			}
+			operands.Push(val)
+		} else {
+			return -1, invalidSyntaxErr
 		}
-		operands.Push(val)
 	}
 
-	return operands[0].(float64), nil
+	if res, ok := operands[0].(float64); ok {
+		return res, nil
+	}
+
+	// Leftover token on operand stack indicates invalid syntax
+	return -1, invalidSyntaxErr
 }
 
 func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	var result float64
 	var left, right float64
 	var err error
+	var lhsToken *token
 
 	if right, err = p.lookup(operands.Pop()); err != nil {
 		return -1, err
 	}
 
-	// Save the token in case of a assignment variable is used and we need to
-	// save the result in a variable.
-	lhsIdent := operands.Pop()
-	if left, err = p.lookup(lhsIdent); err != nil {
-		return -1, err
+	// Unary operators have no left hand side
+	if op := allOperators[operator.Type]; !op.unary {
+		// Save the token in case of a assignment variable is used and we need to
+		// save the result in a variable
+		lhsToken = operands.Pop().(*token)
+
+		// Don't lookup the left hand side if = is used so we can do initial
+		// assignment
+		if operator.Type != EQ {
+			left, err = p.lookup(lhsToken)
+			if err != nil {
+				return -1, err
+			}
+		}
 	}
 
 	result, err = execute(operator, left, right)
@@ -241,9 +263,12 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	}
 
 	switch operator.Type {
-	case ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
+	case EQ, ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
 		// Save result in variable
-		p.Variables[lhsIdent.(*token).Value] = result
+		if lhsToken.Type != IDENT {
+			return -1, errors.New("Can't assign to literal")
+		}
+		p.Variables[lhsToken.Value] = result
 	}
 
 	return result, nil
@@ -252,8 +277,8 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 func execute(operator *token, lhs, rhs float64) (float64, error) {
 	var result float64
 
+	// Both lhs and rhs have to be whole numbers for bitwise operations
 	if operator.IsBitwise() && (!isWholeNumber(lhs) || !isWholeNumber(rhs)) {
-		// Both lhs and rhs have to be whole numbers for bitwise operations
 		return -1, fmt.Errorf("Unsupported type (float) for '%s'", operator.Type)
 	}
 
@@ -261,7 +286,11 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 	case ADD, ADD_EQ:
 		result = lhs + rhs
 	case SUB, SUB_EQ:
-		result = lhs - rhs
+		if op := allOperators[operator.Type]; op.unary {
+			result = -rhs
+		} else {
+			result = lhs - rhs
+		}
 	case DIV, DIV_EQ:
 		if rhs == 0 {
 			return -1, divisionByZeroErr
@@ -286,8 +315,12 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 		result = float64(uint64(lhs) << uint64(rhs))
 	case RSH, RSH_EQ:
 		result = float64(uint64(lhs) >> uint64(rhs))
+	case NOT:
+		result = float64(^int64(rhs))
+	case EQ:
+		result = rhs
 	default:
-		return -1, fmt.Errorf("Invalid operator '%s'", operator)
+		return -1, fmt.Errorf("Invalid operator '%s'", operator.Type)
 	}
 
 	return result, nil

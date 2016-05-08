@@ -8,7 +8,7 @@ import "testing"
 
 func TestFloatBitwise(t *testing.T) {
 	badExpressions := []string{
-		"2.4 | 2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2",
+		"2.4 | 2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2", "~5.3",
 	}
 
 	for _, expr := range badExpressions {
@@ -19,7 +19,7 @@ func TestFloatBitwise(t *testing.T) {
 	}
 
 	okExpressions := []string{
-		"2.0 | 2", "5 & 32.0", "7 ^ 2", "9 << 20", "7.0 >> 21.0",
+		"2.0 | 2", "5 & 32.0", "7 ^ 2", "9 << 20", "7.0 >> 21.0", "~255",
 	}
 
 	for _, expr := range okExpressions {
@@ -31,7 +31,7 @@ func TestFloatBitwise(t *testing.T) {
 }
 
 func TestParser(t *testing.T) {
-	_, err := Eval("2 ** 10 / 5 * 2 - 6")
+	_, err := Eval("5 * (2 + 5)")
 
 	if err != nil {
 		t.Error(err)
