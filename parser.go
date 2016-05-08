@@ -212,15 +212,15 @@ func (p *Parser) parse() (float64, error) {
 			return -1, unmatchedParenthesesErr
 		}
 
-		if !operands.Empty() {
-			val, err := p.evaluate(operator, &operands)
-			if err != nil {
-				return -1, err
-			}
-			operands.Push(val)
-		} else {
+		if operands.Empty() {
 			return -1, invalidSyntaxErr
 		}
+
+		val, err := p.evaluate(operator, &operands)
+		if err != nil {
+			return -1, err
+		}
+		operands.Push(val)
 	}
 
 	if res, ok := operands[0].(float64); ok {
@@ -236,6 +236,10 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	var left, right float64
 	var err error
 	var lhsToken *token
+
+	if operands.Empty() {
+		return -1, invalidSyntaxErr
+	}
 
 	if right, err = p.lookup(operands.Pop()); err != nil {
 		return -1, err
