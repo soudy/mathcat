@@ -234,8 +234,7 @@ func (p *Parser) parse() (float64, error) {
 
 	// Single literal, show its value
 	if len(operands) == 1 {
-		res, err := p.lookup(operands[0])
-		return res, err
+		return p.lookup(operands[0])
 	}
 
 	if res, ok := operands[0].(float64); ok {
