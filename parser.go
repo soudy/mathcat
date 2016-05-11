@@ -110,7 +110,6 @@ func Eval(expr string) (float64, error) {
 		tokens:    tokens,
 		pos:       0,
 		Variables: constants,
-		tok:       tokens[0],
 	}
 
 	return p.parse()
@@ -151,8 +150,12 @@ func (p *Parser) GetVar(index string) (float64, error) {
 }
 
 func (p *Parser) parse() (float64, error) {
-	var operands, operators stack
-	var o1, o2 operator
+	var (
+		operands, operators stack
+		o1, o2              operator
+	)
+
+	p.tok = p.tokens[0]
 
 	// No input received, return 0
 	if p.tok.Type == EOL {
@@ -223,6 +226,18 @@ func (p *Parser) parse() (float64, error) {
 		operands.Push(val)
 	}
 
+	// If there are no operands, the expression is useless and doesn't do
+	// anything, for example `()`
+	if operands.Empty() {
+		return 0, nil
+	}
+
+	// Single literal, show its value
+	if len(operands) == 1 {
+		res, err := p.lookup(operands[0])
+		return res, err
+	}
+
 	if res, ok := operands[0].(float64); ok {
 		return res, nil
 	}
@@ -232,10 +247,12 @@ func (p *Parser) parse() (float64, error) {
 }
 
 func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
-	var result float64
-	var left, right float64
-	var err error
-	var lhsToken *token
+	var (
+		result      float64
+		left, right float64
+		err         error
+		lhsToken    interface{}
+	)
 
 	if operands.Empty() {
 		return -1, invalidSyntaxErr
@@ -247,9 +264,12 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 
 	// Unary operators have no left hand side
 	if op := allOperators[operator.Type]; !op.unary {
+		if operands.Empty() {
+			return -1, invalidSyntaxErr
+		}
 		// Save the token in case of a assignment variable is used and we need to
 		// save the result in a variable
-		lhsToken = operands.Pop().(*token)
+		lhsToken = operands.Pop()
 
 		// Don't lookup the left hand side if = is used so we can do initial
 		// assignment
@@ -269,10 +289,10 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	switch operator.Type {
 	case EQ, ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
 		// Save result in variable
-		if lhsToken.Type != IDENT {
+		if lhsToken.(*token).Type != IDENT {
 			return -1, errors.New("Can't assign to literal")
 		}
-		p.Variables[lhsToken.Value] = result
+		p.Variables[lhsToken.(*token).Value] = result
 	}
 
 	return result, nil
