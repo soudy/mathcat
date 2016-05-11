@@ -82,18 +82,14 @@ func (l *lexer) lex() ([]*token, error) {
 					l.eat()
 					l.switchEq(LSH, LSH_EQ)
 				} else {
-					l.emit(ILLEGAL)
-					l.eat()
-					return nil, errors.New("expected <<, got <")
+					return nil, errors.New("Invalid token " + string(l.ch))
 				}
 			case '>':
 				if l.peek() == '>' {
 					l.eat()
 					l.switchEq(RSH, RSH_EQ)
 				} else {
-					l.emit(ILLEGAL)
-					l.eat()
-					return nil, errors.New("expected >>, got >")
+					return nil, errors.New("Invalid token " + string(l.ch))
 				}
 			case '~':
 				l.emit(NOT)
@@ -109,7 +105,7 @@ func (l *lexer) lex() ([]*token, error) {
 				l.emit(EOL)
 			default:
 				l.emit(ILLEGAL)
-				return nil, errors.New("unexpected token " + string(l.ch))
+				return nil, errors.New("Invalid token " + string(l.ch))
 			}
 		}
 	}
