@@ -1,4 +1,5 @@
 # evaler
+[![Build Status](https://travis-ci.org/soudy/evaler.svg?branch=master)](https://travis-ci.org/soudy/evaler)
 evaler is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
 
