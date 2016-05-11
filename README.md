@@ -1,22 +1,24 @@
-# evaler [![Build Status](https://travis-ci.org/soudy/evaler.svg?branch=master)](https://travis-ci.org/soudy/evaler)
+evaler [![Build Status](https://travis-ci.org/soudy/evaler.svg?branch=master)](https://travis-ci.org/soudy/evaler)
+===============
 evaler is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
 
 ## Installation
+### Library
 ```bash
 go get github.com/soudy/evaler
 ```
 
-And to update:
+### REPL
 ```bash
-go get -u github.com/soudy/evaler
+go get github.com/soudy/evaler/cmd/evaler
 ```
 
 ## Usage
 There are three different ways to evaluate expressions, the first way is by
 calling `Eval`, the second way is by creating a new instance and using `Run`,
 and the final way is to use `Exec` in which you can pass a map with variables to
-use in the expressio in which you can pass a map with variables to use in the
+use in the expression in which you can pass a map with variables to use in the
 expression.
 
 ### Eval
@@ -52,3 +54,34 @@ res, err := evaler.Exec("a + b * b", map[string]float64{
     "b": 3,
 }) // 10
 ```
+
+
+### Supported operators
+- `=` (assignment)
+- `+` (addition)
+- `-` (subtraction)
+- `/` (division)
+- `*` (multiply)
+- `**` (power)
+- `%` (remainder)
+- `&` (bitwise and)
+- `|` (bitwise or)
+- `^` (bitwise xor)
+- `<<` (bitwise left shift)
+- `>>` (bitwise right shift)
+- `~` (bitwise not)
+
+All of these except `~` also have an assignment variant (`+=`, `-=`,
+`**=` etc.) that can be used to assign values to variables.
+
+### Predefined variables
+There are some handy predefined variables you can use (and change) throughout
+your expressions:
+
+- pi
+- tau
+- phi
+- e
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/soudy/evaler/blob/master/LICENSE) file for the full license.
