@@ -301,7 +301,7 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 	var result float64
 
 	// Both lhs and rhs have to be whole numbers for bitwise operations
-	if operator.IsBitwise() && (!isWholeNumber(lhs) || !isWholeNumber(rhs)) {
+	if operator.IsBitwise() && (!IsWholeNumber(lhs) || !IsWholeNumber(rhs)) {
 		return -1, fmt.Errorf("Unsupported type (float) for '%s'", operator.Type)
 	}
 
@@ -389,7 +389,8 @@ func (p *Parser) eat() *token {
 	return p.tok
 }
 
-func isWholeNumber(n float64) bool {
+// Check if a float is a whole number
+func IsWholeNumber(n float64) bool {
 	epsilon := 1e-9
 	_, frac := math.Modf(math.Abs(n))
 

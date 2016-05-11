@@ -26,7 +26,11 @@ func repl() {
 			continue
 		}
 
-		fmt.Printf("%.1f\n", res)
+		if evaler.IsWholeNumber(res) {
+			fmt.Printf("%d\n", int64(res))
+		} else {
+			fmt.Printf("%.2f\n", res)
+		}
 	}
 }
 
