@@ -37,6 +37,13 @@ func TestParse(t *testing.T) {
 		"(1)":                                           1,
 		"12**12":                                        8916100448256,
 		"~(~(1))":                                       1,
+		"1000 > 10":                                     1,
+		"1000 < 10":                                     0,
+		"55 == 55":                                      1,
+		"55 <= 55":                                      1,
+		"55 >= 55":                                      1,
+		"0 > 0":                                         0,
+		"0 < 0":                                         0,
 		"((((((((((((1))))))))))))":                     1,
 		"(1 + (2 + (3 + (4 + (5 + (6 + (7)))))))":       28,
 		"(((((((1) + 2) + 3) + 4) + 5) + 6) + 7)":       28,
@@ -51,14 +58,14 @@ func TestParse(t *testing.T) {
 		}
 
 		if expected != res {
-			t.Errorf("wrong result in expression '%s' (expected %.1f, got %.1f)",
+			t.Errorf("wrong result in expression '%s' (expected %f, got %f)",
 				expr, expected, res)
 		}
 	}
 
 	badExpressions := []string{
 		"2 / 0", "2 % 0", "+", "2 + 2 +", ")", "(2 + 2 * 8", "@#%@#*%&@#",
-		"a + a", "~~2",
+		"a + a", "~~2", "2 == ()", "5 < -", "2 * (9 ** 2))", "5 ~ 3",
 	}
 
 	for _, expr := range badExpressions {

@@ -47,6 +47,13 @@ var allOperators = map[tokenType]operator{
 	LSH_EQ: {0, ASSOC_RIGHT, false}, // <<=
 	RSH_EQ: {0, ASSOC_RIGHT, false}, // >>=
 
+	// Relational operators
+	EQ_EQ: {0, ASSOC_RIGHT, false}, // ==
+	GT:    {0, ASSOC_RIGHT, false}, // >
+	GT_EQ: {0, ASSOC_RIGHT, false}, // >=
+	LT:    {0, ASSOC_RIGHT, false}, // <
+	LT_EQ: {0, ASSOC_RIGHT, false}, // <=
+
 	// Bitwise operators
 	OR:  {1, ASSOC_RIGHT, false}, // |
 	XOR: {2, ASSOC_RIGHT, false}, // ^
@@ -342,6 +349,16 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 		result = float64(^int64(rhs))
 	case EQ:
 		result = rhs
+	case EQ_EQ:
+		result = bool2float(lhs == rhs)
+	case GT:
+		result = bool2float(lhs > rhs)
+	case GT_EQ:
+		result = bool2float(lhs >= rhs)
+	case LT:
+		result = bool2float(lhs < rhs)
+	case LT_EQ:
+		result = bool2float(lhs <= rhs)
 	default:
 		return -1, fmt.Errorf("Invalid operator '%s'", operator.Type)
 	}
@@ -395,4 +412,11 @@ func IsWholeNumber(n float64) bool {
 	_, frac := math.Modf(math.Abs(n))
 
 	return frac < epsilon || frac > 1.0-epsilon
+}
+
+func bool2float(b bool) float64 {
+	if b {
+		return 1
+	}
+	return 0
 }

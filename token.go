@@ -47,6 +47,12 @@ const (
 	MUL_EQ // *=
 	POW_EQ // **=
 	REM_EQ // %=
+
+	EQ_EQ // ==
+	GT    // >
+	GT_EQ // >=
+	LT    // <
+	LT_EQ // <=
 	operatorsEnd
 
 	LPAREN // (
@@ -87,6 +93,12 @@ var tokens = map[tokenType]string{
 	XOR_EQ: "^=",
 	LSH_EQ: "<<=",
 	RSH_EQ: ">>=",
+
+	EQ_EQ: "==",
+	GT:    ">",
+	GT_EQ: ">=",
+	LT:    "<",
+	LT_EQ: "<=",
 
 	LPAREN: "(",
 	RPAREN: ")",

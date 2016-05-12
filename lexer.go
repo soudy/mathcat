@@ -82,19 +82,19 @@ func (l *lexer) lex() ([]*token, error) {
 					l.eat()
 					l.switchEq(LSH, LSH_EQ)
 				} else {
-					return nil, errors.New("Invalid token " + string(l.ch))
+					l.switchEq(LT, LT_EQ)
 				}
 			case '>':
 				if l.peek() == '>' {
 					l.eat()
 					l.switchEq(RSH, RSH_EQ)
 				} else {
-					return nil, errors.New("Invalid token " + string(l.ch))
+					l.switchEq(GT, GT_EQ)
 				}
 			case '~':
 				l.emit(NOT)
 			case '=':
-				l.emit(EQ)
+				l.switchEq(EQ, EQ_EQ)
 			case '(':
 				l.emit(LPAREN)
 			case ')':
