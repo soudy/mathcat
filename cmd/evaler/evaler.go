@@ -1,10 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/soudy/evaler"
 	"gopkg.in/readline.v1"
 )
+
+var precision = flag.Int("precision", 2, "decimal precision used in results")
 
 func repl() {
 	p := evaler.New()
@@ -29,11 +32,12 @@ func repl() {
 		if evaler.IsWholeNumber(res) {
 			fmt.Printf("%d\n", int64(res))
 		} else {
-			fmt.Printf("%.2f\n", res)
+			fmt.Printf("%.*f\n", *precision, res)
 		}
 	}
 }
 
 func main() {
+	flag.Parse()
 	repl()
 }
