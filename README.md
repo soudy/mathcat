@@ -70,9 +70,14 @@ res, err := evaler.Exec("a + b * b", map[string]float64{
 - `<<` (bitwise left shift)
 - `>>` (bitwise right shift)
 - `~` (bitwise not)
+- `==` (equal)
+- `>` (greater than)
+- `>=` (greater than or equal)
+- `<` (less than)
+- `<=` (less than or equal)
 
-All of these except `~` also have an assignment variant (`+=`, `-=`,
-`**=` etc.) that can be used to assign values to variables.
+All of these except `~` and relational operators also have an assignment
+variant (`+=`, `-=`, `**=` etc.) that can be used to assign values to variables.
 
 ### Predefined variables
 There are some handy predefined variables you can use (and change) throughout
