@@ -164,11 +164,6 @@ func (p *Parser) parse() (float64, error) {
 
 	p.tok = p.tokens[0]
 
-	// No input received, return 0
-	if p.tok.Type == EOL {
-		return 0, nil
-	}
-
 	for p.eat().Type != EOL {
 		switch {
 		case p.tok.IsLiteral():
@@ -234,18 +229,14 @@ func (p *Parser) parse() (float64, error) {
 	}
 
 	// If there are no operands, the expression is useless and doesn't do
-	// anything, for example `()`
+	// anything, for example `()` or an empty string
 	if operands.Empty() {
 		return 0, nil
 	}
 
-	// Single literal, show its value
+	// Single operand left means the expression was evaluated successful
 	if len(operands) == 1 {
 		return p.lookup(operands[0])
-	}
-
-	if res, ok := operands[0].(float64); ok {
-		return res, nil
 	}
 
 	// Leftover token on operand stack indicates invalid syntax
@@ -261,7 +252,7 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	)
 
 	if operands.Empty() {
-		return -1, invalidSyntaxErr
+		return -1, fmt.Errorf("Unexpected '%s'", operator.Type)
 	}
 
 	if right, err = p.lookup(operands.Pop()); err != nil {
