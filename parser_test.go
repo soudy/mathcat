@@ -8,7 +8,7 @@ import "testing"
 
 func TestFloatBitwise(t *testing.T) {
 	badExpressions := []string{
-		"2.4 | 2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2", "~5.3",
+		"2.4 | -2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2", "~5.3",
 	}
 
 	for _, expr := range badExpressions {
@@ -19,7 +19,7 @@ func TestFloatBitwise(t *testing.T) {
 	}
 
 	okExpressions := []string{
-		"2.0 | 2", "5 & 32.0", "7 ^ 2", "9 << 20", "7.0 >> 21.0", "~255",
+		"2.0 | 2", "5 & 32.0", "7 ^ 2", "9 << 20", "7.0 >> -21.0", "~255",
 	}
 
 	for _, expr := range okExpressions {
@@ -33,7 +33,7 @@ func TestFloatBitwise(t *testing.T) {
 func TestEval(t *testing.T) {
 	okExpressions := map[string]float64{
 		"()":                                            0,
-		"1":                                             1,
+		"-1":                                            -1,
 		"(1)":                                           1,
 		"12**12":                                        8916100448256,
 		"~(~(1))":                                       1,
@@ -42,8 +42,8 @@ func TestEval(t *testing.T) {
 		"55 == 55":                                      1,
 		"55 <= 55":                                      1,
 		"55 >= 55":                                      1,
-		"0 > 0":                                         0,
-		"0 < 0":                                         0,
+		"-0 > 0":                                        0,
+		"0 < -0":                                        0,
 		"((((((((((((1))))))))))))":                     1,
 		"(1 + (2 + (3 + (4 + (5 + (6 + (7)))))))":       28,
 		"(((((((1) + 2) + 3) + 4) + 5) + 6) + 7)":       28,

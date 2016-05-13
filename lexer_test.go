@@ -9,10 +9,10 @@ import (
 )
 
 func TestLex(t *testing.T) {
-	res, err := Lex("some_var123 **= (.5 ** (3 + 4 - 2)) <<= 1.23 % 0.3")
+	res, err := Lex("some_var123 **= (.5 ** (3 + 4 - 2)) <<= 1.23 % -0.3")
 	expected := []tokenType{
 		IDENT, POW_EQ, LPAREN, NUMBER, POW, LPAREN, NUMBER, ADD, NUMBER, SUB, NUMBER,
-		RPAREN, RPAREN, LSH_EQ, NUMBER, REM, NUMBER, EOL,
+		RPAREN, RPAREN, LSH_EQ, NUMBER, REM, UNARY_MIN, NUMBER, EOL,
 	}
 
 	if err != nil {
