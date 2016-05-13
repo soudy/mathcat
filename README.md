@@ -14,7 +14,15 @@ go get github.com/soudy/mathcat
 go get github.com/soudy/mathcat/cmd/mathcat
 ```
 
-## Usage
+## REPL usage
+The REPL can be used by simply launching `mathcat`, or can read from stdin like
+so:
+
+```bash
+echo "3**pi * (6 - -7)" | mathcat
+```
+
+## Library usage
 There are three different ways to evaluate expressions, the first way is by
 calling `Eval`, the second way is by creating a new instance and using `Run`,
 and the final way is to use `Exec` in which you can pass a map with variables to
