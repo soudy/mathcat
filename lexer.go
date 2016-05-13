@@ -59,6 +59,10 @@ func (l *lexer) lex() ([]*token, error) {
 			case '+':
 				l.switchEq(ADD, ADD_EQ)
 			case '-':
+				if l.shouldBeUnary() {
+					l.emit(UNARY_MIN)
+					break
+				}
 				l.switchEq(SUB, SUB_EQ)
 			case '/':
 				l.switchEq(DIV, DIV_EQ)
@@ -117,6 +121,10 @@ func (l *lexer) peek() rune {
 	return l.expr[l.pos]
 }
 
+func (l *lexer) prev() *token {
+	return l.tokens[len(l.tokens)-1]
+}
+
 func (l *lexer) eat() rune {
 	l.ch = l.peek()
 	l.pos++
@@ -147,6 +155,10 @@ func (l *lexer) readNumber() {
 	}
 
 	l.emit(NUMBER)
+}
+
+func (l *lexer) shouldBeUnary() bool {
+	return l.tokens == nil || l.prev().Type == LPAREN || l.prev().IsOperator()
 }
 
 func (l *lexer) switchEq(tokA, tokB tokenType) {

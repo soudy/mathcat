@@ -64,12 +64,13 @@ var allOperators = map[tokenType]operator{
 	NOT: {8, ASSOC_LEFT, true},   // ~
 
 	// Mathematical operators
-	ADD: {5, ASSOC_LEFT, false}, // +
-	SUB: {5, ASSOC_LEFT, false}, // -
-	MUL: {6, ASSOC_LEFT, false}, // *
-	DIV: {6, ASSOC_LEFT, false}, // /
-	REM: {6, ASSOC_LEFT, false}, // %
-	POW: {7, ASSOC_LEFT, false}, // **
+	ADD:       {5, ASSOC_LEFT, false}, // +
+	SUB:       {5, ASSOC_LEFT, false}, // -
+	MUL:       {6, ASSOC_LEFT, false}, // *
+	DIV:       {6, ASSOC_LEFT, false}, // /
+	POW:       {7, ASSOC_LEFT, false}, // **
+	REM:       {6, ASSOC_LEFT, false}, // %
+	UNARY_MIN: {9, ASSOC_LEFT, true},  // -
 }
 
 var (
@@ -337,11 +338,9 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 	case ADD, ADD_EQ:
 		result = lhs + rhs
 	case SUB, SUB_EQ:
-		if op := allOperators[operator.Type]; op.unary {
-			result = -rhs
-		} else {
-			result = lhs - rhs
-		}
+		result = lhs - rhs
+	case UNARY_MIN:
+		result = -rhs
 	case DIV, DIV_EQ:
 		if rhs == 0 {
 			return -1, divisionByZeroErr

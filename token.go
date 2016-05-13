@@ -18,12 +18,13 @@ const (
 	literalsEnd
 
 	operatorsBegin
-	ADD // +
-	SUB // -
-	DIV // /
-	MUL // *
-	POW // **
-	REM // %
+	ADD       // +
+	SUB       // -
+	DIV       // /
+	MUL       // *
+	POW       // **
+	REM       // %
+	UNARY_MIN // -
 
 	bitwiseBegin
 	AND // &
@@ -66,12 +67,13 @@ var tokens = map[tokenType]string{
 	IDENT:  "identifier",
 	NUMBER: "number",
 
-	ADD: "+",
-	SUB: "-",
-	DIV: "/",
-	MUL: "*",
-	POW: "**",
-	REM: "%",
+	ADD:       "+",
+	SUB:       "-",
+	DIV:       "/",
+	MUL:       "*",
+	POW:       "**",
+	REM:       "%",
+	UNARY_MIN: "-",
 
 	AND: "&",
 	OR:  "|",
