@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can be found
 // in the LICENSE file.
 
-package evaler
+package mathcat
 
 import (
 	"errors"
@@ -105,7 +105,7 @@ func New() *Parser {
 // Eval evaluates an expression and returns its result and any errors found.
 //
 // Example:
-//     res, err := evaler.Eval("2 * 2 * 2") // 8
+//     res, err := mathcat.Eval("2 * 2 * 2") // 8
 func Eval(expr string) (float64, error) {
 	tokens, err := Lex(expr)
 
@@ -146,7 +146,7 @@ func (p *Parser) Run(expr string) (float64, error) {
 // Exec executes an expression with a given map of variables.
 //
 // Example:
-//     res, err := evaler.Exec("a + b * b", map[string]float64{
+//     res, err := mathcat.Exec("a + b * b", map[string]float64{
 //	       "a": 1,
 //         "b": 3,
 //     }) // 10

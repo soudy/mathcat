@@ -3,15 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/soudy/evaler"
+	"github.com/soudy/mathcat"
 	"gopkg.in/readline.v1"
 )
 
 var precision = flag.Int("precision", 2, "decimal precision used in results")
 
 func repl() {
-	p := evaler.New()
-	rl, err := readline.New("evaler> ")
+	p := mathcat.New()
+	rl, err := readline.New("mathcat> ")
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ func repl() {
 			continue
 		}
 
-		if evaler.IsWholeNumber(res) {
+		if mathcat.IsWholeNumber(res) {
 			fmt.Printf("%d\n", int64(res))
 		} else {
 			fmt.Printf("%.*f\n", *precision, res)

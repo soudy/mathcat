@@ -1,17 +1,17 @@
-evaler [![Build Status](https://travis-ci.org/soudy/evaler.svg?branch=master)](https://travis-ci.org/soudy/evaler)
+mathcat [![Build Status](https://travis-ci.org/soudy/mathcat.svg?branch=master)](https://travis-ci.org/soudy/mathcat)
 ===============
-evaler is an expression parser library for Go. It supports basic arithmetic,
+mathcat is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
 
 ## Installation
 ### Library
 ```bash
-go get github.com/soudy/evaler
+go get github.com/soudy/mathcat
 ```
 
 ### REPL
 ```bash
-go get github.com/soudy/evaler/cmd/evaler
+go get github.com/soudy/mathcat/cmd/mathcat
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ If you're not planning on declaring variables, you can use `Eval`. `Eval`
 will evaluate an expression and return its result.
 
 ```go
-res, err := evaler.Eval("2 * pi * 5") // pi is a predefined variable
+res, err := mathcat.Eval("2 * pi * 5") // pi is a predefined variable
 if err != nil {
     // handle errors
 }
@@ -38,7 +38,7 @@ You can use `Run` and for a more featureful approach. With this method you can
 assign and use variables accross the `Parser` instance.
 
 ```go
-p := evaler.New()
+p := mathcat.New()
 p.Run("a = 1")
 p.Run("b = 3")
 res, err := p.Run("a + b * b") // 10
@@ -49,7 +49,7 @@ To pass external variables to an expression without using `Run`, you can use
 `Exec` to pass a map of variables.
 
 ```go
-res, err := evaler.Exec("a + b * b", map[string]float64{
+res, err := mathcat.Exec("a + b * b", map[string]float64{
     "a": 1,
     "b": 3,
 }) // 10
@@ -89,4 +89,4 @@ your expressions:
 - e
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/soudy/evaler/blob/master/LICENSE) file for the full license.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/soudy/mathcat/blob/master/LICENSE) file for the full license.
