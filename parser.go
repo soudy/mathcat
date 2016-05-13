@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 type Parser struct {
@@ -142,9 +143,36 @@ func (p *Parser) Run(expr string) (float64, error) {
 	return p.parse()
 }
 
-// Exec executes an expression and returns the result.
-func Exec(expr string) (float64, error) {
-	return 0, nil
+// Exec executes an expression with a given map of variables.
+//
+// Example:
+//     res, err := evaler.Exec("a + b * b", map[string]float64{
+//	       "a": 1,
+//         "b": 3,
+//     }) // 10
+func Exec(expr string, vars map[string]float64) (float64, error) {
+	tokens, err := Lex(expr)
+
+	if err != nil {
+		return -1, err
+	}
+
+	p := &Parser{
+		tokens:    tokens,
+		pos:       0,
+		Variables: constants,
+	}
+
+	for k, v := range vars {
+		if strings.IndexFunc(k, isIdent) == -1 {
+			return -1, fmt.Errorf("Invalid variable name: '%s'")
+		}
+		p.Variables[k] = v
+	}
+
+	p.tokens = tokens
+
+	return p.parse()
 }
 
 // GetVar gets an existing variable.

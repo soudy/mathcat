@@ -30,7 +30,7 @@ func TestFloatBitwise(t *testing.T) {
 	}
 }
 
-func TestParse(t *testing.T) {
+func TestEval(t *testing.T) {
 	okExpressions := map[string]float64{
 		"()":                                            0,
 		"1":                                             1,
@@ -72,6 +72,48 @@ func TestParse(t *testing.T) {
 		_, err := Eval(expr)
 		if err == nil {
 			t.Error("no parser error occured on bad expression")
+		}
+	}
+}
+
+func TestExec(t *testing.T) {
+	type execTest struct {
+		expr     string
+		vars     map[string]float64
+		expected float64
+	}
+
+	okExpressions := []execTest{
+		{"a + b * b", map[string]float64{"a": 1, "b": 3}, 10},
+		{"a + b * pi", map[string]float64{"a": 1, "b": 3, "pi": 3}, 10},
+		{"Å ** Å", map[string]float64{"Å": 1}, 1},
+	}
+
+	for _, test := range okExpressions {
+		res, err := Exec(test.expr, test.vars)
+		if err != nil {
+			t.Error("error on correct Exec")
+		}
+
+		if res != test.expected {
+			t.Error("wrong result in Exec")
+		}
+	}
+
+	badExpressions := []execTest{
+		{"", map[string]float64{"-1": 0}, 0},
+		{"", map[string]float64{"55": 0}, 0},
+		{"", map[string]float64{".": 0}, 0},
+		{"", map[string]float64{")": 0}, 0},
+		{"", map[string]float64{"(": 0}, 0},
+		{"", map[string]float64{"@": 0}, 0},
+		{"", map[string]float64{"@": 0}, 0},
+	}
+
+	for _, test := range badExpressions {
+		_, err := Exec(test.expr, test.vars)
+		if err == nil {
+			t.Error("no error on bad Exec")
 		}
 	}
 }
