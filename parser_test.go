@@ -85,7 +85,8 @@ func TestExec(t *testing.T) {
 
 	okExpressions := []execTest{
 		{"a + b * b", map[string]float64{"a": 1, "b": 3}, 10},
-		{"a + b * pi", map[string]float64{"a": 1, "b": 3, "pi": 3}, 10},
+		{"a + b_ * pi", map[string]float64{"a": 1, "b_": 3, "pi": 3}, 10},
+		{"a2 + b5 * pi3", map[string]float64{"a2": 1, "b5": 3, "pi3": 3}, 10},
 		{"Å ** Å", map[string]float64{"Å": 1}, 1},
 	}
 
@@ -106,7 +107,6 @@ func TestExec(t *testing.T) {
 		{"", map[string]float64{".": 0}, 0},
 		{"", map[string]float64{")": 0}, 0},
 		{"", map[string]float64{"(": 0}, 0},
-		{"", map[string]float64{"@": 0}, 0},
 		{"", map[string]float64{"@": 0}, 0},
 	}
 
