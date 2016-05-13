@@ -163,8 +163,10 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 		Variables: constants,
 	}
 
+	isValidIdent := func(c rune) bool { return isIdent(c) || isNumber(c) }
+
 	for k, v := range vars {
-		if strings.IndexFunc(k, isIdent) == -1 {
+		if !isIdent(rune(k[0])) || strings.IndexFunc(k, isValidIdent) == -1 {
 			return -1, fmt.Errorf("Invalid variable name: '%s'")
 		}
 		p.Variables[k] = v

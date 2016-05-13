@@ -104,6 +104,7 @@ func TestExec(t *testing.T) {
 	badExpressions := []execTest{
 		{"", map[string]float64{"-1": 0}, 0},
 		{"", map[string]float64{"55": 0}, 0},
+		{"", map[string]float64{"55a": 0}, 0},
 		{"", map[string]float64{".": 0}, 0},
 		{"", map[string]float64{")": 0}, 0},
 		{"", map[string]float64{"(": 0}, 0},
