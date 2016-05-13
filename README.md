@@ -43,7 +43,7 @@ fmt.Printf("Result: %f\n", res) // Result: 31.41592653589793
 
 ### Run
 You can use `Run` and for a more featureful approach. With this method you can
-assign and use variables accross the `Parser` instance.
+assign and use variables across the `Parser` instance.
 
 ```go
 p := mathcat.New()
