@@ -74,9 +74,9 @@ var allOperators = map[tokenType]operator{
 }
 
 var (
-	divisionByZeroErr       = errors.New("Divison by zero")
-	unmatchedParenthesesErr = errors.New("Unmatched parentheses")
-	invalidSyntaxErr        = errors.New("Invalid syntax")
+	errDivionByZero         = errors.New("Divison by zero")
+	errUnmatchedParentheses = errors.New("Unmatched parentheses")
+	errInvalidSyntax        = errors.New("Invalid syntax")
 )
 
 // Determine if operator 1 has higher precendence than operator 2
@@ -224,7 +224,7 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.Type == RPAREN:
 			for {
 				if operators.Empty() {
-					return -1, unmatchedParenthesesErr
+					return -1, errUnmatchedParentheses
 				}
 
 				operator := operators.Pop().(*token)
@@ -245,11 +245,11 @@ func (p *Parser) parse() (float64, error) {
 		operator := operators.Pop().(*token)
 
 		if operator.Type == LPAREN {
-			return -1, unmatchedParenthesesErr
+			return -1, errUnmatchedParentheses
 		}
 
 		if operands.Empty() {
-			return -1, invalidSyntaxErr
+			return -1, errInvalidSyntax
 		}
 
 		val, err := p.evaluate(operator, &operands)
@@ -271,7 +271,7 @@ func (p *Parser) parse() (float64, error) {
 	}
 
 	// Leftover token on operand stack indicates invalid syntax
-	return -1, invalidSyntaxErr
+	return -1, errInvalidSyntax
 }
 
 func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
@@ -293,7 +293,7 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	// Unary operators have no left hand side
 	if op := allOperators[operator.Type]; !op.unary {
 		if operands.Empty() {
-			return -1, invalidSyntaxErr
+			return -1, errInvalidSyntax
 		}
 		// Save the token in case of a assignment variable is used and we need to
 		// save the result in a variable
@@ -343,7 +343,7 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 		result = -rhs
 	case DIV, DIV_EQ:
 		if rhs == 0 {
-			return -1, divisionByZeroErr
+			return -1, errDivionByZero
 		}
 		result = lhs / rhs
 	case MUL, MUL_EQ:
@@ -352,7 +352,7 @@ func execute(operator *token, lhs, rhs float64) (float64, error) {
 		result = math.Pow(lhs, rhs)
 	case REM, REM_EQ:
 		if rhs == 0 {
-			return -1, divisionByZeroErr
+			return -1, errDivionByZero
 		}
 		result = math.Mod(lhs, rhs)
 	case AND, AND_EQ:
@@ -426,7 +426,7 @@ func (p *Parser) eat() *token {
 	return p.tok
 }
 
-// Check if a float is a whole number
+// IsWholeNumber checks if a float is a whole number
 func IsWholeNumber(n float64) bool {
 	epsilon := 1e-9
 	_, frac := math.Modf(math.Abs(n))
