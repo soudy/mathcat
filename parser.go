@@ -148,7 +148,7 @@ func (p *Parser) Run(expr string) (float64, error) {
 //
 // Example:
 //     res, err := mathcat.Exec("a + b * b", map[string]float64{
-//	       "a": 1,
+//         "a": 1,
 //         "b": 3,
 //     }) // 10
 func Exec(expr string, vars map[string]float64) (float64, error) {
