@@ -55,6 +55,24 @@ res, err := mathcat.Exec("a + b * b", map[string]float64{
 }) // 10
 ```
 
+Besides evaluating expressions, mathcat also offers some other handy functions.
+### GetVar
+You can get a defined variable at any time with `GetVar`.
+```go
+p := mathcat.New()
+p.Run("a = 1")
+fmt.Printf("%f\n", p.GetVar("a")) // 1
+```
+
+### IsWholeNumber
+Check if a `float64` is a whole number.
+```go
+if mathcat.IsWholeNumber(res) {
+    fmt.Printf("%d\n", int64(res))
+} else {
+    fmt.Printf("%f\n", res)
+}
+```
 
 ### Supported operators
 - `=` (assignment)
