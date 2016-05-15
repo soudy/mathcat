@@ -3,6 +3,19 @@ mathcat [![Build Status](https://travis-ci.org/soudy/mathcat.svg?branch=master)]
 mathcat is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
 
+## Features
+mathcat doesn't just evaluate basic expressions, it has some tricks up its
+sleeve. Here's a list with some of its features:
+
+- Hex literals (0xDEADBEEF)
+- Binary literals (0b1101001)
+- Scientific notation (24e3)
+- Variables
+- Bitwise operators
+- Relational operators
+- Some handy [predefined variables](#predefined-variables)
+- Its own [REPL](#repl)
+
 ## Installation
 ### Library
 ```bash
