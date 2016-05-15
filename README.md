@@ -96,24 +96,27 @@ if mathcat.IsWholeNumber(res) {
 ```
 
 ### Supported operators
-- `=` (assignment)
-- `+` (addition)
-- `-` (subtraction)
-- `/` (division)
-- `*` (multiply)
-- `**` (power)
-- `%` (remainder)
-- `&` (bitwise and)
-- `|` (bitwise or)
-- `^` (bitwise xor)
-- `<<` (bitwise left shift)
-- `>>` (bitwise right shift)
-- `~` (bitwise not)
-- `==` (equal)
-- `>` (greater than)
-- `>=` (greater than or equal)
-- `<` (less than)
-- `<=` (less than or equal)
+
+| Operator   | Description           |
+|:----------:|-----------------------|
+| =          | assignment            |
+| +          | addition              |
+| -          | subtraction           |
+| /          | division              |
+| *          | multiply              |
+| **         | power                 |
+| %          | remainder             |
+| &          | bitwise and           |
+| |          | bitwise or            |
+| ^          | bitwise xor           |
+| <<         | bitwise left shift    |
+| >>         | bitwise right shift   |
+| ~          | bitwise not           |
+| ==         | equal                 |
+| >          | greater than          |
+| >=         | greater than or equal |
+| <          | less than             |
+| <=         | less than or equal    |
 
 All of these except `~` and relational operators also have an assignment
 variant (`+=`, `-=`, `**=` etc.) that can be used to assign values to variables.
