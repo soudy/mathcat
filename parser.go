@@ -398,7 +398,30 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 	tok := val.(*token)
 	switch tok.Type {
 	case NUMBER:
-		return strconv.ParseFloat(tok.Value, 64)
+		res, err := strconv.ParseFloat(tok.Value, 64)
+		if err != nil {
+			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+		}
+
+		return res, nil
+	case HEX:
+		// Remove 0x part of hex literal and convert to uint first
+		res, err := strconv.ParseUint(tok.Value[2:], 16, 64)
+		if err != nil {
+			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+		}
+
+		// Then convert to float
+		return float64(res), nil
+	case BINARY:
+		// Remove 0b part of binary literal and convert to uint first
+		res, err := strconv.ParseUint(tok.Value[2:], 2, 64)
+		if err != nil {
+			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+		}
+
+		// Then convert to float
+		return float64(res), nil
 	case IDENT:
 		res, err := p.GetVar(tok.Value)
 		if err != nil {

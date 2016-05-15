@@ -29,6 +29,18 @@ func isNumber(c rune) bool {
 	return (c >= '0' && c <= '9') || c == '.'
 }
 
+func isHex(c rune) bool {
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+}
+
+func isBinary(c rune) bool {
+	return c == '0' || c == '1'
+}
+
+func isWhitespace(c rune) bool {
+	return c == '\t' || c == ' ' || c == '\r'
+}
+
 // Lex starts lexing an expression. We keep reading until EOL is found, which
 // we add because we need a padding of 1 to always be able to peek().
 //
@@ -54,6 +66,8 @@ func (l *lexer) lex() ([]*token, error) {
 			l.readIdent()
 		case isNumber(l.ch):
 			l.readNumber()
+		case isWhitespace(l.ch):
+			l.skipWhitespace()
 		default:
 			switch l.ch {
 			case '+':
@@ -103,8 +117,6 @@ func (l *lexer) lex() ([]*token, error) {
 				l.emit(LPAREN)
 			case ')':
 				l.emit(RPAREN)
-			case '\r', ' ', '\t':
-				l.skipWhitespace()
 			case eol:
 				l.emit(EOL)
 			default:
@@ -136,7 +148,7 @@ func (l *lexer) emit(toktype tokenType) {
 }
 
 func (l *lexer) skipWhitespace() {
-	for l.peek() == '\t' || l.peek() == ' ' || l.peek() == '\r' {
+	for isWhitespace(l.peek()) {
 		l.eat()
 	}
 }
@@ -150,7 +162,32 @@ func (l *lexer) readIdent() {
 }
 
 func (l *lexer) readNumber() {
-	for isNumber(l.peek()) {
+	// Hex literals
+	if l.ch == '0' && (l.peek() == 'x' || l.peek() == 'X') {
+		l.eat()
+
+		for isHex(l.peek()) {
+			l.eat()
+		}
+
+		l.emit(HEX)
+		return
+	}
+
+	// Binary literals
+	if l.ch == '0' && (l.peek() == 'b' || l.peek() == 'B') {
+		l.eat()
+
+		for isBinary(l.peek()) {
+			l.eat()
+		}
+
+		l.emit(BINARY)
+		return
+	}
+
+	// Normal literals
+	for isNumber(l.peek()) || l.peek() == 'e' || l.peek() == 'E' {
 		l.eat()
 	}
 
