@@ -98,7 +98,7 @@ if mathcat.IsWholeNumber(res) {
 ### Supported operators
 
 | Operator   | Description           |
-|:----------:|-----------------------|
+|:----------:|:---------------------:|
 | =          | assignment            |
 | +          | addition              |
 | -          | subtraction           |
@@ -107,7 +107,7 @@ if mathcat.IsWholeNumber(res) {
 | **         | power                 |
 | %          | remainder             |
 | &          | bitwise and           |
-| |          | bitwise or            |
+| \|         | bitwise or            |
 | ^          | bitwise xor           |
 | <<         | bitwise left shift    |
 | >>         | bitwise right shift   |
