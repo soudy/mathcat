@@ -18,7 +18,7 @@ type lexer struct {
 	ch     rune     // current character
 	pos    int      // current character position
 	start  int      // current read offset
-	tokens []*token // tokenized lexemes
+	tokens []*Token // tokenized lexemes
 }
 
 func isIdent(c rune) bool {
@@ -45,7 +45,7 @@ func isWhitespace(c rune) bool {
 // we add because we need a padding of 1 to always be able to peek().
 //
 // Returns the generated tokens and any error found.
-func Lex(expr string) ([]*token, error) {
+func Lex(expr string) ([]*Token, error) {
 	l := &lexer{
 		expr:  append([]rune(expr), eol), // add eol as padding
 		pos:   0,
@@ -55,7 +55,7 @@ func Lex(expr string) ([]*token, error) {
 	return l.lex()
 }
 
-func (l *lexer) lex() ([]*token, error) {
+func (l *lexer) lex() ([]*Token, error) {
 	for l.ch != eol {
 		l.start = l.pos
 
@@ -133,7 +133,7 @@ func (l *lexer) peek() rune {
 	return l.expr[l.pos]
 }
 
-func (l *lexer) prev() *token {
+func (l *lexer) prev() *Token {
 	return l.tokens[len(l.tokens)-1]
 }
 

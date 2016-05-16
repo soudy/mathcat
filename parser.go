@@ -12,11 +12,14 @@ import (
 	"strings"
 )
 
+// Parser holds the lexed tokens, token position and declared variables. By
+// default, variables always contains the constants defined below. These can
+// however be overwritten.
 type Parser struct {
-	tokens    []*token
+	tokens    []*Token
 	pos       int
 	Variables map[string]float64
-	tok       *token
+	tok       *Token
 }
 
 type association int
@@ -206,13 +209,13 @@ func (p *Parser) parse() (float64, error) {
 
 			if !operators.Empty() {
 				var ok bool
-				if o2, ok = allOperators[operators.Top().(*token).Type]; !ok {
+				if o2, ok = allOperators[operators.Top().(*Token).Type]; !ok {
 					operators.Push(p.tok)
 					break
 				}
 
 				if o2.hasHigherPrecThan(o1) {
-					operator := operators.Pop().(*token)
+					operator := operators.Pop().(*Token)
 					val, err := p.evaluate(operator, &operands)
 					if err != nil {
 						return -1, err
@@ -227,7 +230,7 @@ func (p *Parser) parse() (float64, error) {
 					return -1, errUnmatchedParentheses
 				}
 
-				operator := operators.Pop().(*token)
+				operator := operators.Pop().(*Token)
 				if operator.Type == LPAREN {
 					break
 				}
@@ -242,7 +245,7 @@ func (p *Parser) parse() (float64, error) {
 
 	// Evaluate remaing operators
 	for !operators.Empty() {
-		operator := operators.Pop().(*token)
+		operator := operators.Pop().(*Token)
 
 		if operator.Type == LPAREN {
 			return -1, errUnmatchedParentheses
@@ -274,7 +277,7 @@ func (p *Parser) parse() (float64, error) {
 	return -1, errInvalidSyntax
 }
 
-func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
+func (p *Parser) evaluate(operator *Token, operands *stack) (float64, error) {
 	var (
 		result      float64
 		left, right float64
@@ -317,16 +320,16 @@ func (p *Parser) evaluate(operator *token, operands *stack) (float64, error) {
 	switch operator.Type {
 	case EQ, ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
 		// Save result in variable
-		if lhsToken.(*token).Type != IDENT {
+		if lhsToken.(*Token).Type != IDENT {
 			return -1, errors.New("Can't assign to literal")
 		}
-		p.Variables[lhsToken.(*token).Value] = result
+		p.Variables[lhsToken.(*Token).Value] = result
 	}
 
 	return result, nil
 }
 
-func execute(operator *token, lhs, rhs float64) (float64, error) {
+func execute(operator *Token, lhs, rhs float64) (float64, error) {
 	var result float64
 
 	// Both lhs and rhs have to be whole numbers for bitwise operations
@@ -395,7 +398,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		return v, nil
 	}
 
-	tok := val.(*token)
+	tok := val.(*Token)
 	switch tok.Type {
 	case NUMBER:
 		res, err := strconv.ParseFloat(tok.Value, 64)
@@ -439,11 +442,11 @@ func (p *Parser) reset() {
 	p.pos = 0
 }
 
-func (p *Parser) peek() *token {
+func (p *Parser) peek() *Token {
 	return p.tokens[p.pos]
 }
 
-func (p *Parser) eat() *token {
+func (p *Parser) eat() *Token {
 	p.tok = p.peek()
 	p.pos++
 	return p.tok

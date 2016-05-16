@@ -110,21 +110,22 @@ var tokens = map[tokenType]string{
 	RPAREN: ")",
 }
 
-type token struct {
+// Token is an entity in an expression
+type Token struct {
 	Type  tokenType
 	Value string
 	Pos   int
 }
 
-func newToken(toktype tokenType, val string, pos int) *token {
-	return &token{
+func newToken(toktype tokenType, val string, pos int) *Token {
+	return &Token{
 		Type:  toktype,
 		Value: val,
 		Pos:   pos,
 	}
 }
 
-func (tok *token) String() string {
+func (tok *Token) String() string {
 	if _, ok := tokens[tok.Type]; ok {
 		return fmt.Sprintf("%d: '%s' ( %s )\n", tok.Pos, tok.Value, tok.Type)
 	}
@@ -141,16 +142,16 @@ func (t tokenType) String() string {
 }
 
 // IsOperator checks if the token is an operator
-func (tok *token) IsOperator() bool {
+func (tok *Token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
 }
 
 // IsBitwise checks if the token type is a bitwise operator
-func (tok *token) IsBitwise() bool {
+func (tok *Token) IsBitwise() bool {
 	return tok.Type > bitwiseBegin && tok.Type < bitwiseEnd
 }
 
 // IsLiteral checks if the token is a literal
-func (tok *token) IsLiteral() bool {
+func (tok *Token) IsLiteral() bool {
 	return tok.Type > literalsBegin && tok.Type < literalsEnd
 }
