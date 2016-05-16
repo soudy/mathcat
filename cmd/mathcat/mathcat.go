@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/chzyer/readline"
 	"github.com/soudy/mathcat"
-	"gopkg.in/readline.v1"
 	"os"
 	"runtime"
 )
