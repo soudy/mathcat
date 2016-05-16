@@ -131,7 +131,7 @@ your expressions:
 - e
 
 ## Documentation
-For a more technical description of mathcat, it's available [here](https://godoc.org/github.com/soudy/mathcat).
+For a more technical description of mathcat, see [here](https://godoc.org/github.com/soudy/mathcat).
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/soudy/mathcat/blob/master/LICENSE) file for the full license.
