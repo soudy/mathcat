@@ -1,4 +1,4 @@
-mathcat [![Build Status](https://travis-ci.org/soudy/mathcat.svg?branch=master)](https://travis-ci.org/soudy/mathcat)
+mathcat [![Build Status](https://travis-ci.org/soudy/mathcat.svg?branch=master)](https://travis-ci.org/soudy/mathcat) [![GoDoc](https://godoc.org/github.com/soudy/mathcat?status.svg)](https://godoc.org/github.com/soudy/mathcat)
 ===============
 mathcat is an expression parser library for Go. It supports basic arithmetic,
 bitwise operations and variable assignment.
@@ -129,6 +129,9 @@ your expressions:
 - tau
 - phi
 - e
+
+## Documentation
+For a more technical description of mathcat, it's available [here](https://godoc.org/github.com/soudy/mathcat).
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/soudy/mathcat/blob/master/LICENSE) file for the full license.
