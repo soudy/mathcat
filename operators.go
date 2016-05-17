@@ -18,7 +18,7 @@ type operator struct {
 	unary bool
 }
 
-var ops = map[tokenType]operator{
+var ops = map[tokenType]*operator{
 	// Assignment operators
 	EQ:     {0, ASSOC_RIGHT, false}, // =
 	ADD_EQ: {0, ASSOC_RIGHT, false}, // +=
@@ -59,7 +59,7 @@ var ops = map[tokenType]operator{
 }
 
 // Determine if operator 1 has higher precendence than operator 2
-func (o1 operator) hasHigherPrecThan(o2 operator) bool {
+func (o1 *operator) hasHigherPrecThan(o2 *operator) bool {
 	return (o2.assoc == ASSOC_LEFT && o2.prec <= o1.prec) ||
 		(o2.assoc == ASSOC_RIGHT && o2.prec < o1.prec)
 }
