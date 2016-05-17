@@ -73,7 +73,7 @@ func (l *lexer) lex() ([]*Token, error) {
 			case '+':
 				l.switchEq(ADD, ADD_EQ)
 			case '-':
-				if l.shouldBeUnary() {
+				if l.isNegation() {
 					l.emit(UNARY_MIN)
 					break
 				}
@@ -194,7 +194,7 @@ func (l *lexer) readNumber() {
 	l.emit(NUMBER)
 }
 
-func (l *lexer) shouldBeUnary() bool {
+func (l *lexer) isNegation() bool {
 	return l.tokens == nil || l.prev().Type == LPAREN || l.prev().IsOperator()
 }
 
