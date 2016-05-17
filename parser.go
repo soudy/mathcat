@@ -133,7 +133,7 @@ func (p *Parser) GetVar(index string) (float64, error) {
 func (p *Parser) parse() (float64, error) {
 	var (
 		operands, operators stack
-		o1, o2              operator
+		o1, o2              *operator
 	)
 
 	p.tok = p.tokens[0]
@@ -149,6 +149,23 @@ func (p *Parser) parse() (float64, error) {
 			operands.Push(p.tok)
 		case p.tok.Type == LPAREN:
 			operators.Push(p.tok)
+		case p.tok.Type == COMMA:
+			for {
+				if operators.Empty() {
+					return -1, errors.New("Misplaced ','")
+				}
+
+				if operators.Top().(*Token).Type == LPAREN {
+					break
+				}
+
+				val, err := p.evaluate(operators.Pop().(*Token), &operands)
+				if err != nil {
+					return -1, err
+				}
+
+				operands.Push(val)
+			}
 		case p.tok.IsOperator():
 			o1 = ops[p.tok.Type]
 
@@ -175,36 +192,34 @@ func (p *Parser) parse() (float64, error) {
 					return -1, errUnmatchedParentheses
 				}
 
-				operator := operators.Pop().(*Token)
-				if operator.Type == LPAREN {
+				top := operators.Pop().(*Token)
+				if top.Type == LPAREN {
 					break
 				}
 
-				val, err := p.evaluateOp(operator, &operands)
+				val, err := p.evaluate(top, &operands)
 				if err != nil {
 					return -1, err
 				}
+
 				operands.Push(val)
 			}
 		}
 	}
 
-	// Evaluate remaing operators
+	// Evaluate remaining operators
 	for !operators.Empty() {
-		operator := operators.Pop().(*Token)
+		top := operators.Pop().(*Token)
 
-		if operator.Type == LPAREN {
+		if top.Type == LPAREN {
 			return -1, errUnmatchedParentheses
 		}
 
-		if operands.Empty() {
-			return -1, errInvalidSyntax
-		}
-
-		val, err := p.evaluateOp(operator, &operands)
+		val, err := p.evaluate(top, &operands)
 		if err != nil {
 			return -1, err
 		}
+
 		operands.Push(val)
 	}
 
@@ -221,6 +236,61 @@ func (p *Parser) parse() (float64, error) {
 
 	// Leftover token on operand stack indicates invalid syntax
 	return -1, errInvalidSyntax
+}
+
+// Evaluate gets called when an operator or function call has to be evaluated
+// for a result. In case of a function, evaluateFunc is called and in case of
+// an operator evaluateOp is called.
+func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
+	var err error
+	var val float64
+
+	if tok.Type == IDENT {
+		// Function call
+		val, err = p.evaluateFunc(tok, operands)
+		if err != nil {
+			return -1, err
+		}
+	} else {
+		// Operator
+		val, err = p.evaluateOp(tok, operands)
+		if err != nil {
+			return -1, err
+		}
+	}
+
+	return val, nil
+}
+
+func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
+	var function *function
+	var ok bool
+	var i int
+
+	if function, ok = functions[tok.Value]; !ok {
+		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
+	}
+
+	// Start popping off arguments for the function call
+	args := make([]float64, function.nargs)
+	for i = 0; i < function.nargs; i++ {
+		if operands.Empty() {
+			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", function.name, function.nargs, i)
+		}
+
+		arg, err := p.lookup(operands.Pop())
+		if err != nil {
+			return -1, err
+		}
+
+		args[i] = arg
+	}
+
+	if len(*operands) > 1 {
+		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", function.name, function.nargs, i+1)
+	}
+
+	return function.operation(args), nil
 }
 
 func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {

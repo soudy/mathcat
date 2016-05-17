@@ -117,6 +117,8 @@ func (l *lexer) lex() ([]*Token, error) {
 				l.emit(LPAREN)
 			case ')':
 				l.emit(RPAREN)
+			case ',':
+				l.emit(COMMA)
 			case eol:
 				l.emit(EOL)
 			default:

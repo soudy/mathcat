@@ -60,6 +60,7 @@ const (
 
 	LPAREN // (
 	RPAREN // )
+	COMMA  // ,
 )
 
 var tokens = map[tokenType]string{
@@ -108,6 +109,7 @@ var tokens = map[tokenType]string{
 
 	LPAREN: "(",
 	RPAREN: ")",
+	COMMA:  ",",
 }
 
 // Token is an entity in an expression
