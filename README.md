@@ -1,7 +1,7 @@
 mathcat [![Build Status](https://travis-ci.org/soudy/mathcat.svg?branch=master)](https://travis-ci.org/soudy/mathcat) [![GoDoc](https://godoc.org/github.com/soudy/mathcat?status.svg)](https://godoc.org/github.com/soudy/mathcat)
 ===============
-mathcat is an expression parser library for Go. It supports basic arithmetic,
-bitwise operations and variable assignment.
+mathcat is an expression evaluating library and REPL in Go with basic
+arithmetic, bitwise operations, variable assignment and more.
 
 ## Features
 mathcat doesn't just evaluate basic expressions, it has some tricks up its
