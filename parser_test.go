@@ -25,24 +25,12 @@ func TestFloatBitwise(t *testing.T) {
 	for _, expr := range okExpressions {
 		_, err := Eval(expr)
 		if err != nil {
-			t.Error("unexpected error on using bitwise operator on int")
+			t.Errorf("unexpected error on using bitwise operator on int: %s", err)
 		}
 	}
 }
 
 func TestNumberLiterals(t *testing.T) {
-	validNumbers := []string{
-		"0xa", "0Xaaabe", "0x12345", "0xe", ".200001", ".2e5", "81e2", "32",
-		"100.0", "0x0", "0", "0b110011", "0b1",
-	}
-
-	for _, n := range validNumbers {
-		_, err := Eval(n)
-		if err != nil {
-			t.Error("error on valid number literal")
-		}
-	}
-
 	invalidNumbers := []string{
 		"0x", "0X", "0x12p345", "0b", "0B", "0b2", "0x22.3", "0b10.1", "0b1e2",
 	}
@@ -53,6 +41,19 @@ func TestNumberLiterals(t *testing.T) {
 			t.Error("no error on invalid number literal")
 		}
 	}
+
+	validNumbers := []string{
+		"0xa", "0Xaaabe", "0x12345", "0xe", ".200001", ".2e5", "81e2", "32",
+		"100.0", "0x0", "0", "0b110011", "0b1",
+	}
+
+	for _, n := range validNumbers {
+		_, err := Eval(n)
+		if err != nil {
+			t.Errorf("error on valid number literal: %s", err)
+		}
+	}
+
 }
 
 func TestEval(t *testing.T) {
@@ -79,7 +80,7 @@ func TestEval(t *testing.T) {
 	for expr, expected := range okExpressions {
 		res, err := Eval(expr)
 		if err != nil {
-			t.Error("parser error occured on correct expression")
+			t.Errorf("parser error occured on correct expression: %s", err)
 		}
 
 		if expected != res {
@@ -118,7 +119,7 @@ func TestExec(t *testing.T) {
 	for _, test := range okExpressions {
 		res, err := Exec(test.expr, test.vars)
 		if err != nil {
-			t.Error("error on correct Exec")
+			t.Errorf("error on correct Exec: %s", err)
 		}
 
 		if res != test.expected {

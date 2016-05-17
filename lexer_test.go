@@ -16,7 +16,7 @@ func TestLex(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Error("lexer error occured")
+		t.Errorf("unexpected lexer error occured: %s", err)
 	}
 
 	for k, v := range res {
