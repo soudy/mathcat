@@ -11,7 +11,7 @@ func (s *stack) Push(tok interface{}) {
 }
 
 func (s stack) Top() interface{} {
-	if len(s) == 0 {
+	if s.Empty() {
 		panic("top on empty stack")
 	}
 	return s[len(s)-1]
