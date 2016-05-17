@@ -141,22 +141,27 @@ func (p *Parser) parse() (float64, error) {
 	for p.eat().Type != EOL {
 		switch {
 		case p.tok.IsLiteral():
+			if p.peek().Type == LPAREN {
+				// It's a function call, push to operators stack instead
+				operators.Push(p.tok)
+				break
+			}
 			operands.Push(p.tok)
 		case p.tok.Type == LPAREN:
 			operators.Push(p.tok)
 		case p.tok.IsOperator():
-			o1 = allOperators[p.tok.Type]
+			o1 = ops[p.tok.Type]
 
 			if !operators.Empty() {
 				var ok bool
-				if o2, ok = allOperators[operators.Top().(*Token).Type]; !ok {
+				if o2, ok = ops[operators.Top().(*Token).Type]; !ok {
 					operators.Push(p.tok)
 					break
 				}
 
 				if o2.hasHigherPrecThan(o1) {
 					operator := operators.Pop().(*Token)
-					val, err := p.evaluate(operator, &operands)
+					val, err := p.evaluateOp(operator, &operands)
 					if err != nil {
 						return -1, err
 					}
@@ -174,7 +179,8 @@ func (p *Parser) parse() (float64, error) {
 				if operator.Type == LPAREN {
 					break
 				}
-				val, err := p.evaluate(operator, &operands)
+
+				val, err := p.evaluateOp(operator, &operands)
 				if err != nil {
 					return -1, err
 				}
@@ -195,7 +201,7 @@ func (p *Parser) parse() (float64, error) {
 			return -1, errInvalidSyntax
 		}
 
-		val, err := p.evaluate(operator, &operands)
+		val, err := p.evaluateOp(operator, &operands)
 		if err != nil {
 			return -1, err
 		}
@@ -217,7 +223,7 @@ func (p *Parser) parse() (float64, error) {
 	return -1, errInvalidSyntax
 }
 
-func (p *Parser) evaluate(operator *Token, operands *stack) (float64, error) {
+func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
 	var (
 		result      float64
 		left, right float64
@@ -234,7 +240,7 @@ func (p *Parser) evaluate(operator *Token, operands *stack) (float64, error) {
 	}
 
 	// Unary operators have no left hand side
-	if op := allOperators[operator.Type]; !op.unary {
+	if op := ops[operator.Type]; !op.unary {
 		if operands.Empty() {
 			return -1, errInvalidSyntax
 		}
