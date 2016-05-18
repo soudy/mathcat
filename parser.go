@@ -263,9 +263,11 @@ func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
 }
 
 func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
-	var function *function
-	var ok bool
-	var i int
+	var (
+		function *function
+		ok       bool
+		i        int
+	)
 
 	if function, ok = functions[tok.Value]; !ok {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
