@@ -29,6 +29,13 @@ var functions = map[string]*function{
 			return math.Ceil(args[0])
 		},
 	},
+	"floor": &function{
+		name:  "floor",
+		nargs: 1,
+		operation: func(args []float64) float64 {
+			return math.Floor(args[0])
+		},
+	},
 	"sin": &function{
 		name:  "sin",
 		nargs: 1,
@@ -69,13 +76,6 @@ var functions = map[string]*function{
 		nargs: 1,
 		operation: func(args []float64) float64 {
 			return math.Atan(args[0])
-		},
-	},
-	"floor": &function{
-		name:  "floor",
-		nargs: 1,
-		operation: func(args []float64) float64 {
-			return math.Floor(args[0])
 		},
 	},
 	"log": &function{

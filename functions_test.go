@@ -4,7 +4,10 @@
 
 package mathcat
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestFunctions(t *testing.T) {
 	badCalls := []string{
@@ -28,6 +31,36 @@ func TestFunctions(t *testing.T) {
 		_, err := Eval(expr)
 		if err != nil {
 			t.Errorf("unexpected error on ok function call: %s", err)
+		}
+	}
+}
+
+func TestFunctionsResult(t *testing.T) {
+	calls := map[string]float64{
+		"abs(-700)":     math.Abs(-700),
+		"ceil(813.23)":  math.Ceil(813.23),
+		"floor(813.23)": math.Floor(813.23),
+		"sin(74)":       math.Sin(74),
+		"cos(74)":       math.Cos(74),
+		"tan(74)":       math.Tan(74),
+		"asin(-1)":      math.Asin(-1),
+		"acos(-1)":      math.Acos(-1),
+		"atan(-1)":      math.Atan(-1),
+		"log(3*100)":    math.Log(3 * 100),
+		"max(5, 8)":     math.Max(5, 8),
+		"min(5, 8)":     math.Min(5, 8),
+		"sqrt(144)":     math.Sqrt(144),
+	}
+
+	for expr, expected := range calls {
+		res, err := Eval(expr)
+		if err != nil {
+			t.Errorf("unexpected error on ok function call: %s", err)
+		}
+
+		if res != expected {
+			t.Errorf("wrong result in function call '%s' (expected %f, got %f)",
+				expr, expected, res)
 		}
 	}
 }
