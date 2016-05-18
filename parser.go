@@ -275,7 +275,7 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 	args := make([]float64, function.nargs)
 	for i = 0; i < function.nargs; i++ {
 		if operands.Empty() {
-			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", function.name, function.nargs, i)
+			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, i)
 		}
 
 		arg, err := p.lookup(operands.Pop())
@@ -288,7 +288,7 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 
 	// XXX: This doesn't catch all cases, some still error 'Invalid syntax'
 	if len(*operands) > 1 {
-		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", function.name, function.nargs, i+1)
+		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, i+1)
 	}
 
 	return function.operation(args), nil
