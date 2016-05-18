@@ -248,15 +248,13 @@ func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
 	if tok.Type == IDENT {
 		// Function call
 		val, err = p.evaluateFunc(tok, operands)
-		if err != nil {
-			return -1, err
-		}
 	} else {
 		// Operator
 		val, err = p.evaluateOp(tok, operands)
-		if err != nil {
-			return -1, err
-		}
+	}
+
+	if err != nil {
+		return -1, err
 	}
 
 	return val, nil
@@ -288,6 +286,7 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		args[i] = arg
 	}
 
+	// XXX: This doesn't catch all cases, some still error 'Invalid syntax'
 	if len(*operands) > 1 {
 		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", function.name, function.nargs, i+1)
 	}
