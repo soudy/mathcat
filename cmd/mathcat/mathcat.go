@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/chzyer/readline"
-	"github.com/soudy/mathcat"
 	"os"
 	"runtime"
+
+	"github.com/chzyer/readline"
+	"github.com/soudy/mathcat"
 )
 
 var precision = flag.Int("precision", 2, "decimal precision used in results")
