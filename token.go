@@ -53,11 +53,12 @@ const (
 	REM_EQ // %=
 	assignmentEnd
 
-	EQ_EQ // ==
-	GT    // >
-	GT_EQ // >=
-	LT    // <
-	LT_EQ // <=
+	BANG_EQ // !=
+	EQ_EQ   // ==
+	GT      // >
+	GT_EQ   // >=
+	LT      // <
+	LT_EQ   // <=
 	operatorsEnd
 
 	LPAREN // (
@@ -103,11 +104,12 @@ var tokens = map[tokenType]string{
 	LSH_EQ: "<<=",
 	RSH_EQ: ">>=",
 
-	EQ_EQ: "==",
-	GT:    ">",
-	GT_EQ: ">=",
-	LT:    "<",
-	LT_EQ: "<=",
+	BANG_EQ: "!=",
+	EQ_EQ:   "==",
+	GT:      ">",
+	GT_EQ:   ">=",
+	LT:      "<",
+	LT_EQ:   "<=",
 
 	LPAREN: "(",
 	RPAREN: ")",

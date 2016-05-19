@@ -34,11 +34,12 @@ var ops = map[tokenType]*operator{
 	RSH_EQ: {0, ASSOC_RIGHT, false}, // >>=
 
 	// Relational operators
-	EQ_EQ: {0, ASSOC_RIGHT, false}, // ==
-	GT:    {0, ASSOC_RIGHT, false}, // >
-	GT_EQ: {0, ASSOC_RIGHT, false}, // >=
-	LT:    {0, ASSOC_RIGHT, false}, // <
-	LT_EQ: {0, ASSOC_RIGHT, false}, // <=
+	EQ_EQ:   {0, ASSOC_RIGHT, false}, // ==
+	BANG_EQ: {0, ASSOC_RIGHT, false}, // !=
+	GT:      {0, ASSOC_RIGHT, false}, // >
+	GT_EQ:   {0, ASSOC_RIGHT, false}, // >=
+	LT:      {0, ASSOC_RIGHT, false}, // <
+	LT_EQ:   {0, ASSOC_RIGHT, false}, // <=
 
 	// Bitwise operators
 	OR:  {1, ASSOC_RIGHT, false}, // |

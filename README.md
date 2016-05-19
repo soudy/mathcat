@@ -114,6 +114,7 @@ if mathcat.IsWholeNumber(res) {
 | >>         | bitwise right shift   |
 | ~          | bitwise not           |
 | ==         | equal                 |
+| !=         | not equal             |
 | >          | greater than          |
 | >=         | greater than or equal |
 | <          | less than             |

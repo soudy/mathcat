@@ -387,6 +387,8 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 		result = rhs
 	case EQ_EQ:
 		result = bool2float(lhs == rhs)
+	case BANG_EQ:
+		result = bool2float(lhs != rhs)
 	case GT:
 		result = bool2float(lhs > rhs)
 	case GT_EQ:

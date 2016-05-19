@@ -65,11 +65,12 @@ func TestEval(t *testing.T) {
 		"~(~(1))":                                       1,
 		"1000 > 10":                                     1,
 		"1000 < 10":                                     0,
-		"55 == 55":                                      1,
+		"55.0 == 55":                                    1,
 		"55 <= 55":                                      1,
 		"55 >= 55":                                      1,
 		"-0 > 0":                                        0,
 		"0 < -0":                                        0,
+		"2 != 2":                                        0,
 		"((((((((((((1))))))))))))":                     1,
 		"(1 + (2 + (3 + (4 + (5 + (6 + (7)))))))":       28,
 		"(((((((1) + 2) + 3) + 4) + 5) + 6) + 7)":       28,
@@ -80,7 +81,7 @@ func TestEval(t *testing.T) {
 	for expr, expected := range okExpressions {
 		res, err := Eval(expr)
 		if err != nil {
-			t.Errorf("parser error occured on correct expression: %s", err)
+			t.Errorf("parser error occured on correct expression '%s': %s", expr, err)
 		}
 
 		if expected != res {

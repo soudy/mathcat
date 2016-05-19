@@ -113,6 +113,12 @@ func (l *lexer) lex() ([]*Token, error) {
 				l.emit(NOT)
 			case '=':
 				l.switchEq(EQ, EQ_EQ)
+			case '!':
+				if l.peek() != '=' {
+					return nil, errors.New("Invalid operation " + string(l.ch))
+				}
+				l.eat()
+				l.emit(BANG_EQ)
 			case '(':
 				l.emit(LPAREN)
 			case ')':
