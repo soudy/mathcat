@@ -267,7 +267,8 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		i        int
 	)
 
-	var count = 0
+	// Arguments received counter
+	count := 0
 
 	if function, ok = functions[tok.Value]; !ok {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
