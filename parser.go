@@ -334,8 +334,7 @@ func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
 		return -1, err
 	}
 
-	switch operator.Type {
-	case EQ, ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ, XOR_EQ, LSH_EQ, RSH_EQ:
+	if operator.IsAssignment() {
 		// Save result in variable
 		if lhsToken.(*Token).Type != IDENT {
 			return -1, errors.New("Can't assign to literal")

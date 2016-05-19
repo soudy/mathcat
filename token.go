@@ -36,6 +36,7 @@ const (
 	RSH // >>
 	NOT // ~
 
+	assignmentBegin
 	AND_EQ // &=
 	OR_EQ  // |=
 	XOR_EQ // ^=
@@ -50,6 +51,7 @@ const (
 	MUL_EQ // *=
 	POW_EQ // **=
 	REM_EQ // %=
+	assignmentEnd
 
 	EQ_EQ // ==
 	GT    // >
@@ -156,4 +158,9 @@ func (tok *Token) IsBitwise() bool {
 // IsLiteral checks if the token is a literal
 func (tok *Token) IsLiteral() bool {
 	return tok.Type > literalsBegin && tok.Type < literalsEnd
+}
+
+// IsAssignment checks if the token is an assignment operator
+func (tok *Token) IsAssignment() bool {
+	return tok.Type > assignmentBegin && tok.Type < assignmentEnd
 }
