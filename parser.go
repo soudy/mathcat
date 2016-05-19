@@ -111,7 +111,7 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 
 	for k, v := range vars {
 		if !isIdent(rune(k[0])) || strings.IndexFunc(k, isValidIdent) == -1 {
-			return -1, fmt.Errorf("Invalid variable name: '%s'")
+			return -1, fmt.Errorf("Invalid variable name: '%s'", k)
 		}
 		p.Variables[k] = v
 	}
@@ -267,15 +267,17 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		i        int
 	)
 
+	var count = 0
+
 	if function, ok = functions[tok.Value]; !ok {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
 	// Start popping off arguments for the function call
 	args := make([]float64, function.nargs)
-	for i = 0; i < function.nargs; i++ {
+	for i = function.nargs - 1; i >= 0; i, count = i-1, count+1 {
 		if operands.Empty() {
-			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, i)
+			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, count)
 		}
 
 		arg, err := p.lookup(operands.Pop())
@@ -284,11 +286,6 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		}
 
 		args[i] = arg
-	}
-
-	// XXX: This doesn't catch all cases, some still error 'Invalid syntax'
-	if len(*operands) > 1 {
-		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, i+1)
 	}
 
 	return function.operation(args), nil
