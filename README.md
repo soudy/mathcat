@@ -124,7 +124,7 @@ variant (`+=`, `-=`, `**=` etc.) that can be used to assign values to variables.
 
 ### Functions
 mathcat has a big list of functions you can use. A function call is invoked like
-in any programming language, with an identifier followed by a left parentheses
+in most programming languages, with an identifier followed by a left parentheses
 like this: `max(5, 10)`.
 
 | Function     | Arguments   | Description                                                                    |
