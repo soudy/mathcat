@@ -10,7 +10,7 @@ sleeve. Here's a list with some of its features:
 - Hex literals (0xDEADBEEF)
 - Binary literals (0b1101001)
 - Scientific notation (24e3)
-- Variables
+- Variables (with UTF-8 support)
 - Functions ([list](#functions))
 - Bitwise operators
 - Relational operators
@@ -82,8 +82,8 @@ Besides evaluating expressions, mathcat also offers some other handy functions.
 You can get a defined variable at any time with `GetVar`.
 ```go
 p := mathcat.New()
-p.Run("a = 1")
-fmt.Printf("%f\n", p.GetVar("a")) // 1
+p.Run("酷 = 1")
+fmt.Printf("%f\n", p.GetVar("酷")) // 1
 ```
 
 ### IsWholeNumber
