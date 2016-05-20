@@ -82,8 +82,10 @@ Besides evaluating expressions, mathcat also offers some other handy functions.
 You can get a defined variable at any time with `GetVar`.
 ```go
 p := mathcat.New()
-p.Run("酷 = 1")
-fmt.Printf("%f\n", p.GetVar("酷")) // 1
+p.Run("酷 = -33")
+if val, err := p.GetVar("酷"); !err {
+    fmt.Printf("%f\n", val) // -33
+}
 ```
 
 ### IsWholeNumber

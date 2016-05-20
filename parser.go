@@ -122,6 +122,12 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 }
 
 // GetVar gets an existing variable.
+//
+// Example:
+//     p.Run("酷 = -33")
+//     if val, err := p.GetVar("酷"); !err {
+//         fmt.Printf("%f\n", val) // -33
+//     }
 func (p *Parser) GetVar(index string) (float64, error) {
 	if val, ok := p.Variables[index]; ok {
 		return val, nil
