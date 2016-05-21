@@ -202,6 +202,9 @@ func (l *lexer) readNumber() {
 	// Normal literals
 	for isNumber(l.peek()) || l.peek() == 'e' || l.peek() == 'E' {
 		l.eat()
+		if (l.ch == 'e' || l.ch == 'E') && l.peek() == '-' {
+			l.eat()
+		}
 	}
 
 	l.emit(NUMBER)
