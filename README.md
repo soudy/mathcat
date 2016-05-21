@@ -29,8 +29,15 @@ go get github.com/soudy/mathcat/cmd/mathcat
 ```
 
 ## REPL usage
-The REPL can be used by simply launching `mathcat`, or can read from stdin like
-so:
+The REPL can be used by simply launching `mathcat`:
+```bash
+mathcat> 8**8
+16777216
+mathcat> (8**8) - e # Look, a comment!
+16777213.28
+```
+
+Or it can read from stdin like so:
 
 ```bash
 echo "3**pi * (6 - -7)" | mathcat

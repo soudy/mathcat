@@ -56,6 +56,7 @@ func Lex(expr string) ([]*Token, error) {
 }
 
 func (l *lexer) lex() ([]*Token, error) {
+loop:
 	for l.ch != eol {
 		l.start = l.pos
 
@@ -125,6 +126,10 @@ func (l *lexer) lex() ([]*Token, error) {
 				l.emit(RPAREN)
 			case ',':
 				l.emit(COMMA)
+			case '#':
+				// Comment, stop scanning for tokens
+				l.emit(EOL)
+				break loop
 			case eol:
 				l.emit(EOL)
 			default:
