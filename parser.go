@@ -137,10 +137,8 @@ func (p *Parser) GetVar(index string) (float64, error) {
 }
 
 func (p *Parser) parse() (float64, error) {
-	var (
-		operands, operators stack
-		o1, o2              *operator
-	)
+	var operands, operators stack
+	var o1, o2 *operator
 
 	p.tok = p.tokens[0]
 
