@@ -51,6 +51,8 @@ func repl() {
 
 		if mathcat.IsWholeNumber(res) {
 			fmt.Printf("%d\n", int64(res))
+		} else if res < 1e-10 {
+			fmt.Printf("%g\n", res)
 		} else {
 			fmt.Printf("%.*f\n", *precision, res)
 		}

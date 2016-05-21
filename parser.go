@@ -476,10 +476,7 @@ func (p *Parser) eat() *Token {
 
 // IsWholeNumber checks if a float is a whole number
 func IsWholeNumber(n float64) bool {
-	epsilon := 1e-15
-	_, frac := math.Modf(math.Abs(n))
-
-	return frac < epsilon || frac > 1.0-epsilon
+	return float64(int64(n)) == n
 }
 
 func bool2float(b bool) float64 {
