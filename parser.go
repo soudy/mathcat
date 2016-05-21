@@ -174,7 +174,21 @@ func (p *Parser) parse() (float64, error) {
 			o1 = ops[p.tok.Type]
 
 			if !operators.Empty() {
+				// Special case, if the token on top of the operators stack is a
+				// function call, always take precedence above an operator.
+				if operators.Top().(*Token).Type == IDENT {
+					function := operators.Pop().(*Token)
+					val, err := p.evaluateFunc(function, &operands)
+					if err != nil {
+						return -1, err
+					}
+					operands.Push(val)
+					operators.Push(p.tok)
+					break
+				}
+
 				var ok bool
+
 				if o2, ok = ops[operators.Top().(*Token).Type]; !ok {
 					operators.Push(p.tok)
 					break

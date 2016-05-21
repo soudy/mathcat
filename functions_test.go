@@ -37,19 +37,20 @@ func TestFunctions(t *testing.T) {
 
 func TestFunctionsResult(t *testing.T) {
 	calls := map[string]float64{
-		"abs(-700)":     math.Abs(-700),
-		"ceil(813.23)":  math.Ceil(813.23),
-		"floor(813.23)": math.Floor(813.23),
-		"sin(74)":       math.Sin(74),
-		"cos(74)":       math.Cos(74),
-		"tan(74)":       math.Tan(74),
-		"asin(-1)":      math.Asin(-1),
-		"acos(-1)":      math.Acos(-1),
-		"atan(-1)":      math.Atan(-1),
-		"log(3*100)":    math.Log(3 * 100),
-		"max(5, 8)":     math.Max(5, 8),
-		"min(5, 8)":     math.Min(5, 8),
-		"sqrt(144)":     math.Sqrt(144),
+		"abs(-700)":                   math.Abs(-700),
+		"ceil(813.23)":                math.Ceil(813.23),
+		"floor(813.23)":               math.Floor(813.23),
+		"sin(74)":                     math.Sin(74),
+		"cos(74)":                     math.Cos(74),
+		"tan(74)":                     math.Tan(74),
+		"asin(-1)":                    math.Asin(-1),
+		"acos(-1)":                    math.Acos(-1),
+		"atan(-1)":                    math.Atan(-1),
+		"log(3*100)":                  math.Log(3 * 100),
+		"max(5, 8)":                   math.Max(5, 8),
+		"min(5, 8)":                   math.Min(5, 8),
+		"sqrt(144)":                   math.Sqrt(144),
+		"tan(144) + tan(-3) + sin(2)": 0.488194703063383,
 	}
 
 	for expr, expected := range calls {
