@@ -6,6 +6,7 @@ package mathcat
 
 import (
 	"math"
+	"math/rand"
 )
 
 type function struct {
@@ -90,6 +91,12 @@ var functions = map[string]*function{
 		nargs: 1,
 		operation: func(args []float64) float64 {
 			return math.Sqrt(args[0])
+		},
+	},
+	"rand": &function{
+		nargs: 0,
+		operation: func(_ []float64) float64 {
+			return rand.Float64()
 		},
 	},
 }

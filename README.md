@@ -153,6 +153,7 @@ like this: `max(5, 10)`.
 | max          | 2           | returns the larger of the two given numbers                                    |
 | min          | 2           | returns the smaller of the two given numbers                                   |
 | sqrt         | 1           | returns the square root of given number                                        |
+| rand         | 0           | returns a random float between 0.0 and 1.0                                     |
 
 ### Predefined variables
 There are some handy predefined variables you can use (and change) throughout
