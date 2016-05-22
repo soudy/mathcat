@@ -116,8 +116,6 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 		p.Variables[k] = v
 	}
 
-	p.tokens = tokens
-
 	return p.parse()
 }
 
