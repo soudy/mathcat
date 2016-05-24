@@ -143,21 +143,21 @@ func (p *Parser) parse() (float64, error) {
 	for p.eat().Type != EOL {
 		switch {
 		case p.tok.IsLiteral():
-			if p.peek().Type == LPAREN {
+			if p.peek().Is(LPAREN) {
 				// It's a function call, push to operators stack instead
 				operators.Push(p.tok)
 				break
 			}
 			operands.Push(p.tok)
-		case p.tok.Type == LPAREN:
+		case p.tok.Is(LPAREN):
 			operators.Push(p.tok)
-		case p.tok.Type == COMMA:
+		case p.tok.Is(COMMA):
 			for {
 				if operators.Empty() {
 					return -1, errors.New("Misplaced ','")
 				}
 
-				if operators.Top().(*Token).Type == LPAREN {
+				if operators.Top().(*Token).Is(LPAREN) {
 					break
 				}
 
@@ -174,7 +174,7 @@ func (p *Parser) parse() (float64, error) {
 			if !operators.Empty() {
 				// Special case, if the token on top of the operators stack is a
 				// function call, always take precedence above an operator.
-				if operators.Top().(*Token).Type == IDENT {
+				if operators.Top().(*Token).Is(IDENT) {
 					function := operators.Pop().(*Token)
 					val, err := p.evaluateFunc(function, &operands)
 					if err != nil {
@@ -202,14 +202,14 @@ func (p *Parser) parse() (float64, error) {
 				}
 			}
 			operators.Push(p.tok)
-		case p.tok.Type == RPAREN:
+		case p.tok.Is(RPAREN):
 			for {
 				if operators.Empty() {
 					return -1, errUnmatchedParentheses
 				}
 
 				top := operators.Pop().(*Token)
-				if top.Type == LPAREN {
+				if top.Is(LPAREN) {
 					break
 				}
 
@@ -227,7 +227,7 @@ func (p *Parser) parse() (float64, error) {
 	for !operators.Empty() {
 		top := operators.Pop().(*Token)
 
-		if top.Type == LPAREN {
+		if top.Is(LPAREN) {
 			return -1, errUnmatchedParentheses
 		}
 
@@ -261,7 +261,7 @@ func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
 	var err error
 	var val float64
 
-	if tok.Type == IDENT {
+	if tok.Is(IDENT) {
 		// Function call
 		val, err = p.evaluateFunc(tok, operands)
 	} else {
@@ -283,12 +283,12 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		i        int
 	)
 
-	// Arguments received counter
-	count := 0
-
 	if function, ok = functions[tok.Value]; !ok {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
+
+	// Arguments received counter
+	count := 0
 
 	// Start popping off arguments for the function call
 	args := make([]float64, function.nargs)

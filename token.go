@@ -147,6 +147,11 @@ func (t tokenType) String() string {
 	return "???"
 }
 
+// Is checks if the token is given token type
+func (tok *Token) Is(toktype tokenType) bool {
+	return tok.Type == toktype
+}
+
 // IsOperator checks if the token is an operator
 func (tok *Token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
