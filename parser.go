@@ -140,7 +140,7 @@ func (p *Parser) parse() (float64, error) {
 
 	p.tok = p.Tokens[0]
 
-	for p.eat().Type != EOL {
+	for !p.eat().Is(EOL) {
 		switch {
 		case p.tok.IsLiteral():
 			if p.peek().Is(LPAREN) {
@@ -335,7 +335,7 @@ func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
 
 		// Don't lookup the left hand side if = is used so we can do initial
 		// assignment
-		if operator.Type != EQ {
+		if !operator.Is(EQ) {
 			left, err = p.lookup(lhsToken)
 			if err != nil {
 				return -1, err
@@ -350,7 +350,7 @@ func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
 
 	if operator.IsAssignment() {
 		// Save result in variable
-		if lhsToken.(*Token).Type != IDENT {
+		if !lhsToken.(*Token).Is(IDENT) {
 			return -1, errors.New("Can't assign to literal")
 		}
 		p.Variables[lhsToken.(*Token).Value] = result
