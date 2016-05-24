@@ -16,7 +16,7 @@ import (
 // default, variables always contains the constants defined below. These can
 // however be overwritten.
 type Parser struct {
-	tokens    []*Token
+	Tokens    []*Token
 	pos       int
 	Variables map[string]float64
 	tok       *Token
@@ -59,7 +59,7 @@ func Eval(expr string) (float64, error) {
 	}
 
 	p := &Parser{
-		tokens:    tokens,
+		Tokens:    tokens,
 		pos:       0,
 		Variables: constants,
 	}
@@ -82,7 +82,7 @@ func (p *Parser) Run(expr string) (float64, error) {
 	}
 
 	p.reset()
-	p.tokens = tokens
+	p.Tokens = tokens
 
 	return p.parse()
 }
@@ -102,7 +102,7 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 	}
 
 	p := &Parser{
-		tokens:    tokens,
+		Tokens:    tokens,
 		pos:       0,
 		Variables: constants,
 	}
@@ -138,7 +138,7 @@ func (p *Parser) parse() (float64, error) {
 	var operands, operators stack
 	var o1, o2 *operator
 
-	p.tok = p.tokens[0]
+	p.tok = p.Tokens[0]
 
 	for p.eat().Type != EOL {
 		switch {
@@ -470,12 +470,12 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 }
 
 func (p *Parser) reset() {
-	p.tokens = nil
+	p.Tokens = nil
 	p.pos = 0
 }
 
 func (p *Parser) peek() *Token {
-	return p.tokens[p.pos]
+	return p.Tokens[p.pos]
 }
 
 func (p *Parser) eat() *Token {
