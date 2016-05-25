@@ -305,7 +305,7 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		args[i] = arg
 	}
 
-	return function.operation(args), nil
+	return function.fn(args), nil
 }
 
 func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
