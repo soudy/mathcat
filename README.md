@@ -37,7 +37,7 @@ mathcat> (8**8) - e # Look, a comment!
 16777213.28
 ```
 
-Or it can read from stdin like so:
+Or it can read from `stdin` like so:
 
 ```bash
 echo "3**pi * (6 - -7)" | mathcat
@@ -63,7 +63,7 @@ fmt.Printf("Result: %f\n", res) // Result: 31.41592653589793
 ```
 
 ### Run
-You can use `Run` and for a more featureful approach. With this method you can
+You can use `Run` for a more featureful approach. With this method you can
 assign and use variables across the `Parser` instance.
 
 ```go
