@@ -33,6 +33,7 @@ func TestFloatBitwise(t *testing.T) {
 func TestNumberLiterals(t *testing.T) {
 	invalidNumbers := []string{
 		"0x", "0X", "0x12p345", "0b", "0B", "0b2", "0x22.3", "0b10.1", "0b1e2",
+		"0o8", "0oea",
 	}
 
 	for _, n := range invalidNumbers {
@@ -42,15 +43,33 @@ func TestNumberLiterals(t *testing.T) {
 		}
 	}
 
-	validNumbers := []string{
-		"0xa", "0Xaaabe", "0x12345", "0xe", ".200001", ".2e5", "81e2", "32",
-		"100.0", "0x0", "0", "0b110011", "0b1",
+	validNumbers := map[string]float64{
+		"0xa":      10,
+		"0Xaaabe":  699070,
+		"0x12345":  74565,
+		"0xe":      14,
+		".200001":  0.200001,
+		".2e5":     20000,
+		"81e2":     8100,
+		"32":       32,
+		"100.0":    100,
+		"0x0":      0,
+		"0":        0,
+		"0b110011": 51,
+		"0b1":      1,
+		"0o666":    438,
+		"0O6120":   3152,
+		"0o0":      0,
 	}
 
-	for _, n := range validNumbers {
-		_, err := Eval(n)
+	for n, expected := range validNumbers {
+		res, err := Eval(n)
 		if err != nil {
 			t.Errorf("error on valid number literal: %s", err)
+		}
+
+		if res != expected {
+			t.Errorf("invalid literal evaluation on %s, expected '%f', got '%f'", n, expected, res)
 		}
 	}
 
