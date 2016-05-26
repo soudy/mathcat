@@ -44,7 +44,7 @@ func TestLiterals(t *testing.T) {
 func TestOperators(t *testing.T) {
 	// We add a number before - sign so it doesn't see it as unary
 	res, err := Lex(`= += -= /= *= **= %= &= |=  ^= <<= >>= == != > >= < <= | ^
-					 & << >> ~ + 5 - * / ** % -`)
+	& << >> ~ + 5 - * / ** % -`)
 	expected := []tokenType{
 		EQ, ADD_EQ, SUB_EQ, DIV_EQ, MUL_EQ, POW_EQ, REM_EQ, AND_EQ, OR_EQ,
 		XOR_EQ, LSH_EQ, RSH_EQ, EQ_EQ, BANG_EQ, GT, GT_EQ, LT, LT_EQ, OR, XOR,
