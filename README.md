@@ -9,6 +9,7 @@ sleeve. Here's a list with some of its features:
 
 - Hex literals (0xDEADBEEF)
 - Binary literals (0b1101001)
+- Octal literals (0o126632)
 - Scientific notation (24e3)
 - Variables (with UTF-8 support)
 - Functions ([list](#functions))

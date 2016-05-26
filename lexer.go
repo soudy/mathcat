@@ -46,6 +46,10 @@ func isBinary(c rune) bool {
 	return c == '0' || c == '1'
 }
 
+func isOctal(c rune) bool {
+	return c >= '0' && c <= '7'
+}
+
 func isWhitespace(c rune) bool {
 	if c == '\t' || c == ' ' || c == '\r' {
 		return true
@@ -93,7 +97,7 @@ loop:
 			case '+':
 				l.switchEq(ADD, ADD_EQ)
 			case '-':
-				if l.isNegation() {
+				if l.isNegation() && l.peek() != '=' {
 					l.emit(UNARY_MIN)
 					break
 				}
@@ -215,6 +219,18 @@ func (l *lexer) readNumber() {
 		}
 
 		l.emit(BINARY)
+		return
+	}
+
+	// Octal literals
+	if l.ch == '0' && (l.peek() == 'o' || l.peek() == 'O') {
+		l.eat()
+
+		for isOctal(l.peek()) {
+			l.eat()
+		}
+
+		l.emit(OCTAL)
 		return
 	}
 

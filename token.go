@@ -17,6 +17,7 @@ const (
 	NUMBER // 3
 	HEX    // 0xDEADBEEF
 	BINARY // 0b10101101100
+	OCTAL  // 0o666
 	literalsEnd
 
 	operatorsBegin
@@ -74,6 +75,7 @@ var tokens = map[tokenType]string{
 	NUMBER: "number",
 	HEX:    "hex number",
 	BINARY: "binary number",
+	OCTAL:  "octal number",
 
 	ADD:       "+",
 	SUB:       "-",

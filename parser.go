@@ -435,7 +435,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 	case NUMBER:
 		res, err := strconv.ParseFloat(tok.Value, 64)
 		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+			return -1, fmt.Errorf("Error parsing '%s': invalid number", tok.Value)
 		}
 
 		return res, nil
@@ -443,7 +443,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		// Remove 0x part of hex literal and convert to uint first
 		res, err := strconv.ParseUint(tok.Value[2:], 16, 64)
 		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+			return -1, fmt.Errorf("Error parsing '%s': invalid hex literal", tok.Value)
 		}
 
 		// Then convert to float
@@ -452,10 +452,17 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		// Remove 0b part of binary literal and convert to uint first
 		res, err := strconv.ParseUint(tok.Value[2:], 2, 64)
 		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid syntax", tok.Value)
+			return -1, fmt.Errorf("Error parsing '%s': invalid binary literal", tok.Value)
 		}
 
-		// Then convert to float
+		return float64(res), nil
+	case OCTAL:
+		// Remove 0o part of binary literal and convert to uint first
+		res, err := strconv.ParseUint(tok.Value[2:], 8, 64)
+		if err != nil {
+			return -1, fmt.Errorf("Error parsing '%s': invalid octal literal", tok.Value)
+		}
+
 		return float64(res), nil
 	case IDENT:
 		res, err := p.GetVar(tok.Value)
