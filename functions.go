@@ -64,7 +64,7 @@ func init() {
 			return math.Tan(args[0])
 		},
 	})
-	funcs.register("tan", &function{
+	funcs.register("asin", &function{
 		nargs: 1,
 		fn: func(args []float64) float64 {
 			return math.Asin(args[0])
@@ -94,7 +94,7 @@ func init() {
 			return math.Max(args[0], args[1])
 		},
 	})
-	funcs.register("max", &function{
+	funcs.register("min", &function{
 		nargs: 2,
 		fn: func(args []float64) float64 {
 			return math.Min(args[0], args[1])
