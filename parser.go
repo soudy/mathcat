@@ -12,14 +12,19 @@ import (
 	"strings"
 )
 
-// Parser holds the lexed tokens, token position and declared variables. By
-// default, variables always contains the constants defined below. These can
+// Parser holds the lexed tokens, token position, declared variables and stacks
+// used throughout the parsing of an expression.
+//
+// By default, variables always contains the constants defined below. These can
 // however be overwritten.
 type Parser struct {
 	Tokens    []*Token
-	pos       int
 	Variables map[string]float64
-	tok       *Token
+
+	pos int
+	tok *Token
+
+	operands, operators stack
 }
 
 var (
@@ -135,9 +140,9 @@ func (p *Parser) GetVar(index string) (float64, error) {
 }
 
 func (p *Parser) parse() (float64, error) {
-	var operands, operators stack
 	var o1, o2 *operator
 
+	// Initializing current token value
 	p.tok = p.Tokens[0]
 
 	for !p.eat().Is(EOL) {
@@ -145,128 +150,129 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.IsLiteral():
 			if p.peek().Is(LPAREN) {
 				// It's a function call, push to operators stack instead
-				operators.Push(p.tok)
+				p.operators.Push(p.tok)
 				break
 			}
-			operands.Push(p.tok)
+			p.operands.Push(p.tok)
 		case p.tok.Is(LPAREN):
-			operators.Push(p.tok)
+			p.operators.Push(p.tok)
 		case p.tok.Is(COMMA):
 			for {
-				if operators.Empty() {
+				if p.operators.Empty() {
 					return -1, errors.New("Misplaced ','")
 				}
 
-				if operators.Top().(*Token).Is(LPAREN) {
+				if p.operators.Top().(*Token).Is(LPAREN) {
 					break
 				}
 
-				val, err := p.evaluate(operators.Pop().(*Token), &operands)
+				val, err := p.evaluate(p.operators.Pop().(*Token))
 				if err != nil {
 					return -1, err
 				}
 
-				operands.Push(val)
+				p.operands.Push(val)
 			}
 		case p.tok.IsOperator():
 			o1 = ops[p.tok.Type]
 
-			if !operators.Empty() {
+			if !p.operators.Empty() {
 				// Special case, if the token on top of the operators stack is a
 				// function call, always take precedence above an operator.
-				if operators.Top().(*Token).Is(IDENT) {
-					function := operators.Pop().(*Token)
-					val, err := p.evaluateFunc(function, &operands)
+				if p.operators.Top().(*Token).Is(IDENT) {
+					function := p.operators.Pop().(*Token)
+					val, err := p.evaluateFunc(function)
 					if err != nil {
 						return -1, err
 					}
-					operands.Push(val)
-					operators.Push(p.tok)
+
+					p.operands.Push(val)
+					p.operators.Push(p.tok)
 					break
 				}
 
 				var ok bool
 
-				if o2, ok = ops[operators.Top().(*Token).Type]; !ok {
-					operators.Push(p.tok)
+				if o2, ok = ops[p.operators.Top().(*Token).Type]; !ok {
+					p.operators.Push(p.tok)
 					break
 				}
 
 				if o2.hasHigherPrecThan(o1) {
-					operator := operators.Pop().(*Token)
-					val, err := p.evaluateOp(operator, &operands)
+					operator := p.operators.Pop().(*Token)
+					val, err := p.evaluateOp(operator)
 					if err != nil {
 						return -1, err
 					}
-					operands.Push(val)
+					p.operands.Push(val)
 				}
 			}
-			operators.Push(p.tok)
+			p.operators.Push(p.tok)
 		case p.tok.Is(RPAREN):
 			for {
-				if operators.Empty() {
+				if p.operators.Empty() {
 					return -1, errUnmatchedParentheses
 				}
 
-				top := operators.Pop().(*Token)
+				top := p.operators.Pop().(*Token)
 				if top.Is(LPAREN) {
 					break
 				}
 
-				val, err := p.evaluate(top, &operands)
+				val, err := p.evaluate(top)
 				if err != nil {
 					return -1, err
 				}
 
-				operands.Push(val)
+				p.operands.Push(val)
 			}
 		}
 	}
 
 	// Evaluate remaining operators
-	for !operators.Empty() {
-		top := operators.Pop().(*Token)
+	for !p.operators.Empty() {
+		top := p.operators.Pop().(*Token)
 
 		if top.Is(LPAREN) {
 			return -1, errUnmatchedParentheses
 		}
 
-		val, err := p.evaluate(top, &operands)
+		val, err := p.evaluate(top)
 		if err != nil {
 			return -1, err
 		}
 
-		operands.Push(val)
+		p.operands.Push(val)
 	}
 
 	// If there are no operands, the expression is useless and doesn't do
 	// anything, for example `()` or an empty string
-	if operands.Empty() {
+	if p.operands.Empty() {
 		return 0, nil
 	}
 
 	// Single operand left means the expression was evaluated successful
-	if len(operands) == 1 {
-		return p.lookup(operands[0])
+	if len(p.operands) == 1 {
+		return p.lookup(p.operands[0])
 	}
 
 	// Leftover token on operand stack indicates invalid syntax
 	return -1, errInvalidSyntax
 }
 
-// Evaluate gets called when an operator or function call has to be evaluated
+// evaluate gets called when an operator or function call has to be evaluated
 // for a result. In case of a function, evaluateFunc is called and in case of
 // an operator evaluateOp is called.
-func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
+func (p *Parser) evaluate(tok *Token) (float64, error) {
 	var err error
 	var val float64
 
 	if tok.Is(IDENT) {
 		// Function call
-		val, err = p.evaluateFunc(tok, operands)
+		val, err = p.evaluateFunc(tok)
 	} else {
 		// Operator
-		val, err = p.evaluateOp(tok, operands)
+		val, err = p.evaluateOp(tok)
 	}
 
 	if err != nil {
@@ -276,7 +282,7 @@ func (p *Parser) evaluate(tok *Token, operands *stack) (float64, error) {
 	return val, nil
 }
 
-func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
+func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	var (
 		function *function
 		ok       bool
@@ -287,17 +293,16 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
-	// Arguments received counter
 	count := 0
 
 	// Start popping off arguments for the function call
-	args := make([]float64, function.nargs)
-	for i = function.nargs - 1; i >= 0; i, count = i-1, count+1 {
-		if operands.Empty() {
-			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.nargs, count)
+	args := make([]float64, function.arity)
+	for i = function.arity - 1; i >= 0; i, count = i-1, count+1 {
+		if p.operands.Empty() {
+			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, count)
 		}
 
-		arg, err := p.lookup(operands.Pop())
+		arg, err := p.lookup(p.operands.Pop())
 		if err != nil {
 			return -1, err
 		}
@@ -308,7 +313,7 @@ func (p *Parser) evaluateFunc(tok *Token, operands *stack) (float64, error) {
 	return function.fn(args), nil
 }
 
-func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
+func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	var (
 		result      float64
 		left, right float64
@@ -316,22 +321,22 @@ func (p *Parser) evaluateOp(operator *Token, operands *stack) (float64, error) {
 		lhsToken    interface{}
 	)
 
-	if operands.Empty() {
+	if p.operands.Empty() {
 		return -1, fmt.Errorf("Unexpected '%s'", operator.Type)
 	}
 
-	if right, err = p.lookup(operands.Pop()); err != nil {
+	if right, err = p.lookup(p.operands.Pop()); err != nil {
 		return -1, err
 	}
 
 	// Unary operators have no left hand side
 	if op := ops[operator.Type]; !op.unary {
-		if operands.Empty() {
+		if p.operands.Empty() {
 			return -1, errInvalidSyntax
 		}
 		// Save the token in case of a assignment variable is used and we need to
 		// save the result in a variable
-		lhsToken = operands.Pop()
+		lhsToken = p.operands.Pop()
 
 		// Don't lookup the left hand side if = is used so we can do initial
 		// assignment
@@ -479,6 +484,9 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 func (p *Parser) reset() {
 	p.Tokens = nil
 	p.pos = 0
+
+	p.operators = nil
+	p.operands = nil
 }
 
 func (p *Parser) peek() *Token {
