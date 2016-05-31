@@ -118,6 +118,12 @@ func init() {
 			return factorial(args[0])
 		},
 	})
+	funcs.register("gcd", &function{
+		nargs: 2,
+		fn: func(args []float64) float64 {
+			return gcd(args[0], args[1])
+		},
+	})
 	funcs.register("list", &function{
 		nargs: 0,
 		fn: func(_ []float64) float64 {
@@ -136,4 +142,12 @@ func factorial(n float64) float64 {
 	}
 
 	return n * factorial(n-1)
+}
+
+func gcd(x, y float64) float64 {
+	for y != 0 {
+		x, y = y, math.Mod(x, y)
+	}
+
+	return x
 }
