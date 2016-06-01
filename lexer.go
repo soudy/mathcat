@@ -9,6 +9,7 @@ import (
 	"unicode"
 )
 
+// eol indicates the end of an expression
 const eol rune = -1
 
 // lexer holds the lexer's state while scanning an expression. If any error
@@ -60,8 +61,8 @@ func isWhitespace(c rune) bool {
 	return false
 }
 
-// Lex starts lexing an expression. We keep reading until EOL is found, which
-// we add because we need a padding of 1 to always be able to peek().
+// Lex starts lexing an expression, converting an input string into a stream
+// of tokens later passed on to the parser.
 //
 // Returns the generated tokens and any error found.
 func Lex(expr string) ([]*Token, error) {
@@ -93,6 +94,8 @@ loop:
 			case '+':
 				l.switchEq(ADD, ADD_EQ)
 			case '-':
+				// Check for unary minus. We decide unaryness at lexer level to
+				// make it easier for the parser to know the difference.
 				if l.isNegation() && l.peek() != '=' {
 					l.emit(UNARY_MIN)
 					break
@@ -230,7 +233,7 @@ func (l *lexer) readNumber() {
 		return
 	}
 
-	// Normal literals
+	// Numeral literals
 	for isNumber(l.peek()) || l.peek() == 'e' || l.peek() == 'E' {
 		l.eat()
 		if (l.ch == 'e' || l.ch == 'E') && l.peek() == '-' {

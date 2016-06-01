@@ -177,8 +177,8 @@ func (p *Parser) parse() (float64, error) {
 			o1 = ops[p.tok.Type]
 
 			if !p.operators.Empty() {
-				// Special case, if the token on top of the operators stack is a
-				// function call, always take precedence above an operator.
+				// Special case, if the token on top of the operators stack is
+				// a function call, always take precedence above an operator.
 				if p.operators.Top().(*Token).Is(IDENT) {
 					function := p.operators.Pop().(*Token)
 					val, err := p.evaluateFunc(function)
@@ -334,8 +334,8 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 		if p.operands.Empty() {
 			return -1, errInvalidSyntax
 		}
-		// Save the token in case of a assignment variable is used and we need to
-		// save the result in a variable
+		// Save the token in case of a assignment variable is used and we need
+		// to save the result in a variable
 		lhsToken = p.operands.Pop()
 
 		// Don't lookup the left hand side if = is used so we can do initial
@@ -435,8 +435,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		return v, nil
 	}
 
-	tok := val.(*Token)
-	switch tok.Type {
+	switch tok := val.(*Token); tok.Type {
 	case NUMBER:
 		res, err := strconv.ParseFloat(tok.Value, 64)
 		if err != nil {
@@ -462,7 +461,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 
 		return float64(res), nil
 	case OCTAL:
-		// Remove 0o part of binary literal and convert to uint first
+		// Remove 0o part of octal literal and convert to uint first
 		res, err := strconv.ParseUint(tok.Value[2:], 8, 64)
 		if err != nil {
 			return -1, fmt.Errorf("Error parsing '%s': invalid octal literal", tok.Value)
@@ -476,9 +475,9 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		}
 
 		return res, nil
+	default:
+		return -1, fmt.Errorf("Invalid lookup type '%s'", tok.Type)
 	}
-
-	return -1, fmt.Errorf("Invalid lookup type: %s", tok.Type)
 }
 
 func (p *Parser) reset() {
