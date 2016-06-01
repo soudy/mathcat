@@ -63,11 +63,8 @@ func Eval(expr string) (float64, error) {
 		return -1, err
 	}
 
-	p := &Parser{
-		Tokens:    tokens,
-		pos:       0,
-		Variables: constants,
-	}
+	p := New()
+	p.Tokens = tokens
 
 	return p.parse()
 }
@@ -106,11 +103,8 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 		return -1, err
 	}
 
-	p := &Parser{
-		Tokens:    tokens,
-		pos:       0,
-		Variables: constants,
-	}
+	p := New()
+	p.Tokens = tokens
 
 	isValidIdent := func(c rune) bool { return isIdent(c) || isNumber(c) }
 
