@@ -291,8 +291,7 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 
 	errBadArity := fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
 
-	arity := p.arity.Pop().(int)
-	if arity != function.arity {
+	if arity := p.arity.Pop().(int); arity != function.arity {
 		// NOTE: This doesn't cover giving 0 arguments to a function that takes
 		// 1, so we catch that case inside the loop
 		return -1, errBadArity
