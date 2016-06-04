@@ -145,7 +145,14 @@ func (p *Parser) parse() (float64, error) {
 			if p.peek().Is(LPAREN) {
 				// It's a function call, push to operators stack instead
 				p.operators.Push(p.tok)
-				p.arity.Push(1)
+
+				// Check ahead if the function call has any argument at all, so
+				// we can do accurate tracking of arity
+				if p.peekN(2).Is(RPAREN) {
+					p.arity.Push(0)
+				} else {
+					p.arity.Push(1)
+				}
 				break
 			}
 			p.operands.Push(p.tok)
@@ -289,21 +296,16 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
-	errBadArity := fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
+	arity := p.arity.Pop().(int)
+	errBadArity := fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, arity)
 
-	if arity := p.arity.Pop().(int); arity != function.arity {
-		// NOTE: This doesn't cover giving 0 arguments to a function that takes
-		// 1, so we catch that case inside the loop
+	if arity != function.arity {
 		return -1, errBadArity
 	}
 
 	// Start popping off arguments for the function call
 	args := make([]float64, function.arity)
 	for i = function.arity - 1; i >= 0; i-- {
-		if p.operands.Empty() {
-			return -1, errBadArity
-		}
-
 		arg, err := p.lookup(p.operands.Pop())
 		if err != nil {
 			return -1, err
@@ -492,6 +494,10 @@ func (p *Parser) reset() {
 
 func (p *Parser) peek() *Token {
 	return p.Tokens[p.pos]
+}
+
+func (p *Parser) peekN(n int) *Token {
+	return p.Tokens[p.pos-1+n]
 }
 
 func (p *Parser) eat() *Token {
