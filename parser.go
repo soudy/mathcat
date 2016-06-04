@@ -24,7 +24,7 @@ type Parser struct {
 	pos int
 	tok *Token
 
-	operands, operators stack
+	operands, operators, arity stack
 }
 
 var (
@@ -145,6 +145,7 @@ func (p *Parser) parse() (float64, error) {
 			if p.peek().Is(LPAREN) {
 				// It's a function call, push to operators stack instead
 				p.operators.Push(p.tok)
+				p.arity.Push(1)
 				break
 			}
 			p.operands.Push(p.tok)
@@ -167,6 +168,7 @@ func (p *Parser) parse() (float64, error) {
 
 				p.operands.Push(val)
 			}
+			p.arity[len(p.arity)-1] = p.arity.Top().(int) + 1
 		case p.tok.IsOperator():
 			o1 = ops[p.tok.Type]
 
@@ -287,13 +289,18 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
-	count := 0
+	arity := p.arity.Pop().(int)
+	if arity != function.arity {
+		// NOTE: This doesn't cover giving 0 arguments to a function that takes
+		// 1, so we catch that case inside the loop
+		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
+	}
 
 	// Start popping off arguments for the function call
 	args := make([]float64, function.arity)
-	for i = function.arity - 1; i >= 0; i, count = i-1, count+1 {
+	for i = function.arity - 1; i >= 0; i-- {
 		if p.operands.Empty() {
-			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, count)
+			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
 		}
 
 		arg, err := p.lookup(p.operands.Pop())
