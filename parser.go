@@ -37,7 +37,7 @@ var (
 // can be overwritten.
 var constants = map[string]float64{
 	"pi":  math.Pi,
-	"tau": math.Pi / 2,
+	"tau": math.Pi * 2,
 	"phi": math.Phi,
 	"e":   math.E,
 }
