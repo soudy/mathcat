@@ -289,18 +289,20 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
+	errBadArity := fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
+
 	arity := p.arity.Pop().(int)
 	if arity != function.arity {
 		// NOTE: This doesn't cover giving 0 arguments to a function that takes
 		// 1, so we catch that case inside the loop
-		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
+		return -1, errBadArity
 	}
 
 	// Start popping off arguments for the function call
 	args := make([]float64, function.arity)
 	for i = function.arity - 1; i >= 0; i-- {
 		if p.operands.Empty() {
-			return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d)", tok.Value, function.arity)
+			return -1, errBadArity
 		}
 
 		arg, err := p.lookup(p.operands.Pop())
