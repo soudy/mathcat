@@ -490,6 +490,7 @@ func (p *Parser) reset() {
 
 	p.operators = nil
 	p.operands = nil
+	p.arity = nil
 }
 
 func (p *Parser) peek() *Token {
