@@ -296,11 +296,8 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
 	}
 
-	arity := p.arity.Pop().(int)
-	errBadArity := fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, arity)
-
-	if arity != function.arity {
-		return -1, errBadArity
+	if arity := p.arity.Pop().(int); arity != function.arity {
+		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, arity)
 	}
 
 	// Start popping off arguments for the function call
