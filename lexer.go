@@ -13,7 +13,7 @@ import (
 const eol rune = -1
 
 // lexer holds the lexer's state while scanning an expression. If any error
-// occurs, the scanning stops immediatly and returns the error.
+// occurs, the scanning stops immediately and returns the error.
 type lexer struct {
 	expr   []rune   // the input expression
 	ch     rune     // current character

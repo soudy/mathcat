@@ -58,7 +58,7 @@ func New() *Parser {
 func Eval(expr string) (float64, error) {
 	tokens, err := Lex(expr)
 
-	// If a lexer error occured don't parse
+	// If a lexer error occurred don't parse
 	if err != nil {
 		return -1, err
 	}
