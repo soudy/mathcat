@@ -175,7 +175,7 @@ func (p *Parser) parse() (float64, error) {
 
 				p.operands.Push(val)
 			}
-			p.arity[len(p.arity)-1] = p.arity.Top().(int) + 1
+			p.arity.Push(p.arity.Pop().(int) + 1)
 		case p.tok.IsOperator():
 			o1 = ops[p.tok.Type]
 
