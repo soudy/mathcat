@@ -31,6 +31,7 @@ var (
 	errDivionByZero         = errors.New("Divison by zero")
 	errUnmatchedParentheses = errors.New("Unmatched parentheses")
 	errInvalidSyntax        = errors.New("Invalid syntax")
+	errMisplacedComma       = errors.New("Misplaced ','")
 )
 
 // Some useful predefined variables that can be used in expressions. These
@@ -161,7 +162,7 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.Is(COMMA):
 			for {
 				if p.operators.Empty() {
-					return -1, errors.New("Misplaced ','")
+					return -1, errMisplacedComma
 				}
 
 				if p.operators.Top().(*Token).Is(LPAREN) {
@@ -303,6 +304,10 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	// Start popping off arguments for the function call
 	args := make([]float64, function.arity)
 	for i = function.arity - 1; i >= 0; i-- {
+		if p.operands.Empty() {
+			return -1, errMisplacedComma
+		}
+
 		arg, err := p.lookup(p.operands.Pop())
 		if err != nil {
 			return -1, err
