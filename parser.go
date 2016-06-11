@@ -181,9 +181,9 @@ func (p *Parser) parse() (float64, error) {
 			o1 = ops[p.tok.Type]
 
 			if !p.operators.Empty() {
-				// Special case, if the token on top of the operators stack is
-				// a function call, always take precedence above an operator.
 				if p.operators.Top().(*Token).Is(IDENT) {
+					// Special case, if the token on top of the operators stack is
+					// a function call, always take precedence above an operator.
 					function := p.operators.Pop().(*Token)
 					val, err := p.evaluateFunc(function)
 					if err != nil {
@@ -271,12 +271,12 @@ func (p *Parser) evaluate(tok *Token) (float64, error) {
 	var err error
 	var val float64
 
-	if tok.Is(IDENT) {
-		// Function call
-		val, err = p.evaluateFunc(tok)
-	} else {
+	if tok.IsOperator() {
 		// Operator
 		val, err = p.evaluateOp(tok)
+	} else {
+		// Function call
+		val, err = p.evaluateFunc(tok)
 	}
 
 	if err != nil {
