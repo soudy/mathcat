@@ -10,7 +10,7 @@ import (
 	"github.com/soudy/mathcat"
 )
 
-var precision = flag.Int("precision", 2, "decimal precision used in results")
+var precision = flag.Int("precision", 6, "decimal precision used in results")
 
 func getHomeDir() string {
 	if runtime.GOOS == "windows" {
