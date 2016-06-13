@@ -268,22 +268,13 @@ func (p *Parser) parse() (float64, error) {
 // for a result. In case of a function, evaluateFunc is called and in case of
 // an operator evaluateOp is called.
 func (p *Parser) evaluate(tok *Token) (float64, error) {
-	var err error
-	var val float64
-
 	if tok.IsOperator() {
 		// Operator
-		val, err = p.evaluateOp(tok)
-	} else {
-		// Function call
-		val, err = p.evaluateFunc(tok)
+		return p.evaluateOp(tok)
 	}
 
-	if err != nil {
-		return -1, err
-	}
-
-	return val, nil
+	// Function call
+	return p.evaluateFunc(tok)
 }
 
 func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
