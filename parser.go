@@ -443,14 +443,10 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 	case HEX:
 		// Remove 0x part of hex literal and convert to uint first
 		tmp, err = strconv.ParseUint(tok.Value[2:], 16, 64)
-		// Then convert to float
-		res = float64(tmp)
 	case BINARY:
 		tmp, err = strconv.ParseUint(tok.Value[2:], 2, 64)
-		res = float64(tmp)
 	case OCTAL:
 		tmp, err = strconv.ParseUint(tok.Value[2:], 8, 64)
-		res = float64(tmp)
 	case IDENT:
 		res, err = p.GetVar(tok.Value)
 		if err != nil {
@@ -465,6 +461,12 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 			return -1, fmt.Errorf("Error parsing '%s': %s", tok.Value, strconv.ErrRange)
 		}
 		return -1, fmt.Errorf("Error parsing '%s': invalid %s", tok.Value, tok.Type)
+	}
+
+	// Number literals with a different base than 10 get converted to a uint
+	// first. This is where we make it a float again so we can return it
+	if tmp {
+		res = float64(tmp)
 	}
 
 	return res, nil
