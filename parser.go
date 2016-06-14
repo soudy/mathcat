@@ -430,49 +430,44 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		return v, nil
 	}
 
-	switch tok := val.(*Token); tok.Type {
-	case NUMBER:
-		res, err := strconv.ParseFloat(tok.Value, 64)
-		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid number", tok.Value)
-		}
+	var (
+		tmp uint64
+		res float64
+		err error
+	)
 
-		return res, nil
+	tok := val.(*Token)
+	switch tok.Type {
+	case NUMBER:
+		res, err = strconv.ParseFloat(tok.Value, 64)
 	case HEX:
 		// Remove 0x part of hex literal and convert to uint first
-		res, err := strconv.ParseUint(tok.Value[2:], 16, 64)
-		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid hex literal", tok.Value)
-		}
-
+		tmp, err = strconv.ParseUint(tok.Value[2:], 16, 64)
 		// Then convert to float
-		return float64(res), nil
+		res = float64(tmp)
 	case BINARY:
-		// Remove 0b part of binary literal and convert to uint first
-		res, err := strconv.ParseUint(tok.Value[2:], 2, 64)
-		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid binary literal", tok.Value)
-		}
-
-		return float64(res), nil
+		tmp, err = strconv.ParseUint(tok.Value[2:], 2, 64)
+		res = float64(tmp)
 	case OCTAL:
-		// Remove 0o part of octal literal and convert to uint first
-		res, err := strconv.ParseUint(tok.Value[2:], 8, 64)
-		if err != nil {
-			return -1, fmt.Errorf("Error parsing '%s': invalid octal literal", tok.Value)
-		}
-
-		return float64(res), nil
+		tmp, err = strconv.ParseUint(tok.Value[2:], 8, 64)
+		res = float64(tmp)
 	case IDENT:
-		res, err := p.GetVar(tok.Value)
+		res, err = p.GetVar(tok.Value)
 		if err != nil {
 			return -1, err
 		}
-
-		return res, nil
 	default:
 		return -1, fmt.Errorf("Invalid lookup type '%s'", tok.Type)
 	}
+
+	if err != nil {
+		if numError, ok := err.(*strconv.NumError); ok && numError.Err == strconv.ErrRange {
+			return -1, fmt.Errorf("Error parsing '%s': %s", tok.Value, strconv.ErrRange)
+		}
+		return -1, fmt.Errorf("Error parsing '%s': invalid %s", tok.Value, tok.Type)
+	}
+
+	return res, nil
 }
 
 func (p *Parser) reset() {
