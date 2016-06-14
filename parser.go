@@ -452,6 +452,7 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		if err != nil {
 			return -1, err
 		}
+		return res, nil
 	default:
 		return -1, fmt.Errorf("Invalid lookup type '%s'", tok.Type)
 	}
