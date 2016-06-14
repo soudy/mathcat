@@ -20,7 +20,7 @@ type functions map[string]*function
 // Functions holds all the function names that are available for use
 var Functions []string
 
-var funcs functions = make(functions)
+var funcs = make(functions)
 
 func (f functions) register(name string, function *function) {
 	Functions = append(Functions, name)
