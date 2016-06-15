@@ -436,20 +436,21 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		err error
 	)
 
+	bases := [...]int{
+		HEX:    16,
+		BINARY: 2,
+		OCTAL:  8,
+	}
+
 	tok := val.(*Token)
 	switch tok.Type {
 	case NUMBER:
 		res, err = strconv.ParseFloat(tok.Value, 64)
-	case HEX:
-		// Remove 0x part of hex literal and convert to uint first
-		tmp, err = strconv.ParseUint(tok.Value[2:], 16, 64)
+	case HEX, BINARY, OCTAL:
+		// Remove 0x part of literal and convert to uint first
+		tmp, err = strconv.ParseUint(tok.Value[2:], bases[tok.Type], 64)
+
 		// Then convert to float
-		res = float64(tmp)
-	case BINARY:
-		tmp, err = strconv.ParseUint(tok.Value[2:], 2, 64)
-		res = float64(tmp)
-	case OCTAL:
-		tmp, err = strconv.ParseUint(tok.Value[2:], 8, 64)
 		res = float64(tmp)
 	case IDENT:
 		res, err = p.GetVar(tok.Value)
