@@ -30,8 +30,7 @@ type Parser struct {
 var (
 	errDivionByZero         = errors.New("Divison by zero")
 	errUnmatchedParentheses = errors.New("Unmatched parentheses")
-	errInvalidSyntax        = errors.New("Invalid syntax")
-	errMisplacedComma       = errors.New("Misplaced ','")
+	errMisplacedComma       = errors.New("Misplaced ‘,’")
 )
 
 // Some useful predefined variables that can be used in expressions. These
@@ -111,7 +110,7 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 
 	for k, v := range vars {
 		if !isIdent(rune(k[0])) || strings.IndexFunc(k, isValidIdent) == -1 {
-			return -1, fmt.Errorf("Invalid variable name: '%s'", k)
+			return -1, fmt.Errorf("Invalid variable name: ‘%s’", k)
 		}
 		p.Variables[k] = v
 	}
@@ -131,7 +130,7 @@ func (p *Parser) GetVar(index string) (float64, error) {
 		return val, nil
 	}
 
-	return -1, fmt.Errorf("Undefined variable '%s'", index)
+	return -1, fmt.Errorf("Undefined variable ‘%s’", index)
 }
 
 func (p *Parser) parse() (float64, error) {
@@ -261,7 +260,7 @@ func (p *Parser) parse() (float64, error) {
 	}
 
 	// Leftover token on operand stack indicates invalid syntax
-	return -1, errInvalidSyntax
+	return -1, fmt.Errorf("Unexpected ‘%s’", p.operands.Top())
 }
 
 // evaluate gets called when an operator or function call has to be evaluated
@@ -283,11 +282,11 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	)
 
 	if function, ok = funcs[tok.Value]; !ok {
-		return -1, fmt.Errorf("Undefined function '%s'", tok.Value)
+		return -1, fmt.Errorf("Undefined function ‘%s’", tok.Value)
 	}
 
 	if arity := p.arity.Pop().(int); arity != function.arity {
-		return -1, fmt.Errorf("Invalid argument count for '%s' (expected %d, got %d)", tok.Value, function.arity, arity)
+		return -1, fmt.Errorf("Invalid argument count for ‘%s’ (expected %d, got %d)", tok.Value, function.arity, arity)
 	}
 
 	// Start popping off arguments for the function call
@@ -317,7 +316,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	)
 
 	if p.operands.Empty() {
-		return -1, fmt.Errorf("Unexpected '%s'", operator.Type)
+		return -1, fmt.Errorf("Unexpected ‘%s’", operator.Type)
 	}
 
 	if right, err = p.lookup(p.operands.Pop()); err != nil {
@@ -327,7 +326,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	// Unary operators have no left hand side
 	if op := ops[operator.Type]; !op.unary {
 		if p.operands.Empty() {
-			return -1, errInvalidSyntax
+			return -1, fmt.Errorf("Unexpected ‘%s’", operator.Value)
 		}
 		// Save the token in case of a assignment variable is used and we need
 		// to save the result in a variable
@@ -364,7 +363,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 
 	// Both lhs and rhs have to be whole numbers for bitwise operations
 	if operator.IsBitwise() && (!IsWholeNumber(lhs) || !IsWholeNumber(rhs)) {
-		return -1, fmt.Errorf("Unsupported type (float) for '%s'", operator.Type)
+		return -1, fmt.Errorf("Unsupported type (float) for ‘%s’", operator.Type)
 	}
 
 	switch operator.Type {
@@ -415,7 +414,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 	case LT_EQ:
 		result = bool2float(lhs <= rhs)
 	default:
-		return -1, fmt.Errorf("Invalid operator '%s'", operator.Type)
+		return -1, fmt.Errorf("Invalid operator ‘%s’", operator.Type)
 	}
 
 	return result, nil
@@ -459,14 +458,14 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		}
 		return res, nil
 	default:
-		return -1, fmt.Errorf("Invalid lookup type '%s'", tok.Type)
+		return -1, fmt.Errorf("Invalid lookup type ‘%s’", tok.Type)
 	}
 
 	if err != nil {
 		if numError, ok := err.(*strconv.NumError); ok && numError.Err == strconv.ErrRange {
-			return -1, fmt.Errorf("Error parsing '%s': %s", tok.Value, strconv.ErrRange)
+			return -1, fmt.Errorf("Error parsing ‘%s’: %s", tok.Value, strconv.ErrRange)
 		}
-		return -1, fmt.Errorf("Error parsing '%s': invalid %s", tok.Value, tok.Type)
+		return -1, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok.Type)
 	}
 
 	return res, nil

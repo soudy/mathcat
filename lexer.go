@@ -5,7 +5,7 @@
 package mathcat
 
 import (
-	"errors"
+	"fmt"
 	"unicode"
 )
 
@@ -123,7 +123,7 @@ loop:
 				l.switchEq(EQ, EQ_EQ)
 			case '!':
 				if l.peek() != '=' {
-					return nil, errors.New("Invalid operation " + string(l.ch))
+					return nil, fmt.Errorf("Invalid operation ‘%s’", string(l.ch))
 				}
 				l.eat()
 				l.emit(BANG_EQ)
@@ -141,7 +141,7 @@ loop:
 				l.emit(EOL)
 			default:
 				l.emit(ILLEGAL)
-				return nil, errors.New("Invalid token " + string(l.ch))
+				return nil, fmt.Errorf("Invalid token ‘%s’", string(l.ch))
 			}
 		}
 	}

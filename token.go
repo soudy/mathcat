@@ -4,8 +4,6 @@
 
 package mathcat
 
-import "fmt"
-
 type tokenType int
 
 const (
@@ -134,11 +132,7 @@ func newToken(toktype tokenType, val string, pos int) *Token {
 }
 
 func (tok *Token) String() string {
-	if _, ok := tokens[tok.Type]; ok {
-		return fmt.Sprintf("%d: '%s' ( %s )\n", tok.Pos, tok.Value, tok.Type)
-	}
-
-	return fmt.Sprintf("%d: '%s' ( ??? )\n", tok.Pos, tok.Value)
+	return tok.Value
 }
 
 func (t tokenType) String() string {
