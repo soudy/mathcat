@@ -123,14 +123,6 @@ type Token struct {
 	Pos   int
 }
 
-func newToken(toktype tokenType, val string, pos int) *Token {
-	return &Token{
-		Type:  toktype,
-		Value: val,
-		Pos:   pos,
-	}
-}
-
 func (tok *Token) String() string {
 	return tok.Value
 }

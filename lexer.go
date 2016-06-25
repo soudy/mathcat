@@ -164,7 +164,11 @@ func (l *lexer) eat() rune {
 }
 
 func (l *lexer) emit(toktype tokenType) {
-	l.tokens = append(l.tokens, newToken(toktype, string(l.expr[l.start:l.pos]), l.start))
+	l.tokens = append(l.tokens, &Token{
+		Type:  toktype,
+		Value: string(l.expr[l.start:l.pos]),
+		Pos:   l.start,
+	})
 }
 
 func (l *lexer) skipWhitespace() {
