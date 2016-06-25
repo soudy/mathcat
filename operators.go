@@ -18,7 +18,7 @@ type operator struct {
 	unary bool
 }
 
-var ops = map[tokenType]*operator{
+var ops = map[TokenType]*operator{
 	// Assignment operators
 	EQ:     {0, ASSOC_RIGHT, false}, // =
 	ADD_EQ: {0, ASSOC_RIGHT, false}, // +=

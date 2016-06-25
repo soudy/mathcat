@@ -140,7 +140,6 @@ loop:
 			case eol:
 				l.emit(EOL)
 			default:
-				l.emit(ILLEGAL)
 				return nil, fmt.Errorf("Invalid token ‘%s’", string(l.ch))
 			}
 		}
@@ -163,7 +162,7 @@ func (l *lexer) eat() rune {
 	return l.ch
 }
 
-func (l *lexer) emit(toktype tokenType) {
+func (l *lexer) emit(toktype TokenType) {
 	l.tokens = append(l.tokens, &Token{
 		Type:  toktype,
 		Value: string(l.expr[l.start:l.pos]),
@@ -239,7 +238,7 @@ func (l *lexer) isNegation() bool {
 	return l.tokens == nil || l.prev().Type == LPAREN || l.prev().IsOperator()
 }
 
-func (l *lexer) switchEq(tokA, tokB tokenType) {
+func (l *lexer) switchEq(tokA, tokB TokenType) {
 	if l.peek() == '=' {
 		l.eat()
 		l.emit(tokB)

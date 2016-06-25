@@ -4,11 +4,18 @@
 
 package mathcat
 
-type tokenType int
+// TokenType represents the type of token
+type TokenType int
+
+// Token is an entity in an expression
+type Token struct {
+	Type  TokenType
+	Value string
+	Pos   int
+}
 
 const (
-	ILLEGAL tokenType = iota
-	EOL
+	EOL TokenType = iota // end of line
 
 	literalsBegin
 	IDENT  // x
@@ -65,9 +72,8 @@ const (
 	COMMA  // ,
 )
 
-var tokens = map[tokenType]string{
-	ILLEGAL: "illegal",
-	EOL:     "end of line",
+var tokens = map[TokenType]string{
+	EOL: "end of line",
 
 	IDENT:  "identifier",
 	NUMBER: "number",
@@ -116,18 +122,11 @@ var tokens = map[tokenType]string{
 	COMMA:  ",",
 }
 
-// Token is an entity in an expression
-type Token struct {
-	Type  tokenType
-	Value string
-	Pos   int
-}
-
 func (tok *Token) String() string {
 	return tok.Value
 }
 
-func (t tokenType) String() string {
+func (t TokenType) String() string {
 	if tok, ok := tokens[t]; ok {
 		return tok
 	}
@@ -136,7 +135,7 @@ func (t tokenType) String() string {
 }
 
 // Is checks if the token is given token type
-func (tok *Token) Is(toktype tokenType) bool {
+func (tok *Token) Is(toktype TokenType) bool {
 	return tok.Type == toktype
 }
 
