@@ -182,40 +182,42 @@ func (l *lexer) readIdent() {
 }
 
 func (l *lexer) readNumber() {
-	// Hex literals
-	if l.ch == '0' && (l.peek() == 'x' || l.peek() == 'X') {
-		l.eat()
-
-		for isHex(l.peek()) {
+	if l.ch == '0' {
+		// Hex literals
+		if l.peek() == 'x' || l.peek() == 'X' {
 			l.eat()
+
+			for isHex(l.peek()) {
+				l.eat()
+			}
+
+			l.emit(HEX)
+			return
 		}
 
-		l.emit(HEX)
-		return
-	}
-
-	// Binary literals
-	if l.ch == '0' && (l.peek() == 'b' || l.peek() == 'B') {
-		l.eat()
-
-		for isBinary(l.peek()) {
+		// Binary literals
+		if l.peek() == 'b' || l.peek() == 'B' {
 			l.eat()
+
+			for isBinary(l.peek()) {
+				l.eat()
+			}
+
+			l.emit(BINARY)
+			return
 		}
 
-		l.emit(BINARY)
-		return
-	}
-
-	// Octal literals
-	if l.ch == '0' && (l.peek() == 'o' || l.peek() == 'O') {
-		l.eat()
-
-		for isOctal(l.peek()) {
+		// Octal literals
+		if l.peek() == 'o' || l.peek() == 'O' {
 			l.eat()
-		}
 
-		l.emit(OCTAL)
-		return
+			for isOctal(l.peek()) {
+				l.eat()
+			}
+
+			l.emit(OCTAL)
+			return
+		}
 	}
 
 	// Numeral literals
