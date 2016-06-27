@@ -88,7 +88,5 @@ func main() {
 		os.Exit(-1)
 	}
 
-	fmt.Println(mode)
-
 	repl(mode)
 }
