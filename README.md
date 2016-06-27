@@ -26,23 +26,30 @@ go get github.com/soudy/mathcat
 
 ### REPL
 ```bash
-go get github.com/soudy/mathcat/cmd/mathcat
+go get github.com/soudy/mathcat/cmd/mc
 ```
 
 ## REPL usage
-The REPL can be used by simply launching `mathcat`:
+The REPL can be used by simply launching `mc`:
 ```bash
-mathcat> 8**8
+mc> 8**8
 16777216
-mathcat> (8**8) - e # Look, a comment!
+mc> (8**8) - e # Look, a comment!
 16777213.28
 ```
 
 Or it can read from `stdin` like so:
 
 ```bash
-echo "3**pi * (6 - -7)" | mathcat
+echo "3**pi * (6 - -7)" | mc
 ```
+
+### Arguments
+
+| Name      | Description                                                                   |
+|-----------|-------------------------------------------------------------------------------|
+| precision | decimal precision used in results                                             |
+| mode      | type of literal used as result. can be number (default), hex, binary or octal |
 
 ## Library usage
 There are three different ways to evaluate expressions, the first way is by
