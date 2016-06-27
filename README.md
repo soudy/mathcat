@@ -46,10 +46,10 @@ echo "3**pi * (6 - -7)" | mc
 
 ### Arguments
 
-| Name      | Description                                                                   |
-|-----------|-------------------------------------------------------------------------------|
-| precision | decimal precision used in results                                             |
-| mode      | type of literal used as result. can be number (default), hex, binary or octal |
+| Name      | Description                                                         | Default |
+|-----------|---------------------------------------------------------------------|---------|
+| precision | decimal precision used in results                                   | 6       |
+| mode      | type of literal used as result. can be number, hex, binary or octal | number  |
 
 ## Library usage
 There are three different ways to evaluate expressions, the first way is by
