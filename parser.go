@@ -18,7 +18,7 @@ import (
 // By default, variables always contains the constants defined below. These can
 // however be overwritten.
 type Parser struct {
-	Tokens    []*Token
+	Tokens    Tokens
 	Variables map[string]float64
 
 	pos int

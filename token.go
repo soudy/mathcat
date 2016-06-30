@@ -14,6 +14,9 @@ type Token struct {
 	Pos   int
 }
 
+// Tokens is a slice of pointers to a token
+type Tokens []*Token
+
 const (
 	EOL TokenType = iota // end of line
 

@@ -15,11 +15,11 @@ const eol rune = -1
 // lexer holds the lexer's state while scanning an expression. If any error
 // occurs, the scanning stops immediately and returns the error.
 type lexer struct {
-	expr   []rune   // the input expression
-	ch     rune     // current character
-	pos    int      // current character position
-	start  int      // current read offset
-	tokens []*Token // tokenized lexemes
+	expr   []rune // the input expression
+	ch     rune   // current character
+	pos    int    // current character position
+	start  int    // current read offset
+	tokens Tokens // tokenized lexemes
 }
 
 func isIdent(c rune) bool {
@@ -50,7 +50,7 @@ func isWhitespace(c rune) bool {
 // of tokens later passed on to the parser.
 //
 // Returns the generated tokens and any error found.
-func Lex(expr string) ([]*Token, error) {
+func Lex(expr string) (Tokens, error) {
 	l := &lexer{
 		expr:  append([]rune(expr), eol), // add eol as padding
 		pos:   0,
@@ -60,7 +60,7 @@ func Lex(expr string) ([]*Token, error) {
 	return l.lex()
 }
 
-func (l *lexer) lex() ([]*Token, error) {
+func (l *lexer) lex() (Tokens, error) {
 loop:
 	for l.ch != eol {
 		l.start = l.pos
