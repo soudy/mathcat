@@ -243,7 +243,7 @@ func (l *lexer) readNumber() {
 }
 
 func (l *lexer) isNegation() bool {
-	return l.tokens == nil || l.prev().Type == LPAREN || l.prev().IsOperator()
+	return l.tokens == nil || l.prev().Is(LPAREN) || l.prev().IsOperator()
 }
 
 func (l *lexer) switchEq(tokA, tokB TokenType) {
