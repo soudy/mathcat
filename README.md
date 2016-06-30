@@ -113,6 +113,13 @@ if mathcat.IsWholeNumber(res) {
 }
 ```
 
+### IsValidIdent
+Check if a string qualifies as a valid identifier
+```go
+mathcat.IsValidIdent("a2") // true
+mathcat.IsValidIdent("6a") // false
+```
+
 ### Supported operators
 
 | Operator   | Description           |
@@ -162,7 +169,7 @@ like this: `max(5, 10)`.
 | min          | 2           | returns the smaller of the two given numbers                                   |
 | sqrt         | 1           | returns the square root of given number                                        |
 | rand         | 0           | returns a random float between 0.0 and 1.0                                     |
-| factorial    | 1           | returns the factorial of  given number                                         |
+| fact         | 1           | returns the factorial of  given number                                         |
 | list         | 0           | list all functions                                                             |
 
 ### Predefined variables
