@@ -46,6 +46,21 @@ func isWhitespace(c rune) bool {
 	return c == '\t' || c == ' ' || c == '\r' || c == '\n'
 }
 
+// IsValidIdent checks if a string qualifies as a valid identifier.
+func IsValidIdent(s string) bool {
+	if !isIdent(rune(s[0])) {
+		return false
+	}
+
+	for _, c := range s {
+		if !isIdent(c) && !isNumber(c) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Lex starts lexing an expression, converting an input string into a stream
 // of tokens later passed on to the parser.
 //

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 )
 
 // Parser holds the lexed tokens, token position, declared variables and stacks
@@ -106,13 +105,11 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 	p := New()
 	p.Tokens = tokens
 
-	isValidIdent := func(c rune) bool { return isIdent(c) || isNumber(c) }
-
-	for k, v := range vars {
-		if !isIdent(rune(k[0])) || strings.IndexFunc(k, isValidIdent) == -1 {
-			return -1, fmt.Errorf("Invalid variable name: ‘%s’", k)
+	for name, val := range vars {
+		if !IsValidIdent(name) {
+			return -1, fmt.Errorf("Invalid variable name: ‘%s’", name)
 		}
-		p.Variables[k] = v
+		p.Variables[name] = val
 	}
 
 	return p.parse()
