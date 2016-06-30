@@ -6,6 +6,7 @@ package mathcat
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 )
 
@@ -48,17 +49,9 @@ func isWhitespace(c rune) bool {
 
 // IsValidIdent checks if a string qualifies as a valid identifier.
 func IsValidIdent(s string) bool {
-	if !isIdent(rune(s[0])) {
-		return false
-	}
+	checkIdent := func(c rune) bool { return isIdent(c) || isNumber(c) }
 
-	for _, c := range s {
-		if !isIdent(c) && !isNumber(c) {
-			return false
-		}
-	}
-
-	return true
+	return isIdent(rune(s[0])) && strings.IndexFunc(s, checkIdent) != -1
 }
 
 // Lex starts lexing an expression, converting an input string into a stream
