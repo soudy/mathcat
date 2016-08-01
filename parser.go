@@ -174,7 +174,7 @@ func (p *Parser) parse() (float64, error) {
 			}
 			p.arity.Push(p.arity.Pop().(int) + 1)
 		case p.tok.IsOperator():
-			o1 = ops[p.tok.Type]
+			o1 = operators[p.tok.Type]
 
 			if !p.operators.Empty() {
 				if p.operators.Top().(*Token).Is(IDENT) {
@@ -193,7 +193,7 @@ func (p *Parser) parse() (float64, error) {
 
 				var ok bool
 
-				if o2, ok = ops[p.operators.Top().(*Token).Type]; !ok {
+				if o2, ok = operators[p.operators.Top().(*Token).Type]; !ok {
 					p.operators.Push(p.tok)
 					break
 				}
@@ -321,7 +321,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	}
 
 	// Unary operators have no left hand side
-	if op := ops[operator.Type]; !op.unary {
+	if op := operators[operator.Type]; !op.unary {
 		if p.operands.Empty() {
 			return -1, fmt.Errorf("Unexpected ‘%s’", operator.Value)
 		}
