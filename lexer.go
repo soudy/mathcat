@@ -141,12 +141,10 @@ loop:
 				l.emit(RPAREN)
 			case ',':
 				l.emit(COMMA)
-			case '#':
-				// Comment, stop scanning for tokens
+			case '#', eol:
+				// Comment or EOL, stop scanning for tokens
 				l.emit(EOL)
 				break loop
-			case eol:
-				l.emit(EOL)
 			default:
 				return nil, fmt.Errorf("Invalid token ‘%s’", string(l.ch))
 			}
