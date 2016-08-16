@@ -55,8 +55,7 @@ echo "3**pi * (6 - -7)" | mc
 There are three different ways to evaluate expressions, the first way is by
 calling `Eval`, the second way is by creating a new instance and using `Run`,
 and the final way is to use `Exec` in which you can pass a map with variables to
-use in the expression in which you can pass a map with variables to use in the
-expression.
+use in the expression.
 
 ### Eval
 If you're not planning on declaring variables, you can use `Eval`. `Eval`
