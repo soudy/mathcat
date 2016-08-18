@@ -115,13 +115,13 @@ func init() {
 	funcs.register("fact", &function{
 		arity: 1,
 		fn: func(args []float64) float64 {
-			return factorial(args[0])
+			return Factorial(args[0])
 		},
 	})
 	funcs.register("gcd", &function{
 		arity: 2,
 		fn: func(args []float64) float64 {
-			return gcd(args[0], args[1])
+			return Gcd(args[0], args[1])
 		},
 	})
 	funcs.register("list", &function{
@@ -142,11 +142,11 @@ func Factorial(n float64) float64 {
 		return 1
 	}
 
-	return n * factorial(n-1)
+	return n * Factorial(n-1)
 }
 
-// GCD calculates the greatest common divisor of the numbers x and y
-func GCD(x, y float64) float64 {
+// Gcd calculates the greatest common divisor of the numbers x and y
+func Gcd(x, y float64) float64 {
 	for y != 0 {
 		x, y = y, math.Mod(x, y)
 	}
