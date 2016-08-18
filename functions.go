@@ -136,7 +136,8 @@ func init() {
 	})
 }
 
-func factorial(n float64) float64 {
+// Factorial calculates the factorial of number n
+func Factorial(n float64) float64 {
 	if n == 0 {
 		return 1
 	}
@@ -144,7 +145,8 @@ func factorial(n float64) float64 {
 	return n * factorial(n-1)
 }
 
-func gcd(x, y float64) float64 {
+// GCD calculates the greatest common divisor of the numbers x and y
+func GCD(x, y float64) float64 {
 	for y != 0 {
 		x, y = y, math.Mod(x, y)
 	}
