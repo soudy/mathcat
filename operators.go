@@ -34,29 +34,29 @@ var operators = map[TokenType]*operator{
 	RSH_EQ: {0, ASSOC_RIGHT, false}, // >>=
 
 	// Relational operators
-	EQ_EQ:   {0, ASSOC_RIGHT, false}, // ==
-	BANG_EQ: {0, ASSOC_RIGHT, false}, // !=
-	GT:      {0, ASSOC_RIGHT, false}, // >
-	GT_EQ:   {0, ASSOC_RIGHT, false}, // >=
-	LT:      {0, ASSOC_RIGHT, false}, // <
-	LT_EQ:   {0, ASSOC_RIGHT, false}, // <=
+	EQ_EQ:   {1, ASSOC_RIGHT, false}, // ==
+	BANG_EQ: {1, ASSOC_RIGHT, false}, // !=
+	GT:      {1, ASSOC_RIGHT, false}, // >
+	GT_EQ:   {1, ASSOC_RIGHT, false}, // >=
+	LT:      {1, ASSOC_RIGHT, false}, // <
+	LT_EQ:   {1, ASSOC_RIGHT, false}, // <=
 
 	// Bitwise operators
-	OR:  {1, ASSOC_RIGHT, false}, // |
-	XOR: {2, ASSOC_RIGHT, false}, // ^
-	AND: {3, ASSOC_RIGHT, false}, // &
-	LSH: {4, ASSOC_RIGHT, false}, // <<
-	RSH: {4, ASSOC_RIGHT, false}, // >>
-	NOT: {8, ASSOC_LEFT, true},   // ~
+	OR:  {2, ASSOC_RIGHT, false}, // |
+	XOR: {3, ASSOC_RIGHT, false}, // ^
+	AND: {4, ASSOC_RIGHT, false}, // &
+	LSH: {5, ASSOC_RIGHT, false}, // <<
+	RSH: {5, ASSOC_RIGHT, false}, // >>
+	NOT: {9, ASSOC_LEFT, true},   // ~
 
 	// Mathematical operators
-	ADD:       {5, ASSOC_LEFT, false}, // +
-	SUB:       {5, ASSOC_LEFT, false}, // -
-	MUL:       {6, ASSOC_LEFT, false}, // *
-	DIV:       {6, ASSOC_LEFT, false}, // /
-	POW:       {7, ASSOC_LEFT, false}, // **
-	REM:       {6, ASSOC_LEFT, false}, // %
-	UNARY_MIN: {9, ASSOC_LEFT, true},  // -
+	ADD:       {6, ASSOC_LEFT, false}, // +
+	SUB:       {6, ASSOC_LEFT, false}, // -
+	MUL:       {7, ASSOC_LEFT, false}, // *
+	DIV:       {7, ASSOC_LEFT, false}, // /
+	POW:       {8, ASSOC_LEFT, false}, // **
+	REM:       {7, ASSOC_LEFT, false}, // %
+	UNARY_MIN: {10, ASSOC_LEFT, true}, // -
 }
 
 // Determine if operator 1 has higher precedence than operator 2

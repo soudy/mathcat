@@ -187,16 +187,22 @@ func (p *Parser) parse() (float64, error) {
 					}
 
 					p.operands.Push(val)
+
+					if p.operators.Empty() {
+						p.operators.Push(p.tok)
+						break
+					}
+				}
+
+				// If the item on top of the operators stack isn't an
+				// operator, it's a function call. We then don't need to check
+				// precedence.
+				if !p.operators.Top().(*Token).IsOperator() {
 					p.operators.Push(p.tok)
 					break
 				}
 
-				var ok bool
-
-				if o2, ok = operators[p.operators.Top().(*Token).Type]; !ok {
-					p.operators.Push(p.tok)
-					break
-				}
+				o2 = operators[p.operators.Top().(*Token).Type]
 
 				if o2.hasHigherPrecThan(o1) {
 					operator := p.operators.Pop().(*Token)
