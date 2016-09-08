@@ -252,7 +252,7 @@ func (p *Parser) parse() (float64, error) {
 	}
 
 	// If there are no operands, the expression is useless and doesn't do
-	// anything, for example `()` or an empty string
+	// anything, for example `()`
 	if p.operands.Empty() {
 		return 0, nil
 	}
