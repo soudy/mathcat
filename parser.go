@@ -285,11 +285,11 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	)
 
 	if function, ok = funcs[tok.Value]; !ok {
-		return -1, fmt.Errorf("Undefined function ‘%s’", tok.Value)
+		return -1, fmt.Errorf("Undefined function ‘%s’", tok)
 	}
 
 	if arity := p.arity.Pop().(int); arity != function.arity {
-		return -1, fmt.Errorf("Invalid argument count for ‘%s’ (expected %d, got %d)", tok.Value, function.arity, arity)
+		return -1, fmt.Errorf("Invalid argument count for ‘%s’ (expected %d, got %d)", tok, function.arity, arity)
 	}
 
 	// Start popping off arguments for the function call
@@ -319,7 +319,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	)
 
 	if p.operands.Empty() {
-		return -1, fmt.Errorf("Unexpected ‘%s’", operator.Type)
+		return -1, fmt.Errorf("Unexpected ‘%s’", operator)
 	}
 
 	if right, err = p.lookup(p.operands.Pop()); err != nil {
@@ -329,7 +329,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	// Unary operators have no left hand side
 	if op := operators[operator.Type]; !op.unary {
 		if p.operands.Empty() {
-			return -1, fmt.Errorf("Unexpected ‘%s’", operator.Value)
+			return -1, fmt.Errorf("Unexpected ‘%s’", operator)
 		}
 		// Save the token in case of a assignment variable is used and we need
 		// to save the result in a variable
@@ -366,7 +366,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 
 	// Both lhs and rhs have to be whole numbers for bitwise operations
 	if operator.IsBitwise() && (!IsWholeNumber(lhs) || !IsWholeNumber(rhs)) {
-		return -1, fmt.Errorf("Unsupported type (float) for ‘%s’", operator.Type)
+		return -1, fmt.Errorf("Unsupported type (float) for ‘%s’", operator)
 	}
 
 	switch operator.Type {
@@ -417,7 +417,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 	case LT_EQ:
 		result = bool2float(lhs <= rhs)
 	default:
-		return -1, fmt.Errorf("Invalid operator ‘%s’", operator.Type)
+		return -1, fmt.Errorf("Invalid operator ‘%s’", operator)
 	}
 
 	return result, nil
@@ -461,14 +461,14 @@ func (p *Parser) lookup(val interface{}) (float64, error) {
 		}
 		return res, nil
 	default:
-		return -1, fmt.Errorf("Invalid lookup type ‘%s’", tok.Type)
+		return -1, fmt.Errorf("Invalid lookup type ‘%s’", tok)
 	}
 
 	if err != nil {
 		if numError, ok := err.(*strconv.NumError); ok && numError.Err == strconv.ErrRange {
 			return -1, fmt.Errorf("Error parsing ‘%s’: %s", tok.Value, strconv.ErrRange)
 		}
-		return -1, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok.Type)
+		return -1, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok)
 	}
 
 	return res, nil
