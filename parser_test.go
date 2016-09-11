@@ -9,6 +9,7 @@ import "testing"
 func TestFloatBitwise(t *testing.T) {
 	badExpressions := []string{
 		"2.4 | -2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2", "~5.3",
+		"2 + 2 = 4",
 	}
 
 	for _, expr := range badExpressions {

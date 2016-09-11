@@ -352,7 +352,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 
 	if operator.IsAssignment() {
 		// Save result in variable
-		if !lhsToken.(*Token).Is(IDENT) {
+		if val, ok := lhsToken.(*Token); !(ok && val.Is(IDENT)) {
 			return -1, errors.New("Can't assign to literal")
 		}
 		p.Variables[lhsToken.(*Token).Value] = result
