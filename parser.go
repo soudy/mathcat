@@ -27,9 +27,10 @@ type Parser struct {
 }
 
 var (
-	errDivionByZero         = errors.New("Divison by zero")
-	errUnmatchedParentheses = errors.New("Unmatched parentheses")
-	errMisplacedComma       = errors.New("Misplaced ‘,’")
+	ErrDivionByZero         = errors.New("Divison by zero")
+	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
+	ErrMisplacedComma       = errors.New("Misplaced ‘,’")
+	ErrAssignToLiteral      = errors.New("Can't assign to literal")
 )
 
 // Some useful predefined variables that can be used in expressions. These
@@ -158,7 +159,7 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.Is(COMMA):
 			for {
 				if p.operators.Empty() {
-					return -1, errMisplacedComma
+					return -1, ErrMisplacedComma
 				}
 
 				if p.operators.Top().(*Token).Is(LPAREN) {
@@ -217,7 +218,7 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.Is(RPAREN):
 			for {
 				if p.operators.Empty() {
-					return -1, errUnmatchedParentheses
+					return -1, ErrUnmatchedParentheses
 				}
 
 				top := p.operators.Pop().(*Token)
@@ -240,7 +241,7 @@ func (p *Parser) parse() (float64, error) {
 		top := p.operators.Pop().(*Token)
 
 		if top.Is(LPAREN) {
-			return -1, errUnmatchedParentheses
+			return -1, ErrUnmatchedParentheses
 		}
 
 		val, err := p.evaluate(top)
@@ -296,7 +297,7 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	args := make([]float64, function.arity)
 	for i = function.arity - 1; i >= 0; i-- {
 		if p.operands.Empty() {
-			return -1, errMisplacedComma
+			return -1, ErrMisplacedComma
 		}
 
 		arg, err := p.lookup(p.operands.Pop())
@@ -353,7 +354,7 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	if operator.IsAssignment() {
 		// Save result in variable
 		if val, ok := lhsToken.(*Token); !(ok && val.Is(IDENT)) {
-			return -1, errors.New("Can't assign to literal")
+			return -1, ErrAssignToLiteral
 		}
 		p.Variables[lhsToken.(*Token).Value] = result
 	}
@@ -378,7 +379,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 		result = -rhs
 	case DIV, DIV_EQ:
 		if rhs == 0 {
-			return -1, errDivionByZero
+			return -1, ErrDivionByZero
 		}
 		result = lhs / rhs
 	case MUL, MUL_EQ:
@@ -387,7 +388,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 		result = math.Pow(lhs, rhs)
 	case REM, REM_EQ:
 		if rhs == 0 {
-			return -1, errDivionByZero
+			return -1, ErrDivionByZero
 		}
 		result = math.Mod(lhs, rhs)
 	case AND, AND_EQ:
