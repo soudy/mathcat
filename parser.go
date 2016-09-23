@@ -132,8 +132,6 @@ func (p *Parser) GetVar(index string) (float64, error) {
 }
 
 func (p *Parser) parse() (float64, error) {
-	var o1, o2 *operator
-
 	// Initializing current token value
 	p.tok = p.Tokens[0]
 
@@ -175,46 +173,9 @@ func (p *Parser) parse() (float64, error) {
 			}
 			p.arity.Push(p.arity.Pop().(int) + 1)
 		case p.tok.IsOperator():
-			o1 = operators[p.tok.Type]
-
-			if !p.operators.Empty() {
-				if p.operators.Top().(*Token).Is(IDENT) {
-					// Special case, if the token on top of the operators stack is
-					// a function call, always take precedence above an operator.
-					function := p.operators.Pop().(*Token)
-					val, err := p.evaluateFunc(function)
-					if err != nil {
-						return -1, err
-					}
-
-					p.operands.Push(val)
-
-					if p.operators.Empty() {
-						p.operators.Push(p.tok)
-						break
-					}
-				}
-
-				// If the item on top of the operators stack isn't an
-				// operator, it's a function call. We then don't need to check
-				// precedence.
-				if !p.operators.Top().(*Token).IsOperator() {
-					p.operators.Push(p.tok)
-					break
-				}
-
-				o2 = operators[p.operators.Top().(*Token).Type]
-
-				if o2.hasHigherPrecThan(o1) {
-					operator := p.operators.Pop().(*Token)
-					val, err := p.evaluateOp(operator)
-					if err != nil {
-						return -1, err
-					}
-					p.operands.Push(val)
-				}
+			if err := p.handleOperator(); err != nil {
+				return -1, err
 			}
-			p.operators.Push(p.tok)
 		case p.tok.Is(RPAREN):
 			for {
 				if p.operators.Empty() {
@@ -265,6 +226,53 @@ func (p *Parser) parse() (float64, error) {
 
 	// Leftover token on operand stack indicates invalid syntax
 	return -1, fmt.Errorf("Unexpected ‘%s’", p.operands.Top())
+}
+
+func (p *Parser) handleOperator() error {
+	var o1, o2 *operator
+
+	o1 = operators[p.tok.Type]
+
+	if !p.operators.Empty() {
+		if p.operators.Top().(*Token).Is(IDENT) {
+			// Special case, if the token on top of the operators stack is
+			// a function call, always take precedence above an operator.
+			function := p.operators.Pop().(*Token)
+			val, err := p.evaluateFunc(function)
+			if err != nil {
+				return err
+			}
+
+			p.operands.Push(val)
+
+			if p.operators.Empty() {
+				p.operators.Push(p.tok)
+				return nil
+			}
+		}
+
+		// If the item on top of the operators stack isn't an
+		// operator, it's a function call. We then don't need to check
+		// precedence.
+		if !p.operators.Top().(*Token).IsOperator() {
+			p.operators.Push(p.tok)
+			return nil
+		}
+
+		o2 = operators[p.operators.Top().(*Token).Type]
+
+		if o2.hasHigherPrecThan(o1) {
+			operator := p.operators.Pop().(*Token)
+			val, err := p.evaluateOp(operator)
+			if err != nil {
+				return err
+			}
+			p.operands.Push(val)
+		}
+	}
+	p.operators.Push(p.tok)
+
+	return nil
 }
 
 // evaluate gets called when an operator or function call has to be evaluated
