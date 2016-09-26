@@ -115,7 +115,7 @@ func init() {
 	funcs.register("fact", &function{
 		arity: 1,
 		fn: func(args []float64) float64 {
-			return Factorial(args[0])
+			return float64(Factorial(int64(args[0])))
 		},
 	})
 	funcs.register("gcd", &function{
@@ -137,8 +137,8 @@ func init() {
 }
 
 // Factorial calculates the factorial of number n
-func Factorial(n float64) float64 {
-	if n == 0 {
+func Factorial(n int64) int64 {
+	if n <= 1 {
 		return 1
 	}
 
