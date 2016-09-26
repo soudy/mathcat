@@ -52,7 +52,7 @@ func TestFunctionsResult(t *testing.T) {
 		"sqrt(144)":                         math.Sqrt(144),
 		"tan(144) + tan(-3) + sin(5)":       -1.380026998425437,
 		"fact(6) * fact(7) == fact(10)":     1,
-		"fact(5.5) * fact(7.3) == fact(10)": 1,
+		"fact(6.5) * fact(7.3) == fact(10)": 1,
 	}
 
 	for expr, expected := range calls {

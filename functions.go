@@ -115,7 +115,7 @@ func init() {
 	funcs.register("fact", &function{
 		arity: 1,
 		fn: func(args []float64) float64 {
-			return float64(Factorial(int64(args[0] + 0.5)))
+			return float64(Factorial(int64(args[0])))
 		},
 	})
 	funcs.register("gcd", &function{
