@@ -33,21 +33,27 @@ var (
 	ErrAssignToLiteral      = errors.New("Can't assign to literal")
 )
 
-// Some useful predefined variables that can be used in expressions. These
-// can be overwritten.
-var constants = map[string]float64{
-	"pi":  math.Pi,
-	"tau": math.Pi * 2,
-	"phi": math.Phi,
-	"e":   math.E,
-}
+// // Some useful predefined variables that can be used in expressions. These
+// // can be overwritten.
+// var constants = map[string]float64{
+// 	"pi":  math.Pi,
+// 	"tau": math.Pi * 2,
+// 	"phi": math.Phi,
+// 	"e":   math.E,
+// }
 
 // New initializes a new Parser instance, useful when you want to run multiple
 // expression and/or use variables.
 func New() *Parser {
+
 	return &Parser{
-		pos:       0,
-		Variables: constants,
+		pos: 0,
+		Variables: map[string]float64{
+			"pi":  math.Pi,
+			"tau": math.Pi * 2,
+			"phi": math.Phi,
+			"e":   math.E,
+		},
 	}
 }
 
