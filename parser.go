@@ -371,7 +371,7 @@ func execute(operator *Token, lhs, rhs float64) (float64, error) {
 	var result float64
 
 	// Both lhs and rhs have to be whole numbers for bitwise operations
-	if operator.IsBitwise() && (!IsWholeNumber(lhs) || !IsWholeNumber(rhs)) {
+	if operator.IsBitwise() && !(IsWholeNumber(lhs) && IsWholeNumber(rhs)) {
 		return -1, fmt.Errorf("Unsupported type (float) for ‘%s’", operator)
 	}
 
