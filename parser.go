@@ -230,10 +230,17 @@ func (p *Parser) handleOperator() error {
 
 	o1 = operators[p.tok.Type]
 
-	if !p.operators.Empty() {
+	// No operators yet, just push to operators stack
+	if p.operators.Empty() {
+		p.operators.Push(p.tok)
+		return nil
+	}
+
+	// While there's a function at the top of the operator stack, or an operator
+	// with higher precedence than o1, pop operators to operands
+	for p.operators.Top().(*Token).Is(IDENT) || p.operators.Top().(*Token).IsOperator() {
+		// Function call, always take precedence over operator
 		if p.operators.Top().(*Token).Is(IDENT) {
-			// Special case, if the token on top of the operators stack is
-			// a function call, always take precedence above an operator.
 			function := p.operators.Pop().(*Token)
 			val, err := p.evaluateFunc(function)
 			if err != nil {
@@ -241,32 +248,27 @@ func (p *Parser) handleOperator() error {
 			}
 
 			p.operands.Push(val)
+		} else {
+			o2 = operators[p.operators.Top().(*Token).Type]
 
-			if p.operators.Empty() {
-				p.operators.Push(p.tok)
-				return nil
+			// Another operator at top, check precedence
+			if o2.hasHigherPrecThan(o1) {
+				operator := p.operators.Pop().(*Token)
+				val, err := p.evaluateOp(operator)
+				if err != nil {
+					return err
+				}
+				p.operands.Push(val)
+			} else {
+				break
 			}
 		}
 
-		// If the item on top of the operators stack isn't an
-		// operator, it's a function call. We then don't need to check
-		// precedence.
-		if !p.operators.Top().(*Token).IsOperator() {
-			p.operators.Push(p.tok)
-			return nil
-		}
-
-		o2 = operators[p.operators.Top().(*Token).Type]
-
-		if o2.hasHigherPrecThan(o1) {
-			operator := p.operators.Pop().(*Token)
-			val, err := p.evaluateOp(operator)
-			if err != nil {
-				return err
-			}
-			p.operands.Push(val)
+		if p.operators.Empty() {
+			break
 		}
 	}
+
 	p.operators.Push(p.tok)
 
 	return nil
