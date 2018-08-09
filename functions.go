@@ -17,13 +17,13 @@ type function struct {
 
 type functions map[string]*function
 
-// Functions holds all the function names that are available for use
-var Functions []string
+// FunctionNames holds all the function names that are available for use
+var FunctionNames []string
 
 var funcs = make(functions)
 
 func (f functions) register(name string, function *function) {
-	Functions = append(Functions, name)
+	FunctionNames = append(FunctionNames, name)
 	f[name] = function
 }
 
@@ -127,7 +127,7 @@ func init() {
 	funcs.register("list", &function{
 		arity: 0,
 		fn: func(_ []float64) float64 {
-			for _, name := range Functions {
+			for _, name := range FunctionNames {
 				fmt.Printf(name + " ")
 			}
 			fmt.Println()

@@ -154,11 +154,11 @@ loop:
 	return l.tokens, nil
 }
 
-func (l *lexer) peek() rune {
+func (l lexer) peek() rune {
 	return l.expr[l.pos]
 }
 
-func (l *lexer) prev() *Token {
+func (l lexer) prev() *Token {
 	return l.tokens[len(l.tokens)-1]
 }
 
@@ -176,7 +176,7 @@ func (l *lexer) emit(toktype TokenType) {
 	})
 }
 
-func (l *lexer) skipWhitespace() {
+func (l lexer) skipWhitespace() {
 	for isWhitespace(l.peek()) {
 		l.eat()
 	}
@@ -240,7 +240,7 @@ func (l *lexer) readNumber() {
 	l.emit(NUMBER)
 }
 
-func (l *lexer) isNegation() bool {
+func (l lexer) isNegation() bool {
 	return l.tokens == nil || l.prev().Is(LPAREN) || l.prev().IsOperator()
 }
 

@@ -182,3 +182,12 @@ func TestWholeNumber(t *testing.T) {
 		}
 	}
 }
+
+func TestGetVar(t *testing.T) {
+	p := New()
+	p.Run("酷 = -33")
+
+	if _, err := p.GetVar("酷"); err != nil {
+		t.Error("GetVar failed: " + err.Error())
+	}
+}

@@ -125,7 +125,7 @@ var tokens = map[TokenType]string{
 	COMMA:  ",",
 }
 
-func (tok *Token) String() string {
+func (tok Token) String() string {
 	return tok.Value
 }
 
@@ -138,26 +138,26 @@ func (t TokenType) String() string {
 }
 
 // Is checks if the token is given token type
-func (tok *Token) Is(toktype TokenType) bool {
+func (tok Token) Is(toktype TokenType) bool {
 	return tok.Type == toktype
 }
 
 // IsOperator checks if the token is an operator
-func (tok *Token) IsOperator() bool {
+func (tok Token) IsOperator() bool {
 	return tok.Type > operatorsBegin && tok.Type < operatorsEnd
 }
 
 // IsBitwise checks if the token type is a bitwise operator
-func (tok *Token) IsBitwise() bool {
+func (tok Token) IsBitwise() bool {
 	return tok.Type > bitwiseBegin && tok.Type < bitwiseEnd
 }
 
 // IsLiteral checks if the token is a literal
-func (tok *Token) IsLiteral() bool {
+func (tok Token) IsLiteral() bool {
 	return tok.Type > literalsBegin && tok.Type < literalsEnd
 }
 
 // IsAssignment checks if the token is an assignment operator
-func (tok *Token) IsAssignment() bool {
+func (tok Token) IsAssignment() bool {
 	return tok.Type > assignmentBegin && tok.Type < assignmentEnd
 }

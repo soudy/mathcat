@@ -36,7 +36,6 @@ var (
 // New initializes a new Parser instance, useful when you want to run multiple
 // expression and/or use variables.
 func New() *Parser {
-
 	return &Parser{
 		pos: 0,
 		Variables: map[string]float64{
@@ -120,7 +119,7 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 //     if val, err := p.GetVar("酷"); !err {
 //         fmt.Printf("%f\n", val) // -33
 //     }
-func (p *Parser) GetVar(index string) (float64, error) {
+func (p Parser) GetVar(index string) (float64, error) {
 	if val, ok := p.Variables[index]; ok {
 		return val, nil
 	}
