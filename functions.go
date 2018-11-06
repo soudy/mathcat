@@ -82,10 +82,24 @@ func init() {
 			return math.Atan(args[0])
 		},
 	})
-	funcs.register("log", &function{
+	funcs.register("ln", &function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Log(args[0])
+		},
+	})
+	funcs.register("log", &function{
+		arity: 1,
+		fn: func(args []float64) float64 {
+			return math.Log10(args[0])
+		},
+	})
+	funcs.register("logn", &function{
+		arity: 2,
+		fn: func(args []float64) float64 {
+			base := args[0]
+			arg := args[1]
+			return math.Log10(arg) / math.Log10(base)
 		},
 	})
 	funcs.register("max", &function{

@@ -151,25 +151,27 @@ mathcat has a big list of functions you can use. A function call is invoked like
 in most programming languages, with an identifier followed by a left parentheses
 like this: `max(5, 10)`.
 
-| Function     | Arguments   | Description                                                                    |
-|:------------:|:-----------:|--------------------------------------------------------------------------------|
-| abs          | 1           | returns the absolute value of given number                                     |
-| acos         | 1           | returns the arccosine of given number, in radians                              |
-| sin          | 1           | returns the sine of given number                                               |
-| cos          | 1           | returns the cosine of given number                                             |
-| tan          | 1           | returns the tangent of given number                                            |
-| asin         | 1           | returns the arcsine of given number                                            |
-| acos         | 1           | returns the acosine of given number                                            |
-| atan         | 1           | returns the arctangent of given number                                         |
-| ceil         | 1           | function returns the smallest integer greater than or equal to a given number  |
-| floor        | 1           | returns the largest integer less than or equal to a given number               |
-| log          | 1           | returns the natural logarithm of given number                                  |
-| max          | 2           | returns the larger of the two given numbers                                    |
-| min          | 2           | returns the smaller of the two given numbers                                   |
-| sqrt         | 1           | returns the square root of given number                                        |
-| rand         | 0           | returns a random float between 0.0 and 1.0                                     |
-| fact         | 1           | returns the factorial of  given number                                         |
-| list         | 0           | list all functions                                                             |
+| Function       |     Arguments | Description                                                                      |
+| :------------: | :-----------: | -------------------------------------------------------------------------------- |
+| abs            |             1 | returns the absolute value of given number                                       |
+| acos           |             1 | returns the arccosine of given number, in radians                                |
+| sin            |             1 | returns the sine of given number                                                 |
+| cos            |             1 | returns the cosine of given number                                               |
+| tan            |             1 | returns the tangent of given number                                              |
+| asin           |             1 | returns the arcsine of given number                                              |
+| acos           |             1 | returns the acosine of given number                                              |
+| atan           |             1 | returns the arctangent of given number                                           |
+| ceil           |             1 | returns the smallest integer greater than or equal to a given number             |
+| floor          |             1 | returns the largest integer less than or equal to a given number                 |
+| ln             |             1 | returns the natural logarithm of given number                                    |
+| log            |             1 | returns the the decimal logarithm of given number                                |
+| logn           |             2 | returns the the n logarithm of given number                                      |
+| max            |             2 | returns the larger of the two given numbers                                      |
+| min            |             2 | returns the smaller of the two given numbers                                     |
+| sqrt           |             1 | returns the square root of given number                                          |
+| rand           |             0 | returns a random float between 0.0 and 1.0                                       |
+| fact           |             1 | returns the factorial of  given number                                           |
+| list           |             0 | list all functions                                                               |
 
 ### Predefined variables
 There are some handy predefined variables you can use (and change) throughout
