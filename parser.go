@@ -286,7 +286,7 @@ func (p *Parser) evaluate(tok *Token) (float64, error) {
 
 func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	var (
-		function *function
+		function function
 		ok       bool
 		i        int
 	)

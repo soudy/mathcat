@@ -15,86 +15,86 @@ type function struct {
 	fn    func(args []float64) float64
 }
 
-type functions map[string]*function
+type functions map[string]function
 
 // FunctionNames holds all the function names that are available for use
 var FunctionNames []string
 
 var funcs = make(functions)
 
-func (f functions) register(name string, function *function) {
+func (f functions) register(name string, function function) {
 	FunctionNames = append(FunctionNames, name)
 	f[name] = function
 }
 
 func init() {
-	funcs.register("abs", &function{
+	funcs.register("abs", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Abs(args[0])
 		},
 	})
-	funcs.register("ceil", &function{
+	funcs.register("ceil", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Ceil(args[0])
 		},
 	})
-	funcs.register("floor", &function{
+	funcs.register("floor", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Floor(args[0])
 		},
 	})
-	funcs.register("sin", &function{
+	funcs.register("sin", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Sin(args[0])
 		},
 	})
-	funcs.register("cos", &function{
+	funcs.register("cos", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Cos(args[0])
 		},
 	})
-	funcs.register("tan", &function{
+	funcs.register("tan", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Tan(args[0])
 		},
 	})
-	funcs.register("asin", &function{
+	funcs.register("asin", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Asin(args[0])
 		},
 	})
-	funcs.register("acos", &function{
+	funcs.register("acos", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Acos(args[0])
 		},
 	})
-	funcs.register("atan", &function{
+	funcs.register("atan", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Atan(args[0])
 		},
 	})
-	funcs.register("ln", &function{
+	funcs.register("ln", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Log(args[0])
 		},
 	})
-	funcs.register("log", &function{
+	funcs.register("log", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Log10(args[0])
 		},
 	})
-	funcs.register("logn", &function{
+	funcs.register("logn", function{
 		arity: 2,
 		fn: func(args []float64) float64 {
 			base := args[0]
@@ -102,47 +102,47 @@ func init() {
 			return math.Log10(arg) / math.Log10(base)
 		},
 	})
-	funcs.register("max", &function{
+	funcs.register("max", function{
 		arity: 2,
 		fn: func(args []float64) float64 {
 			return math.Max(args[0], args[1])
 		},
 	})
-	funcs.register("min", &function{
+	funcs.register("min", function{
 		arity: 2,
 		fn: func(args []float64) float64 {
 			return math.Min(args[0], args[1])
 		},
 	})
-	funcs.register("sqrt", &function{
+	funcs.register("sqrt", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return math.Sqrt(args[0])
 		},
 	})
-	funcs.register("rand", &function{
+	funcs.register("rand", function{
 		arity: 0,
 		fn: func(_ []float64) float64 {
 			return rand.Float64()
 		},
 	})
-	funcs.register("fact", &function{
+	funcs.register("fact", function{
 		arity: 1,
 		fn: func(args []float64) float64 {
 			return float64(Factorial(int64(args[0])))
 		},
 	})
-	funcs.register("gcd", &function{
+	funcs.register("gcd", function{
 		arity: 2,
 		fn: func(args []float64) float64 {
 			return Gcd(args[0], args[1])
 		},
 	})
-	funcs.register("list", &function{
+	funcs.register("list", function{
 		arity: 0,
 		fn: func(_ []float64) float64 {
 			for _, name := range FunctionNames {
-				fmt.Printf(name + " ")
+				fmt.Print(name + " ")
 			}
 			fmt.Println()
 			return 0
