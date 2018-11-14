@@ -27,9 +27,10 @@ type Parser struct {
 }
 
 var (
-	RatTrue  = big.NewRat(1, 1)
+	// RatTrue represents true in boolean operations
+	RatTrue = big.NewRat(1, 1)
+	// RatFalse represents false in boolean operations
 	RatFalse = new(big.Rat)
-	RatZero  = new(big.Rat)
 
 	ErrDivionByZero         = errors.New("Divison by zero")
 	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
@@ -218,7 +219,7 @@ func (p *Parser) parse() (*big.Rat, error) {
 	// If there are no operands, the expression is useless and doesn't do
 	// anything, for example `()`
 	if p.operands.Empty() {
-		return RatZero, nil
+		return new(big.Rat), nil
 	}
 
 	// Single operand left means the expression was evaluated successful

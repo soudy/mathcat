@@ -109,6 +109,14 @@ mathcat.IsValidIdent("a2") // true
 mathcat.IsValidIdent("6a") // false
 ```
 
+### RationalToInteger
+Convert a `big.Rat` to a `big.Int`. Useful for printing in other bases or when
+you're only working with integers.
+```go
+integer := mathcat.RationalToInteger(big.NewRat(42, 1))
+fmt.Printf("%#x\n", integer) // prints 0x2a
+```
+
 ### Supported operators
 
 | Operator   | Description           |
