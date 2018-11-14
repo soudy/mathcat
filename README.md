@@ -85,9 +85,9 @@ To pass external variables to an expression without using `Run`, you can use
 `Exec` to pass a map of variables.
 
 ```go
-res, err := mathcat.Exec("a + b * b", map[string]float64{
-    "a": 1,
-    "b": 3,
+res, err := mathcat.Exec("a + b * b", map[string]*big.Rat{
+    "a": big.NewRat(1, 1),
+    "b": big.NewRat(3, 1),
 }) // 10
 ```
 
@@ -99,16 +99,6 @@ p := mathcat.New()
 p.Run("酷 = -33")
 if val, err := p.GetVar("酷"); !err {
     fmt.Printf("%f\n", val) // -33
-}
-```
-
-### IsWholeNumber
-Check if a `float64` is a whole number.
-```go
-if mathcat.IsWholeNumber(res) {
-    fmt.Printf("%d\n", int64(res))
-} else {
-    fmt.Printf("%f\n", res)
 }
 ```
 

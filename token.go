@@ -21,11 +21,11 @@ const (
 	EOL TokenType = iota // end of line
 
 	literalsBegin
-	IDENT  // x
-	NUMBER // 3
-	HEX    // 0xDEADBEEF
-	BINARY // 0b10101101100
-	OCTAL  // 0o666
+	IDENT   // x
+	DECIMAL // 3
+	HEX     // 0xDEADBEEF
+	BINARY  // 0b10101101100
+	OCTAL   // 0o666
 	literalsEnd
 
 	operatorsBegin
@@ -78,11 +78,11 @@ const (
 var tokens = map[TokenType]string{
 	EOL: "end of line",
 
-	IDENT:  "identifier",
-	NUMBER: "number",
-	HEX:    "hex number",
-	BINARY: "binary number",
-	OCTAL:  "octal number",
+	IDENT:   "identifier",
+	DECIMAL: "decimal number",
+	HEX:     "hex number",
+	BINARY:  "binary number",
+	OCTAL:   "octal number",
 
 	ADD:       "+",
 	SUB:       "-",

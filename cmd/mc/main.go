@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strconv"
 
 	"github.com/chzyer/readline"
 	"github.com/soudy/mathcat"
@@ -60,19 +59,17 @@ func repl(mode Mode) {
 
 		switch mode {
 		case NUMBER:
-			if mathcat.IsWholeNumber(res) {
-				fmt.Printf("%d\n", int64(res))
-			} else if res < 1e-10 {
-				fmt.Printf("%g\n", res)
+			if res.IsInt() {
+				fmt.Println(res.Num())
 			} else {
-				fmt.Printf("%.*f\n", *precision, res)
+				fmt.Println(res.FloatString(*precision))
 			}
 		case HEX:
-			fmt.Printf("%X\n", int64(res))
+			fmt.Println(res.String()) // TODO
 		case BINARY:
-			fmt.Println(strconv.FormatInt(int64(res), 2))
+			fmt.Println(res.String()) // TODO
 		case OCTAL:
-			fmt.Printf("%o\n", int64(res))
+			fmt.Println(res.String()) // TODO
 		}
 	}
 }

@@ -4,7 +4,10 @@
 
 package mathcat
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 func TestFloatBitwise(t *testing.T) {
 	badExpressions := []string{
@@ -44,23 +47,23 @@ func TestNumberLiterals(t *testing.T) {
 		}
 	}
 
-	validNumbers := map[string]float64{
-		"0xa":      10,
-		"0Xaaabe":  699070,
-		"0x12345":  74565,
-		"0xe":      14,
-		".200001":  0.200001,
-		".2e5":     20000,
-		"81e2":     8100,
-		"32":       32,
-		"100.0":    100,
-		"0x0":      0,
-		"0":        0,
-		"0b110011": 51,
-		"0b1":      1,
-		"0o666":    438,
-		"0O6120":   3152,
-		"0o0":      0,
+	validNumbers := map[string]*big.Rat{
+		"0xa":      big.NewRat(10, 1),
+		"0Xaaabe":  big.NewRat(699070, 1),
+		"0x12345":  big.NewRat(74565, 1),
+		"0xe":      big.NewRat(14, 1),
+		".200001":  big.NewRat(200001, 1000000),
+		".2e5":     big.NewRat(20000, 1),
+		"81e2":     big.NewRat(8100, 1),
+		"32":       big.NewRat(32, 1),
+		"100.0":    big.NewRat(100, 1),
+		"0x0":      RatZero,
+		"0":        RatZero,
+		"0b110011": big.NewRat(51, 1),
+		"0b1":      big.NewRat(1, 1),
+		"0o666":    big.NewRat(438, 1),
+		"0O6120":   big.NewRat(3152, 1),
+		"0o0":      RatZero,
 	}
 
 	for n, expected := range validNumbers {
@@ -69,34 +72,36 @@ func TestNumberLiterals(t *testing.T) {
 			t.Errorf("error on valid number literal: %s", err)
 		}
 
-		if res != expected {
-			t.Errorf("invalid literal evaluation on %s, expected '%f', got '%f'", n, expected, res)
+		if res.Cmp(expected) != 0 {
+			t.Errorf("invalid literal evaluation on %s, expected '%s', got '%s'", n, expected, res)
 		}
 	}
 
 }
 
 func TestEval(t *testing.T) {
-	okExpressions := map[string]float64{
-		"()":                                            0,
-		"-1":                                            -1,
-		"(1)":                                           1,
-		"12**12":                                        8916100448256,
-		"~(~(1))":                                       1,
-		"1000 > 10":                                     1,
-		"1000 < 10":                                     0,
-		"55.0 == 55":                                    1,
-		"55 <= 55":                                      1,
-		"55 >= 55":                                      1,
-		"-0 > 0":                                        0,
-		"0 < -0":                                        0,
-		"2 != 2":                                        0,
-		"((((((((((((1))))))))))))":                     1,
-		"(1 + (2 + (3 + (4 + (5 + (6 + (7)))))))":       28,
-		"(((((((1) + 2) + 3) + 4) + 5) + 6) + 7)":       28,
-		"((2 + 2 - 3) / (5 + 5 * 8 / 9)) - (9 + 2)":     -10.894117647058824,
-		"((2 * 4 - 6 / 3) * (3 * 5 + 8 / 4)) - (2 + 3)": 97,
-		"325-2*5+2": 317,
+	okExpressions := map[string]*big.Rat{
+		"()":                                            RatZero,
+		"-1":                                            big.NewRat(-1, 1),
+		"(1)":                                           big.NewRat(1, 1),
+		"12**12":                                        big.NewRat(8916100448256, 1),
+		"~(~(1))":                                       big.NewRat(1, 1),
+		"1000 > 10":                                     big.NewRat(1, 1),
+		"1000 < 10":                                     RatZero,
+		"55.0 == 55":                                    big.NewRat(1, 1),
+		"55 <= 55":                                      big.NewRat(1, 1),
+		"55 >= 55":                                      big.NewRat(1, 1),
+		"-0 > 0":                                        RatZero,
+		"0 < -0":                                        RatZero,
+		"2 != 2":                                        RatZero,
+		"5 % 25":                                        big.NewRat(5, 1),
+		"((((((((((((1))))))))))))":                     big.NewRat(1, 1),
+		"(1 + (2 + (3 + (4 + (5 + (6 + (7)))))))":       big.NewRat(28, 1),
+		"(((((((1) + 2) + 3) + 4) + 5) + 6) + 7)":       big.NewRat(28, 1),
+		"((2 + 2 - 3) / (5 + 5 * 8 / 9)) - (9 + 2)":     big.NewRat(-926, 85),
+		"((2 * 4 - 6 / 3) * (3 * 5 + 8 / 4)) - (2 + 3)": big.NewRat(97, 1),
+		"0xdeadbeef & 0xff000000":                       big.NewRat(3724541952, 1),
+		"325-2*5+2":                                     big.NewRat(317, 1),
 	}
 
 	for expr, expected := range okExpressions {
@@ -105,8 +110,8 @@ func TestEval(t *testing.T) {
 			t.Errorf("parser error occured on correct expression '%s': %s", expr, err)
 		}
 
-		if expected != res {
-			t.Errorf("wrong result in expression '%s' (expected %f, got %f)",
+		if expected.Cmp(res) != 0 {
+			t.Errorf("wrong result in expression '%s' (expected %s, got %s)",
 				expr, expected, res)
 		}
 	}
@@ -127,15 +132,26 @@ func TestEval(t *testing.T) {
 func TestExec(t *testing.T) {
 	type execTest struct {
 		expr     string
-		vars     map[string]float64
-		expected float64
+		vars     map[string]*big.Rat
+		expected *big.Rat
 	}
 
 	okExpressions := []execTest{
-		{"酷 + b * b", map[string]float64{"酷": 1, "b": 3}, 10},
-		{"a + b_ * pi", map[string]float64{"a": 1, "b_": 3, "pi": 3}, 10},
-		{"a2 + b5 * pi3", map[string]float64{"a2": 1, "b5": 3, "pi3": 3}, 10},
-		{"Å ** Å", map[string]float64{"Å": 1}, 1},
+		{"酷 + b * b", map[string]*big.Rat{
+			"酷": big.NewRat(1, 1),
+			"b": big.NewRat(3, 1)},
+			big.NewRat(10, 1)},
+		{"a + b_ * pi", map[string]*big.Rat{
+			"a":  big.NewRat(1, 1),
+			"b_": big.NewRat(3, 1),
+			"pi": big.NewRat(3, 1)},
+			big.NewRat(10, 1)},
+		{"a2 + b5 * pi3", map[string]*big.Rat{
+			"a2":  big.NewRat(1, 1),
+			"b5":  big.NewRat(3, 1),
+			"pi3": big.NewRat(3, 1)},
+			big.NewRat(10, 1)},
+		{"Å ** Å", map[string]*big.Rat{"Å": big.NewRat(1, 1)}, big.NewRat(1, 1)},
 	}
 
 	for _, test := range okExpressions {
@@ -144,41 +160,25 @@ func TestExec(t *testing.T) {
 			t.Errorf("error on correct Exec: %s", err)
 		}
 
-		if res != test.expected {
+		if res.Cmp(test.expected) != 0 {
 			t.Error("wrong result in Exec")
 		}
 	}
 
 	badExpressions := []execTest{
-		{"", map[string]float64{"-1": 0}, 0},
-		{"", map[string]float64{"55": 0}, 0},
-		{"", map[string]float64{"55a": 0}, 0},
-		{"", map[string]float64{".": 0}, 0},
-		{"", map[string]float64{")": 0}, 0},
-		{"", map[string]float64{"(": 0}, 0},
-		{"", map[string]float64{"@": 0}, 0},
+		{"", map[string]*big.Rat{"-1": nil}, nil},
+		{"", map[string]*big.Rat{"55": nil}, nil},
+		{"", map[string]*big.Rat{"55a": nil}, nil},
+		{"", map[string]*big.Rat{".": nil}, nil},
+		{"", map[string]*big.Rat{")": nil}, nil},
+		{"", map[string]*big.Rat{"(": nil}, nil},
+		{"", map[string]*big.Rat{"@": nil}, nil},
 	}
 
 	for _, test := range badExpressions {
 		_, err := Exec(test.expr, test.vars)
 		if err == nil {
 			t.Error("no error on bad Exec")
-		}
-	}
-}
-
-func TestWholeNumber(t *testing.T) {
-	wholeNumbers := []float64{2.0, 2, -2.0, -2, 100.0}
-	for _, num := range wholeNumbers {
-		if !IsWholeNumber(num) {
-			t.Error("whole number not recognized")
-		}
-	}
-
-	floats := []float64{2.00001, 2.1, -2.09999, -2.00009, 100.9}
-	for _, num := range floats {
-		if IsWholeNumber(num) {
-			t.Error("float recognized as whole number")
 		}
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"strconv"
+	"math/big"
 )
 
 // Parser holds the lexed tokens, token position, declared variables and stacks
@@ -18,7 +18,7 @@ import (
 // however be overwritten.
 type Parser struct {
 	Tokens    Tokens
-	Variables map[string]float64
+	Variables map[string]*big.Rat
 
 	pos int
 	tok *Token
@@ -27,36 +27,42 @@ type Parser struct {
 }
 
 var (
+	RatTrue  = big.NewRat(1, 1)
+	RatFalse = big.NewRat(0, 1)
+	RatZero  = big.NewRat(0, 1)
+
 	ErrDivionByZero         = errors.New("Divison by zero")
 	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
 	ErrMisplacedComma       = errors.New("Misplaced ‘,’")
 	ErrAssignToLiteral      = errors.New("Can't assign to literal")
+
+	defaultVariables = map[string]*big.Rat{
+		"pi":  new(big.Rat).SetFloat64(math.Pi),
+		"tau": new(big.Rat).SetFloat64(math.Pi * 2),
+		"phi": new(big.Rat).SetFloat64(math.Phi),
+		"e":   new(big.Rat).SetFloat64(math.E),
+	}
 )
 
 // New initializes a new Parser instance, useful when you want to run multiple
 // expression and/or use variables.
 func New() *Parser {
-	return &Parser{
-		pos: 0,
-		Variables: map[string]float64{
-			"pi":  math.Pi,
-			"tau": math.Pi * 2,
-			"phi": math.Phi,
-			"e":   math.E,
-		},
-	}
+	parser := &Parser{}
+	parser.reset()
+
+	return parser
 }
 
 // Eval evaluates an expression and returns its result and any errors found.
 //
 // Example:
 //     res, err := mathcat.Eval("2 * 2 * 2") // 8
-func Eval(expr string) (float64, error) {
+func Eval(expr string) (*big.Rat, error) {
 	tokens, err := Lex(expr)
 
 	// If a lexer error occurred don't parse
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	p := New()
@@ -72,11 +78,11 @@ func Eval(expr string) (float64, error) {
 //     p.Run("a = 555")
 //     p.Run("a += 45")
 //     res, err := p.Run("a + a") // 1200
-func (p *Parser) Run(expr string) (float64, error) {
+func (p *Parser) Run(expr string) (*big.Rat, error) {
 	tokens, err := Lex(expr)
 
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	p.reset()
@@ -88,15 +94,15 @@ func (p *Parser) Run(expr string) (float64, error) {
 // Exec executes an expression with a given map of variables.
 //
 // Example:
-//     res, err := mathcat.Exec("a + b * b", map[string]float64{
-//         "a": 1,
-//         "b": 3,
+//     res, err := mathcat.Exec("a + b * b", map[string]*big.Rat{
+//         "a": big.NewRat(1, 1),
+//         "b": big.NewRat(3, 1),
 //     }) // 10
-func Exec(expr string, vars map[string]float64) (float64, error) {
+func Exec(expr string, vars map[string]*big.Rat) (*big.Rat, error) {
 	tokens, err := Lex(expr)
 
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	p := New()
@@ -104,7 +110,7 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 
 	for name, val := range vars {
 		if !IsValidIdent(name) {
-			return -1, fmt.Errorf("Invalid variable name: ‘%s’", name)
+			return nil, fmt.Errorf("Invalid variable name: ‘%s’", name)
 		}
 		p.Variables[name] = val
 	}
@@ -119,15 +125,15 @@ func Exec(expr string, vars map[string]float64) (float64, error) {
 //     if val, err := p.GetVar("酷"); !err {
 //         fmt.Printf("%f\n", val) // -33
 //     }
-func (p Parser) GetVar(index string) (float64, error) {
+func (p Parser) GetVar(index string) (*big.Rat, error) {
 	if val, ok := p.Variables[index]; ok {
 		return val, nil
 	}
 
-	return -1, fmt.Errorf("Undefined variable ‘%s’", index)
+	return nil, fmt.Errorf("Undefined variable ‘%s’", index)
 }
 
-func (p *Parser) parse() (float64, error) {
+func (p *Parser) parse() (*big.Rat, error) {
 	// Initializing current token value
 	p.tok = p.Tokens[0]
 
@@ -153,7 +159,7 @@ func (p *Parser) parse() (float64, error) {
 		case p.tok.Is(COMMA):
 			for {
 				if p.operators.Empty() {
-					return -1, ErrMisplacedComma
+					return nil, ErrMisplacedComma
 				}
 
 				if p.operators.Top().(*Token).Is(LPAREN) {
@@ -162,7 +168,7 @@ func (p *Parser) parse() (float64, error) {
 
 				val, err := p.evaluate(p.operators.Pop().(*Token))
 				if err != nil {
-					return -1, err
+					return nil, err
 				}
 
 				p.operands.Push(val)
@@ -170,12 +176,12 @@ func (p *Parser) parse() (float64, error) {
 			p.arity.Push(p.arity.Pop().(int) + 1)
 		case p.tok.IsOperator():
 			if err := p.handleOperator(); err != nil {
-				return -1, err
+				return nil, err
 			}
 		case p.tok.Is(RPAREN):
 			for {
 				if p.operators.Empty() {
-					return -1, ErrUnmatchedParentheses
+					return nil, ErrUnmatchedParentheses
 				}
 
 				top := p.operators.Pop().(*Token)
@@ -185,7 +191,7 @@ func (p *Parser) parse() (float64, error) {
 
 				val, err := p.evaluate(top)
 				if err != nil {
-					return -1, err
+					return nil, err
 				}
 
 				p.operands.Push(val)
@@ -198,12 +204,12 @@ func (p *Parser) parse() (float64, error) {
 		top := p.operators.Pop().(*Token)
 
 		if top.Is(LPAREN) {
-			return -1, ErrUnmatchedParentheses
+			return nil, ErrUnmatchedParentheses
 		}
 
 		val, err := p.evaluate(top)
 		if err != nil {
-			return -1, err
+			return nil, err
 		}
 
 		p.operands.Push(val)
@@ -212,7 +218,7 @@ func (p *Parser) parse() (float64, error) {
 	// If there are no operands, the expression is useless and doesn't do
 	// anything, for example `()`
 	if p.operands.Empty() {
-		return 0, nil
+		return RatZero, nil
 	}
 
 	// Single operand left means the expression was evaluated successful
@@ -221,7 +227,7 @@ func (p *Parser) parse() (float64, error) {
 	}
 
 	// Leftover token on operand stack indicates invalid syntax
-	return -1, fmt.Errorf("Unexpected ‘%s’", p.operands.Top())
+	return nil, fmt.Errorf("Unexpected ‘%s’", p.operands.Top())
 }
 
 func (p *Parser) handleOperator() error {
@@ -276,7 +282,7 @@ func (p *Parser) handleOperator() error {
 // evaluate gets called when an operator or function call has to be evaluated
 // for a result. In case of a function, evaluateFunc is called and in case of
 // an operator evaluateOp is called.
-func (p *Parser) evaluate(tok *Token) (float64, error) {
+func (p *Parser) evaluate(tok *Token) (*big.Rat, error) {
 	if tok.IsOperator() {
 		return p.evaluateOp(tok)
 	}
@@ -284,7 +290,7 @@ func (p *Parser) evaluate(tok *Token) (float64, error) {
 	return p.evaluateFunc(tok)
 }
 
-func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
+func (p *Parser) evaluateFunc(tok *Token) (*big.Rat, error) {
 	var (
 		function function
 		ok       bool
@@ -292,23 +298,23 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	)
 
 	if function, ok = funcs[tok.Value]; !ok {
-		return -1, fmt.Errorf("Undefined function ‘%s’", tok)
+		return nil, fmt.Errorf("Undefined function ‘%s’", tok)
 	}
 
 	if arity := p.arity.Pop().(int); arity != function.arity {
-		return -1, fmt.Errorf("Invalid argument count for ‘%s’ (expected %d, got %d)", tok, function.arity, arity)
+		return nil, fmt.Errorf("Invalid argument count for ‘%s’ (expected %d, got %d)", tok, function.arity, arity)
 	}
 
 	// Start popping off arguments for the function call
-	args := make([]float64, function.arity)
+	args := make([]*big.Rat, function.arity)
 	for i = function.arity - 1; i >= 0; i-- {
 		if p.operands.Empty() {
-			return -1, ErrMisplacedComma
+			return nil, ErrMisplacedComma
 		}
 
 		arg, err := p.lookup(p.operands.Pop())
 		if err != nil {
-			return -1, err
+			return nil, err
 		}
 
 		args[i] = arg
@@ -317,26 +323,26 @@ func (p *Parser) evaluateFunc(tok *Token) (float64, error) {
 	return function.fn(args), nil
 }
 
-func (p *Parser) evaluateOp(operator *Token) (float64, error) {
+func (p *Parser) evaluateOp(operator *Token) (*big.Rat, error) {
 	var (
-		result      float64
-		left, right float64
+		result      *big.Rat
+		left, right *big.Rat
 		err         error
 		lhsToken    interface{}
 	)
 
 	if p.operands.Empty() {
-		return -1, fmt.Errorf("Unexpected ‘%s’", operator)
+		return nil, fmt.Errorf("Unexpected ‘%s’", operator)
 	}
 
 	if right, err = p.lookup(p.operands.Pop()); err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	// Unary operators have no left hand side
 	if op := operators[operator.Type]; !op.unary {
 		if p.operands.Empty() {
-			return -1, fmt.Errorf("Unexpected ‘%s’", operator)
+			return nil, fmt.Errorf("Unexpected ‘%s’", operator)
 		}
 		// Save the token in case of a assignment variable is used and we need
 		// to save the result in a variable
@@ -347,20 +353,20 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 		if !operator.Is(EQ) {
 			left, err = p.lookup(lhsToken)
 			if err != nil {
-				return -1, err
+				return nil, err
 			}
 		}
 	}
 
 	result, err = execute(operator, left, right)
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	if operator.IsAssignment() {
 		// Save result in variable
 		if val, ok := lhsToken.(*Token); !(ok && val.Is(IDENT)) {
-			return -1, ErrAssignToLiteral
+			return nil, ErrAssignToLiteral
 		}
 		p.Variables[lhsToken.(*Token).Value] = result
 	}
@@ -368,114 +374,123 @@ func (p *Parser) evaluateOp(operator *Token) (float64, error) {
 	return result, nil
 }
 
-func execute(operator *Token, lhs, rhs float64) (float64, error) {
-	var result float64
+func execute(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
+	result := new(big.Rat)
 
-	// Both lhs and rhs have to be whole numbers for bitwise operations
-	if operator.IsBitwise() && !(IsWholeNumber(lhs) && IsWholeNumber(rhs)) {
-		return -1, fmt.Errorf("Unsupported type (float) for ‘%s’", operator)
+	// Both lhs and rhs have to be integers for bitwise operations
+	if operator.IsBitwise() {
+		if (lhs == nil && !rhs.IsInt()) || (lhs != nil && (!rhs.IsInt() || !lhs.IsInt())) {
+			return nil, fmt.Errorf("Expecting integers for ‘%s’", operator)
+		}
 	}
 
 	switch operator.Type {
 	case ADD, ADD_EQ:
-		result = lhs + rhs
+		result.Add(lhs, rhs)
 	case SUB, SUB_EQ:
-		result = lhs - rhs
+		result.Sub(lhs, rhs)
 	case UNARY_MIN:
-		result = -rhs
+		result.Neg(rhs)
 	case DIV, DIV_EQ:
-		if rhs == 0 {
-			return -1, ErrDivionByZero
+		if rhs.Sign() == 0 {
+			return nil, ErrDivionByZero
 		}
-		result = lhs / rhs
+		result.Quo(lhs, rhs)
 	case MUL, MUL_EQ:
-		result = lhs * rhs
+		result.Mul(lhs, rhs)
 	case POW, POW_EQ:
-		result = math.Pow(lhs, rhs)
+		lhsInteger := rationalToInteger(lhs)
+		rhsInteger := rationalToInteger(rhs)
+		result.SetInt(new(big.Int).Exp(lhsInteger, rhsInteger, nil))
 	case REM, REM_EQ:
-		if rhs == 0 {
-			return -1, ErrDivionByZero
+		if rhs.Sign() == 0 {
+			return nil, ErrDivionByZero
 		}
-		result = math.Mod(lhs, rhs)
+		lhsInteger := rationalToInteger(lhs)
+		rhsInteger := rationalToInteger(rhs)
+		result.SetInt(new(big.Int).Mod(lhsInteger, rhsInteger))
 	case AND, AND_EQ:
-		result = float64(int64(lhs) & int64(rhs))
+		result.SetInt(new(big.Int).And(lhs.Num(), rhs.Num()))
 	case OR, OR_EQ:
-		result = float64(int64(lhs) | int64(rhs))
+		result.SetInt(new(big.Int).Or(lhs.Num(), rhs.Num()))
 	case XOR, XOR_EQ:
-		result = float64(int64(lhs) ^ int64(rhs))
+		result.SetInt(new(big.Int).Xor(lhs.Num(), rhs.Num()))
 	case LSH, LSH_EQ:
-		result = float64(uint64(lhs) << uint64(rhs))
+		shift := uint(rhs.Num().Uint64())
+		result.SetInt(new(big.Int).Lsh(lhs.Num(), shift))
 	case RSH, RSH_EQ:
-		result = float64(uint64(lhs) >> uint64(rhs))
+		shift := uint(rhs.Num().Uint64())
+		result.SetInt(new(big.Int).Rsh(lhs.Num(), shift))
 	case NOT:
-		result = float64(^int64(rhs))
+		result.SetInt(new(big.Int).Not(rhs.Num()))
 	case EQ:
 		result = rhs
 	case EQ_EQ:
-		result = bool2float(lhs == rhs)
+		result = boolToRat(lhs.Cmp(rhs) == 0)
 	case BANG_EQ:
-		result = bool2float(lhs != rhs)
+		result = boolToRat(lhs.Cmp(rhs) != 0)
 	case GT:
-		result = bool2float(lhs > rhs)
+		result = boolToRat(lhs.Cmp(rhs) == 1)
 	case GT_EQ:
-		result = bool2float(lhs >= rhs)
+		result = boolToRat(lhs.Cmp(rhs) == 1 || lhs.Cmp(rhs) == 0)
 	case LT:
-		result = bool2float(lhs < rhs)
+		result = boolToRat(lhs.Cmp(rhs) == -1)
 	case LT_EQ:
-		result = bool2float(lhs <= rhs)
+		result = boolToRat(lhs.Cmp(rhs) == -1 || lhs.Cmp(rhs) == 0)
 	default:
-		return -1, fmt.Errorf("Invalid operator ‘%s’", operator)
+		return nil, fmt.Errorf("Invalid operator ‘%s’", operator)
 	}
 
 	return result, nil
 }
 
 // Look up a literal. If it's an identifier, check the parser's variables map,
-// otherwise convert the tokenized string to a float64.
-func (p *Parser) lookup(val interface{}) (float64, error) {
-	// val can be a token or a float64, if it's a float64 it has been already
+// otherwise convert the tokenized string to a rational number.
+func (p *Parser) lookup(val interface{}) (*big.Rat, error) {
+	// val can be a token or a rational, if it's a rational it has been already
 	// evaluated and we don't need to do anything
-	if v, ok := val.(float64); ok {
+	if v, ok := val.(*big.Rat); ok {
 		return v, nil
 	}
 
 	var (
-		tmp uint64
-		res float64
-		err error
+		ok  bool
+		res = new(big.Rat)
 	)
 
 	bases := [...]int{
 		HEX:    16,
-		BINARY: 2,
 		OCTAL:  8,
+		BINARY: 2,
 	}
 
 	tok := val.(*Token)
 	switch tok.Type {
-	case NUMBER:
-		res, err = strconv.ParseFloat(tok.Value, 64)
-	case HEX, BINARY, OCTAL:
-		// Remove 0x part of literal and convert to uint first
-		tmp, err = strconv.ParseUint(tok.Value[2:], bases[tok.Type], 64)
+	case DECIMAL:
+		res, ok = res.SetString(tok.Value)
 
-		// Then convert to float
-		res = float64(tmp)
-	case IDENT:
-		res, err = p.GetVar(tok.Value)
-		if err != nil {
-			return -1, err
+		if !ok {
+			return nil, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok.Type)
 		}
+	case HEX, BINARY, OCTAL:
+		tmpInt := new(big.Int)
+		// Remove prefix of literal and convert to int first
+		tmpInt, ok = tmpInt.SetString(tok.Value[2:], bases[tok.Type])
+
+		if !ok {
+			return nil, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok.Type)
+		}
+
+		res.SetInt(tmpInt)
+	case IDENT:
+		res, err := p.GetVar(tok.Value)
+		if err != nil {
+			return nil, err
+		}
+
 		return res, nil
 	default:
-		return -1, fmt.Errorf("Invalid lookup type ‘%s’", tok)
-	}
-
-	if err != nil {
-		if numError, ok := err.(*strconv.NumError); ok && numError.Err == strconv.ErrRange {
-			return -1, fmt.Errorf("Error parsing ‘%s’: %s", tok.Value, strconv.ErrRange)
-		}
-		return -1, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok)
+		return nil, fmt.Errorf("Invalid lookup type ‘%s’", tok)
 	}
 
 	return res, nil
@@ -488,6 +503,12 @@ func (p *Parser) reset() {
 	p.operators = nil
 	p.operands = nil
 	p.arity = nil
+
+	p.Variables = make(map[string]*big.Rat)
+
+	for k, v := range defaultVariables {
+		p.Variables[k] = v
+	}
 }
 
 func (p *Parser) peek() *Token {
@@ -504,14 +525,13 @@ func (p *Parser) eat() *Token {
 	return p.tok
 }
 
-// IsWholeNumber checks if a float is a whole number
-func IsWholeNumber(n float64) bool {
-	return float64(int64(n)) == n
+func boolToRat(b bool) *big.Rat {
+	if b {
+		return RatTrue
+	}
+	return RatFalse
 }
 
-func bool2float(b bool) float64 {
-	if b {
-		return 1
-	}
-	return 0
+func rationalToInteger(n *big.Rat) *big.Int {
+	return new(big.Int).Div(n.Num(), n.Denom())
 }

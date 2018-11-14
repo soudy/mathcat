@@ -229,7 +229,7 @@ func (l *lexer) readNumber() {
 		}
 	}
 
-	// Numeral literals
+	// Decimal literals
 	for isNumber(l.peek()) || l.peek() == 'e' || l.peek() == 'E' {
 		l.eat()
 		if (l.ch == 'e' || l.ch == 'E') && l.peek() == '-' {
@@ -237,7 +237,7 @@ func (l *lexer) readNumber() {
 		}
 	}
 
-	l.emit(NUMBER)
+	l.emit(DECIMAL)
 }
 
 func (l lexer) isNegation() bool {

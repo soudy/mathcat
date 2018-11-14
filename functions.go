@@ -7,12 +7,13 @@ package mathcat
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"math/rand"
 )
 
 type function struct {
 	arity int
-	fn    func(args []float64) float64
+	fn    func(args []*big.Rat) *big.Rat
 }
 
 type functions map[string]function
@@ -30,140 +31,165 @@ func (f functions) register(name string, function function) {
 func init() {
 	funcs.register("abs", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Abs(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			return new(big.Rat).Abs(args[0])
 		},
 	})
 	funcs.register("ceil", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Ceil(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Ceil(float))
 		},
 	})
 	funcs.register("floor", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Floor(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			return new(big.Rat).SetInt(rationalToInteger(args[0]))
 		},
 	})
 	funcs.register("sin", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Sin(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Sin(float))
 		},
 	})
 	funcs.register("cos", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Cos(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Cos(float))
 		},
 	})
 	funcs.register("tan", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Tan(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Tan(float))
 		},
 	})
 	funcs.register("asin", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Asin(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Asin(float))
 		},
 	})
 	funcs.register("acos", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Acos(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Acos(float))
 		},
 	})
 	funcs.register("atan", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Atan(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Atan(float))
 		},
 	})
 	funcs.register("ln", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Log(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Log(float))
 		},
 	})
 	funcs.register("log", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Log10(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Log10(float))
 		},
 	})
 	funcs.register("logn", function{
 		arity: 2,
-		fn: func(args []float64) float64 {
-			base := args[0]
-			arg := args[1]
-			return math.Log10(arg) / math.Log10(base)
+		fn: func(args []*big.Rat) *big.Rat {
+			base, _ := args[0].Float64()
+			arg, _ := args[1].Float64()
+			return new(big.Rat).SetFloat64(math.Log10(arg) / math.Log10(base))
 		},
 	})
 	funcs.register("max", function{
 		arity: 2,
-		fn: func(args []float64) float64 {
-			return math.Max(args[0], args[1])
+		fn: func(args []*big.Rat) *big.Rat {
+			return Max(args[0], args[1])
 		},
 	})
 	funcs.register("min", function{
 		arity: 2,
-		fn: func(args []float64) float64 {
-			return math.Min(args[0], args[1])
+		fn: func(args []*big.Rat) *big.Rat {
+			return Min(args[0], args[1])
 		},
 	})
 	funcs.register("sqrt", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return math.Sqrt(args[0])
+		fn: func(args []*big.Rat) *big.Rat {
+			float, _ := args[0].Float64()
+			return new(big.Rat).SetFloat64(math.Sqrt(float))
 		},
 	})
 	funcs.register("rand", function{
 		arity: 0,
-		fn: func(_ []float64) float64 {
-			return rand.Float64()
+		fn: func(_ []*big.Rat) *big.Rat {
+			return new(big.Rat).SetFloat64(rand.Float64())
 		},
 	})
 	funcs.register("fact", function{
 		arity: 1,
-		fn: func(args []float64) float64 {
-			return float64(Factorial(int64(args[0])))
+		fn: func(args []*big.Rat) *big.Rat {
+			integer := rationalToInteger(args[0])
+			return Factorial(integer)
 		},
 	})
 	funcs.register("gcd", function{
 		arity: 2,
-		fn: func(args []float64) float64 {
-			return Gcd(args[0], args[1])
+		fn: func(args []*big.Rat) *big.Rat {
+			x := rationalToInteger(args[0])
+			y := rationalToInteger(args[1])
+			return Gcd(x, y)
 		},
 	})
 	funcs.register("list", function{
 		arity: 0,
-		fn: func(_ []float64) float64 {
+		fn: func(_ []*big.Rat) *big.Rat {
 			for _, name := range FunctionNames {
 				fmt.Print(name + " ")
 			}
 			fmt.Println()
-			return 0
+			return nil
 		},
 	})
 }
 
-// Factorial calculates the factorial of number n
-func Factorial(n int64) int64 {
-	if n <= 1 {
-		return 1
-	}
-
-	return n * Factorial(n-1)
+// Factorial calculates the factorial of rational number n
+func Factorial(n *big.Int) *big.Rat {
+	fact := new(big.Int).MulRange(1, n.Int64())
+	return new(big.Rat).SetInt(fact)
 }
 
 // Gcd calculates the greatest common divisor of the numbers x and y
-func Gcd(x, y float64) float64 {
-	for y != 0 {
-		x, y = y, math.Mod(x, y)
+func Gcd(x, y *big.Int) *big.Rat {
+	gcd := new(big.Int).GCD(nil, nil, x, y)
+	return new(big.Rat).SetInt(gcd)
+}
+
+// Max gives the maximum of two rational numbers
+func Max(a, b *big.Rat) *big.Rat {
+	if a.Cmp(b) == 1 {
+		return a
 	}
 
-	return x
+	return b
+}
+
+// Min gives the minimum of two rational numbers
+func Min(a, b *big.Rat) *big.Rat {
+	if a.Cmp(b) == -1 {
+		return a
+	}
+
+	return b
 }

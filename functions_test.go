@@ -5,7 +5,7 @@
 package mathcat
 
 import (
-	"math"
+	"math/big"
 	"testing"
 )
 
@@ -36,25 +36,25 @@ func TestFunctions(t *testing.T) {
 }
 
 func TestFunctionsResult(t *testing.T) {
-	calls := map[string]float64{
-		"abs(-700)":                         math.Abs(-700),
-		"ceil(813.23)":                      math.Ceil(813.23),
-		"floor(813.23)":                     math.Floor(813.23),
-		"sin(74)":                           math.Sin(74),
-		"cos(74)":                           math.Cos(74),
-		"tan(74)":                           math.Tan(74),
-		"asin(-1)":                          math.Asin(-1),
-		"acos(-1)":                          math.Acos(-1),
-		"atan(-1)":                          math.Atan(-1),
-		"ln(3*100)":                         math.Log(3 * 100),
-		"log(50)":                           math.Log10(50),
-		"logn(2, 50)":                       math.Log10(50) / math.Log10(2),
-		"max(5, 8)":                         math.Max(5, 8),
-		"min(5, 8)":                         math.Min(5, 8),
-		"sqrt(144)":                         math.Sqrt(144),
-		"tan(144) + tan(-3) + sin(5)":       -1.380026998425437,
-		"fact(6) * fact(7) == fact(10)":     1,
-		"fact(6.5) * fact(7.3) == fact(10)": 1,
+	calls := map[string]*big.Rat{
+		"abs(-700)":                         big.NewRat(700, 1),
+		"ceil(813.23)":                      big.NewRat(814, 1),
+		"floor(813.23)":                     big.NewRat(813, 1),
+		"sin(74)":                           big.NewRat(-8873408663100473, 9007199254740992),
+		"cos(74)":                           big.NewRat(6186769253457135, 36028797018963968),
+		"tan(74)":                           big.NewRat(-6459313142528259, 1125899906842624),
+		"asin(-1)":                          big.NewRat(-884279719003555, 562949953421312),
+		"acos(-1)":                          big.NewRat(884279719003555, 281474976710656),
+		"atan(-1)":                          big.NewRat(-884279719003555, 1125899906842624),
+		"ln(3*100)":                         big.NewRat(802736019608251, 140737488355328),
+		"log(50)":                           big.NewRat(59777192800323, 35184372088832),
+		"logn(2, 50)":                       big.NewRat(6354417158300529, 1125899906842624),
+		"max(5, 8)":                         big.NewRat(8, 1),
+		"min(5, 8)":                         big.NewRat(5, 1),
+		"sqrt(144)":                         big.NewRat(12, 1),
+		"tan(144) + tan(-3) + sin(5)":       big.NewRat(-49720712606960177, 36028797018963968),
+		"fact(6) * fact(7) == fact(10)":     big.NewRat(1, 1),
+		"fact(6.5) * fact(7.3) == fact(10)": big.NewRat(1, 1),
 	}
 
 	for expr, expected := range calls {
@@ -63,8 +63,8 @@ func TestFunctionsResult(t *testing.T) {
 			t.Errorf("unexpected error on ok function call: %s", err)
 		}
 
-		if res != expected {
-			t.Errorf("wrong result in function call '%s' (expected %f, got %f)",
+		if res.Cmp(expected) != 0 {
+			t.Errorf("wrong result in function call '%s' (expected %s, got %s)",
 				expr, expected, res)
 		}
 	}
