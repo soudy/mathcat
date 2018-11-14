@@ -49,7 +49,12 @@ var (
 // expression and/or use variables.
 func New() *Parser {
 	parser := &Parser{}
-	parser.reset()
+
+	parser.Variables = make(map[string]*big.Rat)
+
+	for k, v := range defaultVariables {
+		parser.Variables[k] = v
+	}
 
 	return parser
 }
@@ -504,12 +509,6 @@ func (p *Parser) reset() {
 	p.operators = nil
 	p.operands = nil
 	p.arity = nil
-
-	p.Variables = make(map[string]*big.Rat)
-
-	for k, v := range defaultVariables {
-		p.Variables[k] = v
-	}
 }
 
 func (p *Parser) peek() *Token {

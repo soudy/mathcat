@@ -16,7 +16,7 @@ import (
 
 var (
 	precision   = flag.Int("precision", 6, "decimal precision used in results")
-	literalMode = flag.String("mode", "number", "type of literal used as result. can be number (default), hex, binary or octal")
+	literalMode = flag.String("mode", "decimal", "type of literal used as result. can be number (default), hex, binary or octal")
 )
 
 func getHomeDir() string {
