@@ -45,7 +45,7 @@ func init() {
 	funcs.register("floor", function{
 		arity: 1,
 		fn: func(args []*big.Rat) *big.Rat {
-			return new(big.Rat).SetInt(rationalToInteger(args[0]))
+			return new(big.Rat).SetInt(RationalToInteger(args[0]))
 		},
 	})
 	funcs.register("sin", function{
@@ -140,15 +140,15 @@ func init() {
 	funcs.register("fact", function{
 		arity: 1,
 		fn: func(args []*big.Rat) *big.Rat {
-			integer := rationalToInteger(args[0])
+			integer := RationalToInteger(args[0])
 			return Factorial(integer)
 		},
 	})
 	funcs.register("gcd", function{
 		arity: 2,
 		fn: func(args []*big.Rat) *big.Rat {
-			x := rationalToInteger(args[0])
-			y := rationalToInteger(args[1])
+			x := RationalToInteger(args[0])
+			y := RationalToInteger(args[1])
 			return Gcd(x, y)
 		},
 	})

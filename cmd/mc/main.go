@@ -58,18 +58,20 @@ func repl(mode Mode) {
 		}
 
 		switch mode {
-		case NUMBER:
+		case DECIMAL:
 			if res.IsInt() {
 				fmt.Println(res.Num())
 			} else {
 				fmt.Println(res.FloatString(*precision))
 			}
-		case HEX:
-			fmt.Println(res.String()) // TODO
-		case BINARY:
-			fmt.Println(res.String()) // TODO
-		case OCTAL:
-			fmt.Println(res.String()) // TODO
+		case HEX, BINARY, OCTAL:
+			formats := map[Mode]string{
+				HEX:    "%#x",
+				BINARY: "%b",
+				OCTAL:  "%#o",
+			}
+			integer := mathcat.RationalToInteger(res)
+			fmt.Printf(formats[mode]+"\n", integer)
 		}
 	}
 }

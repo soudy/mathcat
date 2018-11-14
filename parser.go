@@ -28,8 +28,8 @@ type Parser struct {
 
 var (
 	RatTrue  = big.NewRat(1, 1)
-	RatFalse = big.NewRat(0, 1)
-	RatZero  = big.NewRat(0, 1)
+	RatFalse = new(big.Rat)
+	RatZero  = new(big.Rat)
 
 	ErrDivionByZero         = errors.New("Divison by zero")
 	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
@@ -399,15 +399,15 @@ func execute(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 	case MUL, MUL_EQ:
 		result.Mul(lhs, rhs)
 	case POW, POW_EQ:
-		lhsInteger := rationalToInteger(lhs)
-		rhsInteger := rationalToInteger(rhs)
+		lhsInteger := RationalToInteger(lhs)
+		rhsInteger := RationalToInteger(rhs)
 		result.SetInt(new(big.Int).Exp(lhsInteger, rhsInteger, nil))
 	case REM, REM_EQ:
 		if rhs.Sign() == 0 {
 			return nil, ErrDivionByZero
 		}
-		lhsInteger := rationalToInteger(lhs)
-		rhsInteger := rationalToInteger(rhs)
+		lhsInteger := RationalToInteger(lhs)
+		rhsInteger := RationalToInteger(rhs)
 		result.SetInt(new(big.Int).Mod(lhsInteger, rhsInteger))
 	case AND, AND_EQ:
 		result.SetInt(new(big.Int).And(lhs.Num(), rhs.Num()))
@@ -532,6 +532,7 @@ func boolToRat(b bool) *big.Rat {
 	return RatFalse
 }
 
-func rationalToInteger(n *big.Rat) *big.Int {
+// RationalToInteger converts a rational number to an integer
+func RationalToInteger(n *big.Rat) *big.Int {
 	return new(big.Int).Div(n.Num(), n.Denom())
 }
