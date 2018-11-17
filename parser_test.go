@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+var RatZero = new(big.Rat)
+
 func TestFloatBitwise(t *testing.T) {
 	badExpressions := []string{
 		"2.4 | -2", "5.5 & 32", "7.7 ^ 2.1", "9 << 20.1", "7 >> 21.2", "~5.3",
