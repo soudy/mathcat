@@ -237,7 +237,7 @@ func (p *Parser) parse() (*big.Rat, error) {
 }
 
 func (p *Parser) handleOperator() error {
-	var o1, o2 *operator
+	var o1, o2 operator
 
 	o1 = operators[p.tok.Type]
 
