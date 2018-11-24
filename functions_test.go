@@ -39,6 +39,7 @@ func TestFunctionsResult(t *testing.T) {
 	calls := map[string]*big.Rat{
 		"abs(-700)":                         big.NewRat(700, 1),
 		"ceil(813.23)":                      big.NewRat(814, 1),
+		"ceil(ceil(10 ** 16 + 0.1))":        big.NewRat(10000000000000001, 1),
 		"floor(813.23)":                     big.NewRat(813, 1),
 		"sin(74)":                           big.NewRat(-8873408663100473, 9007199254740992),
 		"cos(74)":                           big.NewRat(6186769253457135, 36028797018963968),

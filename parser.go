@@ -405,9 +405,9 @@ func execute(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 	case MUL, MUL_EQ:
 		result.Mul(lhs, rhs)
 	case POW, POW_EQ:
-		lhsInteger := RationalToInteger(lhs)
-		rhsInteger := RationalToInteger(rhs)
-		result.SetInt(new(big.Int).Exp(lhsInteger, rhsInteger, nil))
+		lhsFloat, _ := lhs.Float64()
+		rhsFloat, _ := rhs.Float64()
+		result.SetFloat64(math.Pow(lhsFloat, rhsFloat))
 	case REM, REM_EQ:
 		if rhs.Sign() == 0 {
 			return nil, ErrDivionByZero
@@ -530,9 +530,4 @@ func boolToRat(b bool) *big.Rat {
 		return RatTrue
 	}
 	return RatFalse
-}
-
-// RationalToInteger converts a rational number to an integer
-func RationalToInteger(n *big.Rat) *big.Int {
-	return new(big.Int).Div(n.Num(), n.Denom())
 }

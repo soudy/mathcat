@@ -35,13 +35,13 @@ The REPL can be used by simply launching `mc`:
 mc> 8**8
 16777216
 mc> (8**8) - e # Look, a comment!
-16777213.28
+16777213.281718
 ```
 
 Or it can read from `stdin` like so:
 
 ```bash
-echo "3**pi * (6 - -7)" | mc
+$ echo "3**pi * (6 - -7)" | mc
 ```
 
 ### Arguments
@@ -66,7 +66,7 @@ res, err := mathcat.Eval("2 * pi * 5") // pi is a predefined variable
 if err != nil {
     // handle errors
 }
-fmt.Printf("Result: %f\n", res) // Result: 31.41592653589793
+fmt.Printf("Result: %s\n", res.FloatString(6)) // Result: 31.415927
 ```
 
 ### Run
@@ -149,27 +149,27 @@ mathcat has a big list of functions you can use. A function call is invoked like
 in most programming languages, with an identifier followed by a left parentheses
 like this: `max(5, 10)`.
 
-| Function       |     Arguments | Description                                                                      |
-| :------------: | :-----------: | -------------------------------------------------------------------------------- |
-| abs            |             1 | returns the absolute value of given number                                       |
-| acos           |             1 | returns the arccosine of given number, in radians                                |
-| sin            |             1 | returns the sine of given number                                                 |
-| cos            |             1 | returns the cosine of given number                                               |
-| tan            |             1 | returns the tangent of given number                                              |
-| asin           |             1 | returns the arcsine of given number                                              |
-| acos           |             1 | returns the acosine of given number                                              |
-| atan           |             1 | returns the arctangent of given number                                           |
-| ceil           |             1 | returns the smallest integer greater than or equal to a given number             |
-| floor          |             1 | returns the largest integer less than or equal to a given number                 |
-| ln             |             1 | returns the natural logarithm of given number                                    |
-| log            |             1 | returns the the decimal logarithm of given number                                |
-| logn           |             2 | returns the the n logarithm of given number                                      |
-| max            |             2 | returns the larger of the two given numbers                                      |
-| min            |             2 | returns the smaller of the two given numbers                                     |
-| sqrt           |             1 | returns the square root of given number                                          |
-| rand           |             0 | returns a random float between 0.0 and 1.0                                       |
-| fact           |             1 | returns the factorial of  given number                                           |
-| list           |             0 | list all functions                                                               |
+| Function        |     Arguments | Description                                                                      |
+| :-------------: | :-----------: | -------------------------------------------------------------------------------- |
+| abs(n)          |             1 | returns the absolute value of given number                                       |
+| acos(n)         |             1 | returns the arccosine of given number, in radians                                |
+| sin(n)          |             1 | returns the sine of given number                                                 |
+| cos(n)          |             1 | returns the cosine of given number                                               |
+| tan(n)          |             1 | returns the tangent of given number                                              |
+| asin(n)         |             1 | returns the arcsine of given number                                              |
+| acos(n)         |             1 | returns the acosine of given number                                              |
+| atan(n)         |             1 | returns the arctangent of given number                                           |
+| ceil(n)         |             1 | returns the smallest integer greater than or equal to a given number             |
+| floor(n)        |             1 | returns the largest integer less than or equal to a given number                 |
+| ln(n)           |             1 | returns the natural logarithm of given number                                    |
+| log(n)          |             1 | returns the the decimal logarithm of given number                                |
+| logn(k, n)      |             2 | returns the the k logarithm of n                                                 |
+| max(a, b)       |             2 | returns the larger of the two given numbers                                      |
+| min(a, b)       |             2 | returns the smaller of the two given numbers                                     |
+| sqrt(n)         |             1 | returns the square root of given number                                          |
+| rand()          |             0 | returns a random float between 0.0 and 1.0                                       |
+| fact(n)         |             1 | returns the factorial of  given number                                           |
+| list()          |             0 | list all functions                                                               |
 
 ### Predefined variables
 There are some handy predefined variables you can use (and change) throughout

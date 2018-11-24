@@ -38,14 +38,13 @@ func init() {
 	funcs.register("ceil", function{
 		arity: 1,
 		fn: func(args []*big.Rat) *big.Rat {
-			float, _ := args[0].Float64()
-			return new(big.Rat).SetFloat64(math.Ceil(float))
+			return Ceil(args[0])
 		},
 	})
 	funcs.register("floor", function{
 		arity: 1,
 		fn: func(args []*big.Rat) *big.Rat {
-			return new(big.Rat).SetInt(RationalToInteger(args[0]))
+			return Floor(args[0])
 		},
 	})
 	funcs.register("sin", function{
@@ -140,16 +139,13 @@ func init() {
 	funcs.register("fact", function{
 		arity: 1,
 		fn: func(args []*big.Rat) *big.Rat {
-			integer := RationalToInteger(args[0])
-			return Factorial(integer)
+			return Factorial(args[0])
 		},
 	})
 	funcs.register("gcd", function{
 		arity: 2,
 		fn: func(args []*big.Rat) *big.Rat {
-			x := RationalToInteger(args[0])
-			y := RationalToInteger(args[1])
-			return Gcd(x, y)
+			return Gcd(args[0], args[1])
 		},
 	})
 	funcs.register("list", function{
@@ -162,34 +158,4 @@ func init() {
 			return nil
 		},
 	})
-}
-
-// Factorial calculates the factorial of rational number n
-func Factorial(n *big.Int) *big.Rat {
-	fact := new(big.Int).MulRange(1, n.Int64())
-	return new(big.Rat).SetInt(fact)
-}
-
-// Gcd calculates the greatest common divisor of the numbers x and y
-func Gcd(x, y *big.Int) *big.Rat {
-	gcd := new(big.Int).GCD(nil, nil, x, y)
-	return new(big.Rat).SetInt(gcd)
-}
-
-// Max gives the maximum of two rational numbers
-func Max(a, b *big.Rat) *big.Rat {
-	if a.Cmp(b) == 1 {
-		return a
-	}
-
-	return b
-}
-
-// Min gives the minimum of two rational numbers
-func Min(a, b *big.Rat) *big.Rat {
-	if a.Cmp(b) == -1 {
-		return a
-	}
-
-	return b
 }

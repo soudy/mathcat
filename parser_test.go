@@ -104,6 +104,7 @@ func TestEval(t *testing.T) {
 		"((2 * 4 - 6 / 3) * (3 * 5 + 8 / 4)) - (2 + 3)": big.NewRat(97, 1),
 		"0xdeadbeef & 0xff000000":                       big.NewRat(3724541952, 1),
 		"325-2*5+2":                                     big.NewRat(317, 1),
+		"3**pi * (6 - -7)":                              big.NewRat(57713016890376237, 140737488355328),
 	}
 
 	for expr, expected := range okExpressions {
