@@ -66,7 +66,7 @@ func repl(mode Mode) {
 				stringResult := new(big.Float).
 					SetPrec(*precision).
 					SetRat(res).
-					Text('g', -1)
+					Text('f', -1)
 				fmt.Println(stringResult)
 			}
 		case HEX, BINARY, OCTAL:

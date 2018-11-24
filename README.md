@@ -35,7 +35,7 @@ The REPL can be used by simply launching `mc`:
 mc> 8**8
 16777216
 mc> (8**8) - e # Look, a comment!
-16777213.281718
+16777213.281718171541
 ```
 
 Or it can read from `stdin` like so:
@@ -152,7 +152,6 @@ like this: `max(5, 10)`.
 | Function        |     Arguments | Description                                                                      |
 | :-------------: | :-----------: | -------------------------------------------------------------------------------- |
 | abs(n)          |             1 | returns the absolute value of given number                                       |
-| acos(n)         |             1 | returns the arccosine of given number, in radians                                |
 | sin(n)          |             1 | returns the sine of given number                                                 |
 | cos(n)          |             1 | returns the cosine of given number                                               |
 | tan(n)          |             1 | returns the tangent of given number                                              |
