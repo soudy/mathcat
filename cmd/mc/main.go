@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/big"
 	"os"
 	"runtime"
 
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	precision   = flag.Int("precision", 6, "decimal precision used in results")
+	precision   = flag.Uint("precision", 64, "decimal precision used in results")
 	literalMode = flag.String("mode", "decimal", "type of literal used as result. can be number (default), hex, binary or octal")
 )
 
@@ -62,7 +63,11 @@ func repl(mode Mode) {
 			if res.IsInt() {
 				fmt.Println(res.Num())
 			} else {
-				fmt.Println(res.FloatString(*precision))
+				stringResult := new(big.Float).
+					SetPrec(*precision).
+					SetRat(res).
+					Text('g', -1)
+				fmt.Println(stringResult)
 			}
 		case HEX, BINARY, OCTAL:
 			formats := map[Mode]string{

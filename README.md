@@ -48,7 +48,7 @@ $ echo "3**pi * (6 - -7)" | mc
 
 | Name      | Description                                                          | Default |
 |-----------|----------------------------------------------------------------------|---------|
-| precision | decimal precision used in results                                    | 6       |
+| precision | decimal precision used in results                                    | 64      |
 | mode      | type of literal used as result. can be decimal, hex, binary or octal | decimal |
 
 ## Library usage
