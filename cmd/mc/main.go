@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	precision   = flag.Uint("precision", 64, "decimal precision used in results")
-	literalMode = flag.String("mode", "decimal", "type of literal used as result. can be number (default), hex, binary or octal")
+	precision   = flag.Uint("precision", 64, "bits of precision used in decimal float results")
+	literalMode = flag.String("mode", "decimal", "type of literal used as result. can be decimal (default), hex, binary or octal")
 )
 
 func getHomeDir() string {
@@ -41,7 +41,7 @@ func repl(mode Mode) {
 	})
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(-1)
 	}
 	defer rl.Close()
@@ -54,7 +54,7 @@ func repl(mode Mode) {
 
 		res, err := p.Run(line)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			continue
 		}
 
