@@ -11,7 +11,7 @@ func RationalToInteger(n *big.Rat) *big.Int {
 func Factorial(n *big.Rat) *big.Rat {
 	integer := RationalToInteger(n)
 	fact := new(big.Int).MulRange(1, integer.Int64())
-	return n.SetInt(fact)
+	return new(big.Rat).SetInt(fact)
 }
 
 // Gcd calculates the greatest common divisor of the numbers x and y
@@ -20,7 +20,7 @@ func Gcd(x, y *big.Rat) *big.Rat {
 	yInt := RationalToInteger(y)
 	gcd := new(big.Int).GCD(nil, nil, xInt, yInt)
 
-	return x.SetInt(gcd)
+	return new(big.Rat).SetInt(gcd)
 }
 
 // Max gives the maximum of two rational numbers
@@ -43,7 +43,7 @@ func Min(a, b *big.Rat) *big.Rat {
 
 // Floor returns the floor of a rational number
 func Floor(n *big.Rat) *big.Rat {
-	return n.SetInt(RationalToInteger(n))
+	return new(big.Rat).SetInt(RationalToInteger(n))
 }
 
 // Ceil returns the ceil of a rational number
