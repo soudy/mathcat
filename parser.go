@@ -32,7 +32,6 @@ var (
 	// RatFalse represents false in boolean operations
 	RatFalse = new(big.Rat)
 
-	ErrDivionByZero         = errors.New("Divison by zero")
 	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
 	ErrMisplacedComma       = errors.New("Misplaced ‘,’")
 	ErrAssignToLiteral      = errors.New("Can't assign to literal")
@@ -143,16 +142,16 @@ func (p *Parser) parse() (*big.Rat, error) {
 	// Initializing current token value
 	p.tok = p.Tokens[0]
 
-	for !p.eat().Is(EOL) {
+	for !p.eat().Is(Eol) {
 		switch {
 		case p.tok.IsLiteral():
-			if p.peek().Is(LPAREN) {
+			if p.peek().Is(Lparen) {
 				// It's a function call, push to operators stack instead
 				p.operators.Push(p.tok)
 
 				// Check ahead if the function call has any argument at all, so
 				// we can do accurate tracking of arity
-				if p.peekN(2).Is(RPAREN) {
+				if p.peekN(2).Is(Rparen) {
 					p.arity.Push(0)
 				} else {
 					p.arity.Push(1)
@@ -160,15 +159,15 @@ func (p *Parser) parse() (*big.Rat, error) {
 				break
 			}
 			p.operands.Push(p.tok)
-		case p.tok.Is(LPAREN):
+		case p.tok.Is(Lparen):
 			p.operators.Push(p.tok)
-		case p.tok.Is(COMMA):
+		case p.tok.Is(Comma):
 			for {
 				if p.operators.Empty() {
 					return nil, ErrMisplacedComma
 				}
 
-				if p.operators.Top().(*Token).Is(LPAREN) {
+				if p.operators.Top().(*Token).Is(Lparen) {
 					break
 				}
 
@@ -184,14 +183,14 @@ func (p *Parser) parse() (*big.Rat, error) {
 			if err := p.handleOperator(); err != nil {
 				return nil, err
 			}
-		case p.tok.Is(RPAREN):
+		case p.tok.Is(Rparen):
 			for {
 				if p.operators.Empty() {
 					return nil, ErrUnmatchedParentheses
 				}
 
 				top := p.operators.Pop().(*Token)
-				if top.Is(LPAREN) {
+				if top.Is(Lparen) {
 					break
 				}
 
@@ -209,7 +208,7 @@ func (p *Parser) parse() (*big.Rat, error) {
 	for !p.operators.Empty() {
 		top := p.operators.Pop().(*Token)
 
-		if top.Is(LPAREN) {
+		if top.Is(Lparen) {
 			return nil, ErrUnmatchedParentheses
 		}
 
@@ -249,9 +248,9 @@ func (p *Parser) handleOperator() error {
 
 	// While there's a function at the top of the operator stack, or an operator
 	// with higher precedence than o1, pop operators to operands
-	for p.operators.Top().(*Token).Is(IDENT) || p.operators.Top().(*Token).IsOperator() {
+	for p.operators.Top().(*Token).Is(Ident) || p.operators.Top().(*Token).IsOperator() {
 		// Function call, always take precedence over operator
-		if p.operators.Top().(*Token).Is(IDENT) {
+		if p.operators.Top().(*Token).Is(Ident) {
 			function := p.operators.Pop().(*Token)
 			val, err := p.evaluateFunc(function)
 			if err != nil {
@@ -356,7 +355,7 @@ func (p *Parser) evaluateOp(operator *Token) (*big.Rat, error) {
 
 		// Don't lookup the left hand side if = is used so we can do initial
 		// assignment
-		if !operator.Is(EQ) {
+		if !operator.Is(Eq) {
 			left, err = p.lookup(lhsToken)
 			if err != nil {
 				return nil, err
@@ -364,87 +363,17 @@ func (p *Parser) evaluateOp(operator *Token) (*big.Rat, error) {
 		}
 	}
 
-	result, err = execute(operator, left, right)
+	result, err = executeExpression(operator, left, right)
 	if err != nil {
 		return nil, err
 	}
 
 	if operator.IsAssignment() {
 		// Save result in variable
-		if val, ok := lhsToken.(*Token); !(ok && val.Is(IDENT)) {
+		if val, ok := lhsToken.(*Token); !(ok && val.Is(Ident)) {
 			return nil, ErrAssignToLiteral
 		}
 		p.Variables[lhsToken.(*Token).Value] = result
-	}
-
-	return result, nil
-}
-
-func execute(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
-	result := new(big.Rat)
-
-	// Both lhs and rhs have to be integers for bitwise operations
-	if operator.IsBitwise() {
-		if (lhs == nil && !rhs.IsInt()) || (lhs != nil && (!rhs.IsInt() || !lhs.IsInt())) {
-			return nil, fmt.Errorf("Expecting integers for ‘%s’", operator)
-		}
-	}
-
-	switch operator.Type {
-	case ADD, ADD_EQ:
-		result.Add(lhs, rhs)
-	case SUB, SUB_EQ:
-		result.Sub(lhs, rhs)
-	case UNARY_MIN:
-		result.Neg(rhs)
-	case DIV, DIV_EQ:
-		if rhs.Sign() == 0 {
-			return nil, ErrDivionByZero
-		}
-		result.Quo(lhs, rhs)
-	case MUL, MUL_EQ:
-		result.Mul(lhs, rhs)
-	case POW, POW_EQ:
-		lhsFloat, _ := lhs.Float64()
-		rhsFloat, _ := rhs.Float64()
-		result.SetFloat64(math.Pow(lhsFloat, rhsFloat))
-	case REM, REM_EQ:
-		if rhs.Sign() == 0 {
-			return nil, ErrDivionByZero
-		}
-		lhsInteger := RationalToInteger(lhs)
-		rhsInteger := RationalToInteger(rhs)
-		result.SetInt(new(big.Int).Mod(lhsInteger, rhsInteger))
-	case AND, AND_EQ:
-		result.SetInt(new(big.Int).And(lhs.Num(), rhs.Num()))
-	case OR, OR_EQ:
-		result.SetInt(new(big.Int).Or(lhs.Num(), rhs.Num()))
-	case XOR, XOR_EQ:
-		result.SetInt(new(big.Int).Xor(lhs.Num(), rhs.Num()))
-	case LSH, LSH_EQ:
-		shift := uint(rhs.Num().Uint64())
-		result.SetInt(new(big.Int).Lsh(lhs.Num(), shift))
-	case RSH, RSH_EQ:
-		shift := uint(rhs.Num().Uint64())
-		result.SetInt(new(big.Int).Rsh(lhs.Num(), shift))
-	case NOT:
-		result.SetInt(new(big.Int).Not(rhs.Num()))
-	case EQ:
-		result = rhs
-	case EQ_EQ:
-		result = boolToRat(lhs.Cmp(rhs) == 0)
-	case BANG_EQ:
-		result = boolToRat(lhs.Cmp(rhs) != 0)
-	case GT:
-		result = boolToRat(lhs.Cmp(rhs) == 1)
-	case GT_EQ:
-		result = boolToRat(lhs.Cmp(rhs) == 1 || lhs.Cmp(rhs) == 0)
-	case LT:
-		result = boolToRat(lhs.Cmp(rhs) == -1)
-	case LT_EQ:
-		result = boolToRat(lhs.Cmp(rhs) == -1 || lhs.Cmp(rhs) == 0)
-	default:
-		return nil, fmt.Errorf("Invalid operator ‘%s’", operator)
 	}
 
 	return result, nil
@@ -465,20 +394,20 @@ func (p *Parser) lookup(val interface{}) (*big.Rat, error) {
 	)
 
 	bases := [...]int{
-		HEX:    16,
-		OCTAL:  8,
-		BINARY: 2,
+		Hex:    16,
+		Octal:  8,
+		Binary: 2,
 	}
 
 	tok := val.(*Token)
 	switch tok.Type {
-	case DECIMAL:
+	case Decimal:
 		res, ok = res.SetString(tok.Value)
 
 		if !ok {
 			return nil, fmt.Errorf("Error parsing ‘%s’: invalid %s", tok.Value, tok.Type)
 		}
-	case HEX, BINARY, OCTAL:
+	case Hex, Binary, Octal:
 		tmpInt := new(big.Int)
 		// Remove prefix of literal and convert to int first
 		tmpInt, ok = tmpInt.SetString(tok.Value[2:], bases[tok.Type])
@@ -488,7 +417,7 @@ func (p *Parser) lookup(val interface{}) (*big.Rat, error) {
 		}
 
 		res.SetInt(tmpInt)
-	case IDENT:
+	case Ident:
 		res, err := p.GetVar(tok.Value)
 		if err != nil {
 			return nil, err

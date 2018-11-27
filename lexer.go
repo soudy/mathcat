@@ -85,65 +85,65 @@ loop:
 		default:
 			switch l.ch {
 			case '+':
-				l.switchEq(ADD, ADD_EQ)
+				l.switchEq(Add, AddEq)
 			case '-':
 				// Check for unary minus. We decide unaryness at lexer level to
 				// make it easier for the parser to know the difference.
 				if l.isNegation() && l.peek() != '=' {
-					l.emit(UNARY_MIN)
+					l.emit(UnaryMin)
 					break
 				}
-				l.switchEq(SUB, SUB_EQ)
+				l.switchEq(Sub, SubEq)
 			case '/':
-				l.switchEq(DIV, DIV_EQ)
+				l.switchEq(Div, DivEq)
 			case '*':
 				if l.peek() == '*' {
 					l.eat()
-					l.switchEq(POW, POW_EQ)
+					l.switchEq(Pow, PowEq)
 				} else {
-					l.switchEq(MUL, MUL_EQ)
+					l.switchEq(Mul, MulEq)
 				}
 			case '%':
-				l.switchEq(REM, REM_EQ)
+				l.switchEq(Rem, RemEq)
 			case '&':
-				l.switchEq(AND, AND_EQ)
+				l.switchEq(And, AndEq)
 			case '|':
-				l.switchEq(OR, OR_EQ)
+				l.switchEq(Or, OrEq)
 			case '^':
-				l.switchEq(XOR, XOR_EQ)
+				l.switchEq(Xor, XorEq)
 			case '<':
 				if l.peek() == '<' {
 					l.eat()
-					l.switchEq(LSH, LSH_EQ)
+					l.switchEq(Lsh, LshEq)
 				} else {
-					l.switchEq(LT, LT_EQ)
+					l.switchEq(Lt, LtEq)
 				}
 			case '>':
 				if l.peek() == '>' {
 					l.eat()
-					l.switchEq(RSH, RSH_EQ)
+					l.switchEq(Rsh, RshEq)
 				} else {
-					l.switchEq(GT, GT_EQ)
+					l.switchEq(Gt, GtEq)
 				}
 			case '~':
-				l.emit(NOT)
+				l.emit(Not)
 			case '=':
-				l.switchEq(EQ, EQ_EQ)
+				l.switchEq(Eq, EqEq)
 			case '!':
 				if l.peek() != '=' {
 					return nil, fmt.Errorf("Invalid operation ‘%s’", string(l.ch))
 				}
 				l.eat()
-				l.emit(BANG_EQ)
+				l.emit(NotEq)
 			case '(':
-				l.emit(LPAREN)
+				l.emit(Lparen)
 			case ')':
-				l.emit(RPAREN)
+				l.emit(Rparen)
 			case ',':
-				l.emit(COMMA)
+				l.emit(Comma)
 			case '#', eol:
 				// Comment or EOL, stop scanning for tokens
-				l.emit(EOL)
+				l.emit(Eol)
 				break loop
 			default:
 				return nil, fmt.Errorf("Invalid token ‘%s’", string(l.ch))
@@ -187,7 +187,7 @@ func (l *lexer) readIdent() {
 		l.eat()
 	}
 
-	l.emit(IDENT)
+	l.emit(Ident)
 }
 
 func (l *lexer) readNumber() {
@@ -200,7 +200,7 @@ func (l *lexer) readNumber() {
 				l.eat()
 			}
 
-			l.emit(HEX)
+			l.emit(Hex)
 			return
 		}
 
@@ -212,7 +212,7 @@ func (l *lexer) readNumber() {
 				l.eat()
 			}
 
-			l.emit(BINARY)
+			l.emit(Binary)
 			return
 		}
 
@@ -224,7 +224,7 @@ func (l *lexer) readNumber() {
 				l.eat()
 			}
 
-			l.emit(OCTAL)
+			l.emit(Octal)
 			return
 		}
 	}
@@ -237,11 +237,11 @@ func (l *lexer) readNumber() {
 		}
 	}
 
-	l.emit(DECIMAL)
+	l.emit(Decimal)
 }
 
 func (l lexer) isNegation() bool {
-	return l.tokens == nil || l.prev().Is(LPAREN) || l.prev().IsOperator()
+	return l.tokens == nil || l.prev().Is(Lparen) || l.prev().IsOperator()
 }
 
 func (l *lexer) switchEq(tokA, tokB TokenType) {

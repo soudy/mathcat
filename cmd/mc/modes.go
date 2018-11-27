@@ -7,15 +7,15 @@ package main
 type Mode int
 
 const (
-	DECIMAL Mode = iota
-	HEX
-	BINARY
-	OCTAL
+	Decimal Mode = iota
+	Hex
+	Binary
+	Octal
 )
 
 var modes = map[string]Mode{
-	"decimal": DECIMAL,
-	"hex":     HEX,
-	"binary":  BINARY,
-	"octal":   OCTAL,
+	"decimal": Decimal,
+	"hex":     Hex,
+	"binary":  Binary,
+	"octal":   Octal,
 }

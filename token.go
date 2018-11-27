@@ -18,111 +18,111 @@ type Token struct {
 type Tokens []*Token
 
 const (
-	EOL TokenType = iota // end of line
+	Eol TokenType = iota // end of line
 
 	literalsBegin
-	IDENT   // x
-	DECIMAL // 3
-	HEX     // 0xDEADBEEF
-	BINARY  // 0b10101101100
-	OCTAL   // 0o666
+	Ident   // x
+	Decimal // 3
+	Hex     // 0xDEADBEEF
+	Binary  // 0b10101101100
+	Octal   // 0o666
 	literalsEnd
 
 	operatorsBegin
-	ADD       // +
-	SUB       // -
-	DIV       // /
-	MUL       // *
-	POW       // **
-	REM       // %
-	UNARY_MIN // -
+	Add      // +
+	Sub      // -
+	Div      // /
+	Mul      // *
+	Pow      // **
+	Rem      // %
+	UnaryMin // -
 
 	bitwiseBegin
-	AND // &
-	OR  // |
-	XOR // ^
-	LSH // <<
-	RSH // >>
-	NOT // ~
+	And // &
+	Or  // |
+	Xor // ^
+	Lsh // <<
+	Rsh // >>
+	Not // ~
 
 	assignmentBegin
-	AND_EQ // &=
-	OR_EQ  // |=
-	XOR_EQ // ^=
-	LSH_EQ // <<=
-	RSH_EQ // >>=
+	AndEq // &=
+	OrEq  // |=
+	XorEq // ^=
+	LshEq // <<=
+	RshEq // >>=
 	bitwiseEnd
 
-	EQ     // =
-	ADD_EQ // +=
-	SUB_EQ // -=
-	DIV_EQ // /=
-	MUL_EQ // *=
-	POW_EQ // **=
-	REM_EQ // %=
+	Eq    // =
+	AddEq // +=
+	SubEq // -=
+	DivEq // /=
+	MulEq // *=
+	PowEq // **=
+	RemEq // %=
 	assignmentEnd
 
-	BANG_EQ // !=
-	EQ_EQ   // ==
-	GT      // >
-	GT_EQ   // >=
-	LT      // <
-	LT_EQ   // <=
+	NotEq // !=
+	EqEq  // ==
+	Gt    // >
+	GtEq  // >=
+	Lt    // <
+	LtEq  // <=
 	operatorsEnd
 
-	LPAREN // (
-	RPAREN // )
-	COMMA  // ,
+	Lparen // (
+	Rparen // )
+	Comma  // ,
 )
 
 var tokens = map[TokenType]string{
-	EOL: "end of line",
+	Eol: "end of line",
 
-	IDENT:   "identifier",
-	DECIMAL: "decimal number",
-	HEX:     "hex number",
-	BINARY:  "binary number",
-	OCTAL:   "octal number",
+	Ident:   "identifier",
+	Decimal: "decimal number",
+	Hex:     "hex number",
+	Binary:  "binary number",
+	Octal:   "octal number",
 
-	ADD:       "+",
-	SUB:       "-",
-	DIV:       "/",
-	MUL:       "*",
-	POW:       "**",
-	REM:       "%",
-	UNARY_MIN: "-",
+	Add:      "+",
+	Sub:      "-",
+	Div:      "/",
+	Mul:      "*",
+	Pow:      "**",
+	Rem:      "%",
+	UnaryMin: "-",
 
-	AND: "&",
-	OR:  "|",
-	XOR: "^",
-	LSH: "<<",
-	RSH: ">>",
-	NOT: "~",
+	And: "&",
+	Or:  "|",
+	Xor: "^",
+	Lsh: "<<",
+	Rsh: ">>",
+	Not: "~",
 
-	EQ:     "=",
-	ADD_EQ: "+=",
-	SUB_EQ: "-=",
-	DIV_EQ: "/=",
-	MUL_EQ: "*=",
-	POW_EQ: "**=",
-	REM_EQ: "%=",
+	Eq:    "=",
+	AddEq: "+=",
+	SubEq: "-=",
+	DivEq: "/=",
+	MulEq: "*=",
+	PowEq: "**=",
+	RemEq: "%=",
 
-	AND_EQ: "&=",
-	OR_EQ:  "|=",
-	XOR_EQ: "^=",
-	LSH_EQ: "<<=",
-	RSH_EQ: ">>=",
+	AndEq: "&=",
+	OrEq:  "|=",
+	XorEq: "^=",
+	LshEq: "<<=",
+	RshEq: ">>=",
 
-	BANG_EQ: "!=",
-	EQ_EQ:   "==",
-	GT:      ">",
-	GT_EQ:   ">=",
-	LT:      "<",
-	LT_EQ:   "<=",
+	NotEq: "!=",
+	EqEq:  "==",
+	Gt:    ">",
+	GtEq:  ">=",
+	Lt:    "<",
+	LtEq:  "<=",
 
-	LPAREN: "(",
-	RPAREN: ")",
-	COMMA:  ",",
+	Lparen: "(",
+	Rparen: ")",
+	Comma:  ",",
 }
 
 func (tok Token) String() string {
