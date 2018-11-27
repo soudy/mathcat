@@ -59,7 +59,7 @@ func repl(mode Mode) {
 		}
 
 		switch mode {
-		case DECIMAL:
+		case Decimal:
 			if res.IsInt() {
 				fmt.Println(res.Num())
 			} else {
@@ -69,11 +69,11 @@ func repl(mode Mode) {
 					Text('f', -1)
 				fmt.Println(stringResult)
 			}
-		case HEX, BINARY, OCTAL:
+		case Hex, Binary, Octal:
 			formats := map[Mode]string{
-				HEX:    "%#x",
-				BINARY: "%b",
-				OCTAL:  "%#o",
+				Hex:    "%#x",
+				Binary: "%b",
+				Octal:  "%#o",
 			}
 			integer := mathcat.RationalToInteger(res)
 			fmt.Printf(formats[mode]+"\n", integer)
