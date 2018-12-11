@@ -51,3 +51,10 @@ func Ceil(n *big.Rat) *big.Rat {
 	floor := Floor(n.Neg(n))
 	return new(big.Rat).Neg(floor)
 }
+
+// Mod returns x % y
+func Mod(x, y *big.Rat) *big.Rat {
+	res := new(big.Rat)
+	quo := Floor(res.Quo(x, y))
+	return res.Sub(x, res.Mul(y, quo))
+}

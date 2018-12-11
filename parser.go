@@ -30,7 +30,7 @@ var (
 	// RatTrue represents true in boolean operations
 	RatTrue = big.NewRat(1, 1)
 	// RatFalse represents false in boolean operations
-	RatFalse = new(big.Rat)
+	RatFalse = big.NewRat(0, 1)
 
 	ErrUnmatchedParentheses = errors.New("Unmatched parentheses")
 	ErrMisplacedComma       = errors.New("Misplaced ‘,’")
@@ -330,17 +330,17 @@ func (p *Parser) evaluateFunc(tok *Token) (*big.Rat, error) {
 
 func (p *Parser) evaluateOp(operator *Token) (*big.Rat, error) {
 	var (
-		result      *big.Rat
-		left, right *big.Rat
-		err         error
-		lhsToken    interface{}
+		result   *big.Rat
+		lhs, rhs *big.Rat
+		err      error
+		lhsToken interface{}
 	)
 
 	if p.operands.Empty() {
 		return nil, fmt.Errorf("Unexpected ‘%s’", operator)
 	}
 
-	if right, err = p.lookup(p.operands.Pop()); err != nil {
+	if rhs, err = p.lookup(p.operands.Pop()); err != nil {
 		return nil, err
 	}
 
@@ -356,14 +356,14 @@ func (p *Parser) evaluateOp(operator *Token) (*big.Rat, error) {
 		// Don't lookup the left hand side if = is used so we can do initial
 		// assignment
 		if !operator.Is(Eq) {
-			left, err = p.lookup(lhsToken)
+			lhs, err = p.lookup(lhsToken)
 			if err != nil {
 				return nil, err
 			}
 		}
 	}
 
-	result, err = executeExpression(operator, left, right)
+	result, err = executeExpression(operator, lhs, rhs)
 	if err != nil {
 		return nil, err
 	}
