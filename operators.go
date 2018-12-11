@@ -106,9 +106,7 @@ func executeExpression(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 		if rhs.Sign() == 0 {
 			return nil, ErrDivisionByZero
 		}
-		lhsInteger := RationalToInteger(lhs)
-		rhsInteger := RationalToInteger(rhs)
-		result.SetInt(new(big.Int).Mod(lhsInteger, rhsInteger))
+		result.Set(Mod(lhs, rhs))
 	case And, AndEq:
 		result.SetInt(new(big.Int).And(lhs.Num(), rhs.Num()))
 	case Or, OrEq:
