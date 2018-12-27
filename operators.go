@@ -141,3 +141,10 @@ func executeExpression(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 
 	return result, nil
 }
+
+func boolToRat(b bool) *big.Rat {
+	if b {
+		return RatTrue
+	}
+	return RatFalse
+}
