@@ -453,10 +453,3 @@ func (p *Parser) eat() *Token {
 	p.pos++
 	return p.tok
 }
-
-func boolToRat(b bool) *big.Rat {
-	if b {
-		return RatTrue
-	}
-	return RatFalse
-}
