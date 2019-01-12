@@ -38,7 +38,7 @@ var (
 
 	defaultVariables = map[string]*big.Rat{
 		"pi":  new(big.Rat).SetFloat64(math.Pi),
-		"tau": new(big.Rat).SetFloat64(math.Pi * 2),
+		"tau": new(big.Rat).Mul(new(big.Rat).SetFloat64(math.Pi), big.NewRat(2, 1)),
 		"phi": new(big.Rat).SetFloat64(math.Phi),
 		"e":   new(big.Rat).SetFloat64(math.E),
 	}
