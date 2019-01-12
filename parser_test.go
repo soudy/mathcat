@@ -93,6 +93,7 @@ func TestEval(t *testing.T) {
 		"55.0 == 55":                                    big.NewRat(1, 1),
 		"55 <= 55":                                      big.NewRat(1, 1),
 		"55 >= 55":                                      big.NewRat(1, 1),
+		"pi * 2 == tau":                                 big.NewRat(1, 1),
 		"-0 > 0":                                        RatZero,
 		"0 < -0":                                        RatZero,
 		"2 != 2":                                        RatZero,
