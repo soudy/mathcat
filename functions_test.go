@@ -58,6 +58,7 @@ func TestFunctionsResult(t *testing.T) {
 		"tan(144) + tan(-3) + sin(5)":       big.NewRat(-49720712606960177, 36028797018963968),
 		"fact(6) * fact(7) == fact(10)":     big.NewRat(1, 1),
 		"fact(6.5) * fact(7.3) == fact(10)": big.NewRat(1, 1),
+		"list()": big.NewRat(1, 1),
 	}
 
 	for expr, expected := range calls {
