@@ -155,7 +155,7 @@ func init() {
 				fmt.Print(name + " ")
 			}
 			fmt.Println()
-			return nil
+			return RatTrue
 		},
 	})
 }
