@@ -107,6 +107,10 @@ func TestEval(t *testing.T) {
 		"0xdeadbeef & 0xff000000":                       big.NewRat(3724541952, 1),
 		"325-2*5+2":                                     big.NewRat(317, 1),
 		"3**pi * (6 - -7)":                              big.NewRat(57713016890376237, 140737488355328),
+		"(2 == 2) == true":                              RatTrue,
+		"(2 == 3) == false":                             RatTrue,
+		"true == 1 & false == 0":                        RatTrue,
+		"false":                                         RatFalse,
 	}
 
 	for expr, expected := range okExpressions {
