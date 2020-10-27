@@ -178,6 +178,8 @@ your expressions:
 - tau
 - phi
 - e
+- true (set to 1)
+- false (set to 0)
 
 ## Documentation
 For a more technical description of mathcat, see [here](https://godoc.org/github.com/soudy/mathcat).

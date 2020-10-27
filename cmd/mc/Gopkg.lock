@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/soudy/mathcat"
   packages = ["."]
-  revision = "adbec354adbea49f4808c3be7ce25b53d6be9b91"
+  revision = "0deae8ca163beb9b9bb83c6ddc696bf962cb3d4c"
 
 [solve-meta]
   analyzer-name = "dep"

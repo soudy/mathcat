@@ -99,9 +99,15 @@ func executeExpression(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 	case Mul, MulEq:
 		result.Mul(lhs, rhs)
 	case Pow, PowEq:
-		lhsFloat, _ := lhs.Float64()
-		rhsFloat, _ := rhs.Float64()
-		result.SetFloat64(math.Pow(lhsFloat, rhsFloat))
+		if lhs.IsInt() && rhs.IsInt() {
+			intResult := lhs.Num()
+			intResult.Exp(intResult, rhs.Num(), nil)
+			result.SetInt(intResult)
+		} else {
+			lhsFloat, _ := lhs.Float64()
+			rhsFloat, _ := rhs.Float64()
+			result.SetFloat64(math.Pow(lhsFloat, rhsFloat))
+		}
 	case Rem, RemEq:
 		if rhs.Sign() == 0 {
 			return nil, ErrDivisionByZero
