@@ -111,6 +111,7 @@ func TestEval(t *testing.T) {
 		"(2 == 3) == false":                             RatTrue,
 		"true == 1 & false == 0":                        RatTrue,
 		"false":                                         RatFalse,
+		"33**11":                                        big.NewRat(50542106513726817, 1),
 	}
 
 	for expr, expected := range okExpressions {
