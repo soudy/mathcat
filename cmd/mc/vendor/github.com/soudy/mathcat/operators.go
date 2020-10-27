@@ -100,7 +100,8 @@ func executeExpression(operator *Token, lhs, rhs *big.Rat) (*big.Rat, error) {
 		result.Mul(lhs, rhs)
 	case Pow, PowEq:
 		if lhs.IsInt() && rhs.IsInt() {
-			intResult := lhs.Num()
+			intResult := new(big.Int)
+			intResult.Set(lhs.Num())
 			intResult.Exp(intResult, rhs.Num(), nil)
 			result.SetInt(intResult)
 		} else {
